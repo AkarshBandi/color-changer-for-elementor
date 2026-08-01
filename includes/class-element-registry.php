@@ -7,20 +7,70 @@ defined( 'ABSPATH' ) || exit;
 class Element_Registry {
 
 	public static function get_registry() {
-		return array(
-			'wc-add-to-cart'     => self::widget_add_to_cart(),
-			'wc-product-price'   => self::widget_product_price(),
-			'wc-sale-badge'      => self::widget_sale_badge(),
-			'wc-star-rating'     => self::widget_star_rating(),
-			'wc-product-tabs'    => self::widget_product_tabs(),
-			'wc-cart-table'      => self::widget_cart_table(),
-			'wc-checkout'        => self::widget_checkout(),
-			'wc-notices'         => self::widget_notices(),
-			'wc-quantity-input'  => self::widget_quantity_input(),
-			'wc-account'         => self::widget_account(),
-			'wc-general-links'   => self::widget_general_links(),
-			'wc-loop-buttons'    => self::widget_loop_buttons(),
+		return apply_filters(
+			'wooce_element_registry',
+			array(
+				'wc-add-to-cart'     => self::widget_add_to_cart(),
+				'wc-product-price'   => self::widget_product_price(),
+				'wc-sale-badge'      => self::widget_sale_badge(),
+				'wc-star-rating'     => self::widget_star_rating(),
+				'wc-product-tabs'    => self::widget_product_tabs(),
+				'wc-cart-table'      => self::widget_cart_table(),
+				'wc-checkout'        => self::widget_checkout(),
+				'wc-notices'         => self::widget_notices(),
+				'wc-quantity-input'  => self::widget_quantity_input(),
+				'wc-account'         => self::widget_account(),
+				'wc-general-links'   => self::widget_general_links(),
+				'wc-loop-buttons'    => self::widget_loop_buttons(),
+			)
 		);
+	}
+
+	/**
+	 * Map third-party addon widget types to registry keys.
+	 *
+	 * Elementor (free) does not register real WooCommerce widgets; sites
+	 * build them with addons such as Essential Addons or Premium Addons.
+	 * This lets discovery/normalization recognize those widget types and
+	 * route them to the matching registry element.
+	 *
+	 * @return array
+	 */
+	public static function get_addon_map() {
+		return apply_filters(
+			'wooce_addon_widget_map',
+			array(
+				'eael-woo-add-to-cart'     => 'wc-add-to-cart',
+				'eael-woo-product-price'   => 'wc-product-price',
+				'eael-woo-product-rating'  => 'wc-star-rating',
+				'eael-woo-product-tabs'    => 'wc-product-tabs',
+				'eael-woo-cart'            => 'wc-cart-table',
+				'eael-woo-checkout'        => 'wc-checkout',
+				'eicon-woocommerce'        => 'wc-loop-buttons',
+				'premium-woo-products'     => 'wc-loop-buttons',
+				'premium-woo-cta'          => 'wc-add-to-cart',
+				'premium-mini-cart'        => 'wc-cart-table',
+				'premium-woo-categories'   => 'wc-general-links',
+			)
+		);
+	}
+
+	/**
+	 * Whether a widget type string belongs to the WooCommerce element family.
+	 *
+	 * Matches native Elementor widget types (woocommerce-*, wc-*) plus
+	 * addon widget types from Essential Addons (eael-woo-*, eicon-woocommerce)
+	 * and Premium Addons (premium-woo-*).
+	 *
+	 * @param string $widget_type
+	 * @return bool
+	 */
+	public static function is_woocommerce_widget_type( $widget_type ) {
+		if ( ! is_string( $widget_type ) || '' === $widget_type ) {
+			return false;
+		}
+
+		return (bool) preg_match( '/^(woocommerce-|wc-|eael-woo-|eicon-woocommerce|premium-woo-)/', $widget_type );
 	}
 
 	public static function normalize_key( $widget_type ) {
@@ -30,8 +80,14 @@ class Element_Registry {
 			return $widget_type;
 		}
 
+		$addon_map = self::get_addon_map();
+
+		if ( isset( $addon_map[ $widget_type ] ) ) {
+			return $addon_map[ $widget_type ];
+		}
+
 		if ( strpos( $widget_type, 'woocommerce-' ) === 0 ) {
-			$base   = substr( $widget_type, 13 );
+			$base   = substr( $widget_type, 12 );
 			$wc_key = 'wc-' . $base;
 			if ( isset( $registry[ $wc_key ] ) ) {
 				return $wc_key;
@@ -66,8 +122,18 @@ class Element_Registry {
 			return $registry[ $widget_type ];
 		}
 
+		$addon_map = self::get_addon_map();
+
+		if ( isset( $addon_map[ $widget_type ] ) ) {
+			$registry_key = $addon_map[ $widget_type ];
+
+			if ( isset( $registry[ $registry_key ] ) ) {
+				return $registry[ $registry_key ];
+			}
+		}
+
 		if ( strpos( $widget_type, 'woocommerce-' ) === 0 ) {
-			$base  = substr( $widget_type, 13 );
+			$base  = substr( $widget_type, 12 );
 			$wc_key = 'wc-' . $base;
 			if ( isset( $registry[ $wc_key ] ) ) {
 				return $registry[ $wc_key ];

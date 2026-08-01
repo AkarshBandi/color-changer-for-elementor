@@ -44,7 +44,7 @@ class Discovery_Engine {
 	private function walk_elements( $elements, &$widgets ) {
 		foreach ( $elements as $element ) {
 			if ( isset( $element['widgetType'] ) && is_string( $element['widgetType'] ) ) {
-				if ( stripos( $element['widgetType'], 'woocommerce' ) !== false ) {
+				if ( Element_Registry::is_woocommerce_widget_type( $element['widgetType'] ) ) {
 					$widgets[] = Element_Registry::normalize_key( $element['widgetType'] );
 				}
 			}
