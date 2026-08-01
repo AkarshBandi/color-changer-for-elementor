@@ -58,13 +58,8 @@ jobs:
         run: vendor/bin/phpunit
 
   plugin-check:
-    # Informational until Phase 3 (release compliance): readme version,
-    # plugin/author URIs and headers are aligned before the WordPress.org
-    # submission. Making this required too early would keep CI red on known
-    # pre-release debt.
     name: Plugin Check
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 

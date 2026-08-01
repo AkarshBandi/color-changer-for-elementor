@@ -1,9 +1,10 @@
 === WooCommerce Elementor Colors ===
-Contributors: anomalyco
+Contributors: AkarshBandi
 Tags: woocommerce, elementor, css, design, colors, global colors, live editor, visual editor
 Requires at least: 5.8
-Tested up to: 6.7
+Tested up to: 7.0
 Requires PHP: 7.4
+Requires Plugins: woocommerce, elementor
 WC requires at least: 7.0
 WC tested up to: 10.9
 Stable tag: 1.1.0
@@ -72,6 +73,10 @@ Click "Open Live Editor" from the Advanced Settings page or add `?wooce_editor=1
 = Can I share a preview with my client? =
 
 Yes. Use the "Share Preview" button in the Live Editor toolbar. It generates a temporary, nonce-protected URL that anyone can view.
+
+== Privacy Notices ==
+
+This plugin may collect an email address during the optional step of the Onboarding Wizard. The address is stored locally in your site's database (WordPress option `wooce_pro_optin_email`) and is only used to notify you about the plugin's Pro add-on. It is not sent to any third party and can be removed at any time by deleting the option or deactivating the plugin.
 
 == Changelog ==
 

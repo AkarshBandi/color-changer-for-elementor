@@ -5,10 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-08-01
 
 ### Added
 
+- Onboarding Wizard with 4-step setup (scan, A/B test, dequeue, launch).
+- Live Visual Editor with click-to-customize on the frontend.
+- Color state controls (Normal, Hover, Focus, Disabled).
+- Audit Mode with coverage counter.
+- WCAG contrast scoring for accessibility.
+- Share preview links for client feedback.
+- Undo support (10-action history stack).
+- Performance badge showing CSS savings.
 - Addon widget discovery: Essential Addons (`eael-woo-*`, `eicon-woocommerce`)
   and Premium Addons (`premium-woo-*`) widget types now auto-map to their
   matching WooCommerce registry elements on scan.
@@ -22,12 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Renamed admin menu to "Advanced Settings".
 - Consolidated the six duplicated widget-key migration loops, the two
   `walk_elements()` copies and the mapping sanitizer into a single
   `Mapping_Service` class.
 - Plugin source now passes `WordPress-Extra` with zero errors and warnings.
 - One-time onboarding redirect no longer hijacks every admin page; a
   dismissible admin notice takes over (see `wooce_wizard_dismissed`).
+- Plugin header now declares `Requires Plugins: woocommerce, elementor`,
+  `Tested up to: 7.0`, and aligns version with the readme stable tag (1.1.0).
+- Readme now includes a privacy notice for the optional Pro opt-in email.
 
 ### Fixed
 
@@ -36,23 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   map to `wc-product-price`).
 - Onboarding wizard forced a redirect on every admin page load until
   completion; now fires once after activation, then surfaces as a notice.
-
-## [1.1.0] - 2026-07-30
-
-### Added
-
-- Onboarding Wizard with 4-step setup (scan, A/B test, dequeue, launch).
-- Live Visual Editor with click-to-customize on the frontend.
-- Color state controls (Normal, Hover, Focus, Disabled).
-- Audit Mode with coverage counter.
-- WCAG contrast scoring for accessibility.
-- Share preview links for client feedback.
-- Undo support (10-action history stack).
-- Performance badge showing CSS savings.
-
-### Changed
-
-- Renamed admin menu to "Advanced Settings".
 
 ## [1.0.0] - 2026-01-15
 
