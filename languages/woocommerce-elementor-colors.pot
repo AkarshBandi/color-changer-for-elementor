@@ -1,0 +1,115 @@
+# Copyright (C) 2024 WooCommerce Elementor Colors Team
+# This file is distributed under the GPL-2.0+ license.
+# Message template for WooCommerce Elementor Colors.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Elementor Colors 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/anomalyco/woocommerce-elementor-colors/issues\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: woocommerce-elementor-colors.php:59
+msgid "WooCommerce Elementor Colors requires <strong>Elementor</strong> (free version) to be installed and active."
+msgstr ""
+
+#: woocommerce-elementor-colors.php:67
+msgid "WooCommerce Elementor Colors requires <strong>WooCommerce</strong> to be installed and active."
+msgstr ""
+
+#: includes/class-admin.php:27 includes/class-admin.php:28
+msgid "WooCommerce Elementor Colors"
+msgstr ""
+
+#: includes/class-admin.php:69
+msgid "WooCommerce Elementor Colors"
+msgstr ""
+
+#: includes/class-admin.php:70
+msgid "This plugin removes all WooCommerce default CSS and maps Elementor global colors to WooCommerce elements. Your WooCommerce pages will fully inherit your Elementor design system."
+msgstr ""
+
+#: includes/class-admin.php:77
+msgid "Dequeue WooCommerce CSS"
+msgstr ""
+
+#: includes/class-admin.php:82
+msgid "Remove all WooCommerce default stylesheets (core CSS + block CSS)"
+msgstr ""
+
+#: includes/class-admin.php:84
+msgid "When enabled, WooCommerce will use zero default CSS. All styling comes from your theme and Elementor."
+msgstr ""
+
+#: includes/class-admin.php:93
+msgid "Detected Elementor Global Colors"
+msgstr ""
+
+#: includes/class-admin.php:94
+msgid "These colors from your active Elementor kit are automatically applied to WooCommerce elements:"
+msgstr ""
+
+#: includes/class-admin.php:99
+msgid "Color"
+msgstr ""
+
+#: includes/class-admin.php:100
+msgid "Preview"
+msgstr ""
+
+#: includes/class-admin.php:101
+msgid "Value"
+msgstr ""
+
+#: includes/class-admin.php:102
+msgid "Applied To"
+msgstr ""
+
+#: includes/class-admin.php:119
+msgid "How It Works"
+msgstr ""
+
+#: includes/class-admin.php:121
+msgid "WooCommerce default CSS is <strong>fully dequeued</strong> — both core CSS and block CSS."
+msgstr ""
+
+#: includes/class-admin.php:122
+msgid "Elementor global colors (<strong>Primary, Secondary, Text, Accent</strong>) are read from your active kit."
+msgstr ""
+
+#: includes/class-admin.php:123
+msgid "A dynamic override stylesheet is injected <strong>after</strong> Elementor frontend CSS using the <code>elementor/frontend/after_enqueue_styles</code> hook."
+msgstr ""
+
+#: includes/class-admin.php:124
+msgid "All WooCommerce elements (buttons, prices, sale badges, notices, star ratings, tabs, pagination) inherit your Elementor design system."
+msgstr ""
+
+#: includes/class-admin.php:125
+msgid "No template overrides, no JavaScript, no bloat — pure PHP + CSS."
+msgstr ""
+
+#: includes/class-admin.php:127
+msgid "Requires Elementor (free) and WooCommerce. Elementor Pro is recommended for dedicated WooCommerce widgets."
+msgstr ""
+
+#: includes/class-admin.php:135
+msgid "Buttons, Prices, Links, Tabs, Info notices"
+msgstr ""
+
+#: includes/class-admin.php:136
+msgid "Button hover states"
+msgstr ""
+
+#: includes/class-admin.php:137
+msgid "Quantity inputs, Select fields"
+msgstr ""
+
+#: includes/class-admin.php:138
+msgid "Sale badges, Star ratings, Success notices"
+msgstr ""
