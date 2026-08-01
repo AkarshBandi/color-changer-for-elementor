@@ -33,6 +33,8 @@ class Plugin {
 	}
 
 	private static function load() {
+		// Read-only URL flag with capability check; allows safe shutdown.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['wooce_disable'] ) && '1' === $_GET['wooce_disable'] && current_user_can( 'manage_options' ) ) {
 			define( 'WOOEC_DISABLE', true );
 		}
@@ -74,10 +76,13 @@ class Plugin {
 	}
 
 	public static function handle_share_link() {
+		// Read-only public share link; token is validated against a transient below.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_GET['wooce_share'] ) ) {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$nonce = sanitize_key( $_GET['wooce_share'] );
 
 		if ( strlen( $nonce ) < 16 ) {
@@ -97,9 +102,15 @@ class Plugin {
 			return;
 		}
 
-		add_action( 'wp_head', function () use ( $css ) {
-			echo '<style id="wooce-share-css">' . $css . '</style>';
-		}, 999 );
+		add_action(
+			'wp_head',
+			function () use ( $css ) {
+				// CSS is generated internally from sanitized mappings.
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<style id="wooce-share-css">' . $css . '</style>';
+			},
+			999
+		);
 	}
 
 	public static function declare_wc_compatibility() {

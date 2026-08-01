@@ -1,11 +1,8 @@
-.DS_Store
-*.log
-*.swp
-*.swo
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Thumbs.db
-ehthumbs.db
-Desktop.ini
+# Composer dependencies (dev-only tooling)
+/vendor/
+
+# PHPUnit cache
+.phpunit.result.cache
+
+# PHPCS cache
+.phpcs-cache

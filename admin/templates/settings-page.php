@@ -8,7 +8,8 @@
 		</div>
 	</div>
 
-	<?php if ( isset( $_GET['saved'] ) && '1' === $_GET['saved'] ) : ?>
+	<?php // Read-only admin notice flag set by the settings form redirect. ?>
+	<?php if ( isset( $_GET['saved'] ) && '1' === $_GET['saved'] ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only URL flag for admin notice. ?>
 		<div class="wooce-notice wooce-notice-success">
 			<?php echo esc_html__( 'Settings saved successfully.', 'woocommerce-elementor-colors' ); ?>
 		</div>

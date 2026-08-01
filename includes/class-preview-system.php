@@ -12,6 +12,7 @@ class Preview_System {
 	}
 
 	public static function is_preview_mode() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only URL flag; capability checked below.
 		if ( ! isset( $_GET['wooce_preview'] ) || '1' !== $_GET['wooce_preview'] ) {
 			return false;
 		}
@@ -66,6 +67,8 @@ class Preview_System {
 		$spacer_height = is_admin_bar_showing() ? '84px' : '52px';
 		echo '<div style="margin-top:' . esc_attr( $spacer_height ) . ';"></div>';
 
+		// Buffered page output; contents are already escaped by the templates.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $content;
 	}
 

@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 class CSS_Generator {
 
-	private static $kit_colors = null;
+	private static $kit_colors   = null;
 	private static $fallback_css = '';
 
 	public function maybe_generate_and_inject() {
@@ -18,8 +18,8 @@ class CSS_Generator {
 			return;
 		}
 
-		$page_type  = Page_Context::get_current_page_type();
-		$preview    = Preview_System::is_preview_mode();
+		$page_type = Page_Context::get_current_page_type();
+		$preview   = Preview_System::is_preview_mode();
 
 		if ( $preview ) {
 			$mappings_raw = get_transient( 'wooce_preview_draft' );
@@ -38,10 +38,12 @@ class CSS_Generator {
 			return;
 		}
 
-		$kit_colors      = self::get_kit_colors();
-		$mappings_ver    = $preview ? 'preview' : ( isset( $saved['version'] ) ? $saved['version'] : '1' );
-		$kit_ver         = md5( serialize( $kit_colors ) );
-		$cache_key       = 'wooce_css_' . md5( $page_type . $mappings_ver . $kit_ver );
+		$kit_colors   = self::get_kit_colors();
+		$mappings_ver = $preview ? 'preview' : ( isset( $saved['version'] ) ? $saved['version'] : '1' );
+		// serialize() here only feeds an md5 cache key; no serialized data is persisted.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		$kit_ver   = md5( serialize( $kit_colors ) );
+		$cache_key = 'wooce_css_' . md5( $page_type . $mappings_ver . $kit_ver );
 
 		if ( ! $preview ) {
 			$cached = Cache_Manager::get( $cache_key );
@@ -129,7 +131,7 @@ class CSS_Generator {
 			return self::$kit_colors;
 		}
 
-		$colors       = array();
+		$colors        = array();
 		$system_colors = isset( $settings['system_colors'] ) ? $settings['system_colors'] : array();
 		$custom_colors = isset( $settings['custom_colors'] ) ? $settings['custom_colors'] : array();
 
@@ -164,7 +166,7 @@ class CSS_Generator {
 	}
 
 	private function build_css( $mappings ) {
-		$css       = '';
+		$css        = '';
 		$kit_colors = self::get_kit_colors();
 
 		foreach ( $mappings as $widget_type => $widget ) {
@@ -246,8 +248,8 @@ class CSS_Generator {
 			return '';
 		}
 
-		$css       = '';
-		$instance  = new self();
+		$css      = '';
+		$instance = new self();
 
 		foreach ( $slot_def['selectors'] as $selector ) {
 			foreach ( $slot_def['states'] as $state ) {
@@ -316,6 +318,8 @@ class CSS_Generator {
 			return;
 		}
 
+		// CSS is generated internally from sanitized kit colors and mappings.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<style id="wooce-dynamic-css">' . self::$fallback_css . '</style>';
 
 		self::$fallback_css = '';

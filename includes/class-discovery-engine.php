@@ -12,13 +12,15 @@ class Discovery_Engine {
 			array( 'page', 'product' )
 		);
 
-		$posts = get_posts( array(
-			'post_type'      => $post_types,
-			'post_status'    => 'publish',
-			'meta_key'       => '_elementor_data',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-		) );
+		$posts = get_posts(
+			array(
+				'post_type'      => $post_types,
+				'post_status'    => 'publish',
+				'meta_key'       => '_elementor_data',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			)
+		);
 
 		$widgets = array();
 

@@ -31,6 +31,8 @@ class AJAX_Handlers {
 	public function save_preview() {
 		$this->verify_request();
 
+		// Nonce and capability are verified in verify_request() above.
+		// phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['mappings'] ) || ! is_array( $_POST['mappings'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'No mappings provided.', 'woocommerce-elementor-colors' ) ) );
 		}
@@ -50,11 +52,14 @@ class AJAX_Handlers {
 		}
 
 		wp_send_json_success( array( 'preview_url' => $preview_url ) );
+		// phpcs:enable WordPress.Security.NonceVerification
 	}
 
 	public function dismiss_new() {
 		$this->verify_request();
 
+		// Nonce and capability are verified in verify_request() above.
+		// phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['widgets'] ) || ! is_array( $_POST['widgets'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'No widgets specified.', 'woocommerce-elementor-colors' ) ) );
 		}
@@ -82,6 +87,7 @@ class AJAX_Handlers {
 		update_option( 'wooce_colors_mappings', $saved );
 
 		wp_send_json_success( array( 'message' => __( 'Dismissed.', 'woocommerce-elementor-colors' ) ) );
+		// phpcs:enable WordPress.Security.NonceVerification
 	}
 
 	public function rescan() {
@@ -106,34 +112,41 @@ class AJAX_Handlers {
 
 		Cache_Manager::clear_all();
 
-		wp_send_json_success( array(
-			'new_count' => count( $new_widgets ),
-			'message'   => sprintf(
+		wp_send_json_success(
+			array(
+				'new_count' => count( $new_widgets ),
+				'message'   => sprintf(
 				/* translators: %d: number of new widgets found */
-				__( 'Scan complete. Found %d new widget(s).', 'woocommerce-elementor-colors' ),
-				count( $new_widgets )
-			),
-		) );
+					__( 'Scan complete. Found %d new widget(s).', 'woocommerce-elementor-colors' ),
+					count( $new_widgets )
+				),
+			)
+		);
 	}
 
 	public function scan_progress() {
 		$this->verify_request();
 
-		$offset   = isset( $_POST['offset'] ) ? absint( $_POST['offset'] ) : 0;
-		$batch    = 5;
+		// Nonce and capability are verified in verify_request() above.
+		// phpcs:disable WordPress.Security.NonceVerification
+		$offset = isset( $_POST['offset'] ) ? absint( $_POST['offset'] ) : 0;
+		$batch  = 5;
+		// phpcs:enable WordPress.Security.NonceVerification
 
 		$post_types = apply_filters( 'wooce_scan_post_types', array( 'page', 'product' ) );
 		$post_types = array_map( 'sanitize_key', (array) $post_types );
 
-		$posts = get_posts( array(
-			'post_type'      => $post_types,
-			'post_status'    => 'publish',
-			'meta_key'       => '_elementor_data',
-			'posts_per_page' => $batch,
-			'offset'         => $offset,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-		) );
+		$posts = get_posts(
+			array(
+				'post_type'      => $post_types,
+				'post_status'    => 'publish',
+				'meta_key'       => '_elementor_data',
+				'posts_per_page' => $batch,
+				'offset'         => $offset,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
+		);
 
 		$found       = array();
 		$widget_keys = array();
@@ -161,7 +174,7 @@ class AJAX_Handlers {
 			$label      = $definition ? $definition['label'] : ucfirst( str_replace( array( 'wc-', 'woocommerce-', '-' ), array( '', '', ' ' ), $wk ) );
 
 			if ( isset( $found[ $wk ] ) ) {
-				$found[ $wk ]['count']++;
+				++$found[ $wk ]['count'];
 			} else {
 				$found[ $wk ] = array(
 					'widget_type' => $wk,
@@ -174,12 +187,14 @@ class AJAX_Handlers {
 		$done        = count( $posts ) < $batch;
 		$next_offset = $offset + $batch;
 
-		wp_send_json_success( array(
-			'done'        => $done,
-			'next_offset' => $next_offset,
-			'found'       => array_values( $found ),
-			'batch_count' => count( $posts ),
-		) );
+		wp_send_json_success(
+			array(
+				'done'        => $done,
+				'next_offset' => $next_offset,
+				'found'       => array_values( $found ),
+				'batch_count' => count( $posts ),
+			)
+		);
 	}
 
 	private function walk_elements( $elements, &$widget_keys ) {
@@ -189,6 +204,8 @@ class AJAX_Handlers {
 	public function live_update() {
 		$this->verify_request();
 
+		// Nonce and capability are verified in verify_request() above.
+		// phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['widget_key'] ) || ! isset( $_POST['slot_id'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'Missing parameters.', 'woocommerce-elementor-colors' ) ) );
 		}
@@ -214,10 +231,12 @@ class AJAX_Handlers {
 
 			set_transient( 'wooce_live_draft', $draft, DAY_IN_SECONDS );
 
-			wp_send_json_success( array(
-				'removed' => true,
-				'count'   => count( $draft ),
-			) );
+			wp_send_json_success(
+				array(
+					'removed' => true,
+					'count'   => count( $draft ),
+				)
+			);
 		}
 
 		if ( ! isset( $_POST['hex'] ) ) {
@@ -240,10 +259,13 @@ class AJAX_Handlers {
 
 		$css = CSS_Generator::build_single_css( $widget_key, $slot_id, $hex );
 
-		wp_send_json_success( array(
-			'css'   => $css,
-			'count' => count( $draft ),
-		) );
+		wp_send_json_success(
+			array(
+				'css'   => $css,
+				'count' => count( $draft ),
+			)
+		);
+		// phpcs:enable WordPress.Security.NonceVerification
 	}
 
 	public function commit_live() {
@@ -257,8 +279,8 @@ class AJAX_Handlers {
 
 		$saved = get_option( 'wooce_colors_mappings', array() );
 
-		$user_id    = get_current_user_id();
-		$history    = get_user_meta( $user_id, 'wooce_history_' . $user_id, true );
+		$user_id = get_current_user_id();
+		$history = get_user_meta( $user_id, 'wooce_history_' . $user_id, true );
 		if ( ! is_array( $history ) ) {
 			$history = array();
 		}
@@ -322,10 +344,12 @@ class AJAX_Handlers {
 
 		Cache_Manager::clear_all();
 
-		wp_send_json_success( array(
-			'message'      => __( 'Changes saved successfully.', 'woocommerce-elementor-colors' ),
-			'new_version'  => $saved['version'],
-		) );
+		wp_send_json_success(
+			array(
+				'message'     => __( 'Changes saved successfully.', 'woocommerce-elementor-colors' ),
+				'new_version' => $saved['version'],
+			)
+		);
 	}
 
 	public function undo_action() {
@@ -353,8 +377,8 @@ class AJAX_Handlers {
 	public function generate_share() {
 		$this->verify_request();
 
-		$saved       = get_option( 'wooce_colors_mappings', array() );
-		$mappings    = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
+		$saved    = get_option( 'wooce_colors_mappings', array() );
+		$mappings = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
 
 		if ( empty( $mappings ) ) {
 			$draft = get_transient( 'wooce_live_draft' );
@@ -373,10 +397,12 @@ class AJAX_Handlers {
 
 		$share_url = add_query_arg( 'wooce_share', $nonce, home_url( '/' ) );
 
-		wp_send_json_success( array(
-			'share_url' => $share_url,
-			'nonce'     => $nonce,
-		) );
+		wp_send_json_success(
+			array(
+				'share_url' => $share_url,
+				'nonce'     => $nonce,
+			)
+		);
 	}
 
 	private function migrate_widget_keys( &$saved ) {

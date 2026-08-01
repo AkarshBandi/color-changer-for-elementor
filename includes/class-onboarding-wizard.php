@@ -35,10 +35,14 @@ class Onboarding_Wizard {
 			return;
 		}
 
+		// Read-only checks: don't redirect when already on the wizard page
+		// or when a form is being submitted.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['page'] ) && 'wooce-wizard' === $_GET['page'] ) {
 			return;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( isset( $_POST ) && ! empty( $_POST ) ) {
 			return;
 		}
@@ -74,9 +78,9 @@ class Onboarding_Wizard {
 			return;
 		}
 
-		$wizard_url    = admin_url( 'admin.php?page=wooce-wizard' );
-		$dismiss_url   = admin_url( 'admin-ajax.php?action=wooce_dismiss_onboarding&nonce=' . wp_create_nonce( 'wooce_admin_nonce' ) );
-		$settings_url  = admin_url( 'admin.php?page=wooce-settings' );
+		$wizard_url   = admin_url( 'admin.php?page=wooce-wizard' );
+		$dismiss_url  = admin_url( 'admin-ajax.php?action=wooce_dismiss_onboarding&nonce=' . wp_create_nonce( 'wooce_admin_nonce' ) );
+		$settings_url = admin_url( 'admin.php?page=wooce-settings' );
 
 		echo '<div class="notice notice-info is-dismissible wooce-onboarding-notice">';
 		echo '<p>';
@@ -122,7 +126,8 @@ class Onboarding_Wizard {
 
 	public function enqueue_assets( $hook_suffix ) {
 		if ( 'admin_page_wooce-wizard' !== $hook_suffix ) {
-			global $admin_page_hooks;
+			// Read-only admin page flag; hook suffix is checked above.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( ! isset( $_GET['page'] ) || 'wooce-wizard' !== $_GET['page'] ) {
 				return;
 			}
@@ -230,14 +235,16 @@ class Onboarding_Wizard {
 			wp_send_json_error( array( 'message' => __( 'WooCommerce not active.', 'woocommerce-elementor-colors' ) ) );
 		}
 
-		$products = wc_get_products( array(
-			'limit'  => 1,
-			'status' => 'publish',
-			'return' => 'ids',
-		) );
+		$products = wc_get_products(
+			array(
+				'limit'  => 1,
+				'status' => 'publish',
+				'return' => 'ids',
+			)
+		);
 
 		if ( empty( $products ) ) {
-			$args      = array(
+			$args     = array(
 				'post_type'      => 'product',
 				'post_status'    => 'publish',
 				'posts_per_page' => 1,
@@ -257,31 +264,39 @@ class Onboarding_Wizard {
 		if ( empty( $product_html ) ) {
 			$product = wc_get_product( $product_id );
 			if ( $product ) {
+				// Intentional global $post override to render the single-product
+				// template for the live preview; restored immediately after.
+				// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
 				global $post;
 				$original_post = $post;
-				$post = get_post( $product_id );
+				$post          = get_post( $product_id );
 				setup_postdata( $post );
 				ob_start();
 				wc_get_template_part( 'content', 'single-product' );
 				$product_html = ob_get_clean();
 				wp_reset_postdata();
 				$post = $original_post;
+				// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
 			}
 		}
 
 		$wc_css_links = '';
 		if ( function_exists( 'WC' ) ) {
-			$wc_url       = WC()->plugin_url();
+			$wc_url = WC()->plugin_url();
+			// Inline stylesheet links are part of the captured preview HTML;
+			// they cannot be enqueued because this output is not rendered via wp_head.
+			// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 			$wc_css_links = '<link rel="stylesheet" href="' . esc_url( $wc_url . '/assets/css/woocommerce.css' ) . '" type="text/css" />'
 				. '<link rel="stylesheet" href="' . esc_url( $wc_url . '/assets/css/woocommerce-layout.css' ) . '" type="text/css" />';
+			// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 		}
 
 		$before_html = '<div id="wooce-before">' . $wc_css_links . $product_html . '</div>';
 
-		$saved       = get_option( 'wooce_colors_mappings', array() );
-		$mappings    = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
-		$page_type   = 'is_product';
-		$kit_colors  = CSS_Generator::get_kit_colors();
+		$saved      = get_option( 'wooce_colors_mappings', array() );
+		$mappings   = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
+		$page_type  = 'is_product';
+		$kit_colors = CSS_Generator::get_kit_colors();
 
 		$css = '';
 
@@ -295,10 +310,12 @@ class Onboarding_Wizard {
 
 		$after_html = '<div id="wooce-after">' . $wc_css_links . $css . $product_html . '</div>';
 
-		wp_send_json_success( array(
-			'before' => $before_html,
-			'after'  => $after_html,
-		) );
+		wp_send_json_success(
+			array(
+				'before' => $before_html,
+				'after'  => $after_html,
+			)
+		);
 	}
 
 	public function ajax_complete_onboarding() {

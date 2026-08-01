@@ -1,6 +1,6 @@
 <?php
 $definition = WooElementorColors\Element_Registry::lookup( $widget_key );
-$status     = isset( $widget_data['status'] ) ? $widget_data['status'] : 'default';
+$row_status = isset( $widget_data['status'] ) ? $widget_data['status'] : 'default';
 $slots      = isset( $widget_data['slots'] ) ? $widget_data['slots'] : array();
 ?>
 <tr data-widget-key="<?php echo esc_attr( $widget_key ); ?>">
@@ -8,15 +8,15 @@ $slots      = isset( $widget_data['slots'] ) ? $widget_data['slots'] : array();
 		<span class="wooce-widget-label"><?php echo esc_html( $widget_data['label'] ); ?></span>
 	</td>
 	<td>
-		<span class="wooce-badge wooce-badge-<?php echo esc_attr( $status ); ?>">
-			<?php echo esc_html( $status ); ?>
+		<span class="wooce-badge wooce-badge-<?php echo esc_attr( $row_status ); ?>">
+			<?php echo esc_html( $row_status ); ?>
 		</span>
 	</td>
 	<td>
 		<div class="wooce-preview-chip-wrapper">
 			<?php foreach ( $slots as $slot_id => $slot_config ) : ?>
 				<?php
-				$slot_label   = $slot_id;
+				$slot_label    = $slot_id;
 				$current_color = isset( $slot_config['color'] ) ? $slot_config['color'] : 'text';
 
 				if ( $definition && isset( $definition['slots'] ) ) {
@@ -58,7 +58,7 @@ $slots      = isset( $widget_data['slots'] ) ? $widget_data['slots'] : array();
 					data-widget-key="<?php echo esc_attr( $widget_key ); ?>"
 					data-state="<?php echo esc_attr( $slot_id ); ?>"
 					title="<?php echo esc_attr( $slot_label . ': ' . $color_hex ); ?>"
-					style="<?php echo $chip_style; ?>"></span>
+					style="<?php echo esc_attr( $chip_style ); ?>"></span>
 			<?php endforeach; ?>
 		</div>
 	</td>

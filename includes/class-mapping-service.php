@@ -41,7 +41,7 @@ class Mapping_Service {
 				$normalized = Element_Registry::normalize_key( $key );
 				if ( $normalized !== $key ) {
 					$saved['dismissed_new'][ $i ] = $normalized;
-					$needs_update = true;
+					$needs_update                 = true;
 				}
 			}
 		}
@@ -66,7 +66,7 @@ class Mapping_Service {
 			$defaults  = $heuristic->apply_defaults( $new_widgets );
 
 			foreach ( $defaults as $widget_type => $config ) {
-				$config['status'] = 'new';
+				$config['status']                 = 'new';
 				$saved['widgets'][ $widget_type ] = $config;
 			}
 

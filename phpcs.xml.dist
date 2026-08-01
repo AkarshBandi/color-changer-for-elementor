@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="WooCommerce Elementor Colors">
+	<description>PHP_CodeSniffer ruleset for the WooCommerce Elementor Colors plugin.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/.git/*</exclude-pattern>
+
+	<!-- Only PHP files are checked by PHPCS. -->
+	<arg name="extensions" value="php"/>
+
+	<!-- Enforce WordPress-Extra on plugin source. -->
+	<rule ref="WordPress-Extra"/>
+
+	<!--
+		The test bootstrap defines WordPress function shims. Their signatures
+		must mirror core (e.g. $default, $string, unused parameters), which the
+		WPCS tests intentionally flag, so those files are excluded.
+	-->
+	<exclude-pattern>/tests/class-wp-shims.php</exclude-pattern>
+	<exclude-pattern>/tests/bootstrap.php</exclude-pattern>
+</ruleset>

@@ -19,6 +19,8 @@ class Live_Editor {
 			return;
 		}
 
+		// Read-only URL flag; capability checked above.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$show = isset( $_GET['wooce_editor'] ) && '1' === $_GET['wooce_editor'];
 
 		if ( ! $show ) {
@@ -58,7 +60,7 @@ class Live_Editor {
 
 		$settings_url = admin_url( 'admin.php?page=wooce-settings' );
 
-		$registry = Element_Registry::get_registry();
+		$registry     = Element_Registry::get_registry();
 		$widget_slots = array();
 
 		foreach ( $registry as $widget_key => $definition ) {
@@ -87,15 +89,15 @@ class Live_Editor {
 			'wooce-editor',
 			'wooceData',
 			array(
-				'kitColors'          => $colors_js,
-				'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
-				'nonce'              => wp_create_nonce( 'wooce_admin_nonce' ),
-				'siteUrl'            => home_url(),
-				'registrySelectors'  => CSS_Generator::get_registry_selectors(),
-				'widgetSlots'        => $widget_slots,
-				'settingsUrl'        => $settings_url,
-				'wcCssSize'          => $this->get_wc_css_size(),
-				'dequeueEnabled'     => $dequeue_enabled,
+				'kitColors'         => $colors_js,
+				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+				'nonce'             => wp_create_nonce( 'wooce_admin_nonce' ),
+				'siteUrl'           => home_url(),
+				'registrySelectors' => CSS_Generator::get_registry_selectors(),
+				'widgetSlots'       => $widget_slots,
+				'settingsUrl'       => $settings_url,
+				'wcCssSize'         => $this->get_wc_css_size(),
+				'dequeueEnabled'    => $dequeue_enabled,
 			)
 		);
 	}

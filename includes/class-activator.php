@@ -17,10 +17,13 @@ class Activator {
 		add_option( 'wooce_onboarding_completed', false );
 		add_option( 'wooce_wizard_dismissed', false );
 
-		add_option( 'wooce_dequeue_settings', array(
-			'dequeue_core'   => 'yes',
-			'dequeue_blocks' => 'yes',
-		) );
+		add_option(
+			'wooce_dequeue_settings',
+			array(
+				'dequeue_core'   => 'yes',
+				'dequeue_blocks' => 'yes',
+			)
+		);
 
 		set_transient( 'wooce_wizard_redirect', true, 60 );
 
@@ -30,12 +33,15 @@ class Activator {
 		$heuristic = new Heuristic_Engine();
 		$mappings  = $heuristic->apply_defaults( $widget_types );
 
-		add_option( 'wooce_colors_mappings', array(
-			'version'       => 1,
-			'widgets'       => $mappings,
-			'dismissed_new' => array(),
-			'last_scan'     => current_time( 'mysql' ),
-		) );
+		add_option(
+			'wooce_colors_mappings',
+			array(
+				'version'       => 1,
+				'widgets'       => $mappings,
+				'dismissed_new' => array(),
+				'last_scan'     => current_time( 'mysql' ),
+			)
+		);
 
 		if ( ! wp_next_scheduled( 'wooce_daily_scan' ) ) {
 			wp_schedule_event( time(), 'daily', 'wooce_daily_scan' );
