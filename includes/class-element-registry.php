@@ -70,7 +70,7 @@ class Element_Registry {
 			return false;
 		}
 
-		return (bool) preg_match( '/^(woocommerce-|wc-|eael-woo-|eicon-woocommerce|premium-woo-)/', $widget_type );
+		return (bool) preg_match( '/woocommerce|^wc-|^eael-woo-|^premium-woo-|^eicon-woocommerce/', $widget_type );
 	}
 
 	public static function normalize_key( $widget_type ) {

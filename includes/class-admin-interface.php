@@ -110,21 +110,8 @@ class Admin_Interface {
 
 		$saved = get_option( 'wooce_colors_mappings', array() );
 
-		if ( isset( $saved['widgets'] ) && is_array( $saved['widgets'] ) ) {
-			$needs_update = false;
-			foreach ( $saved['widgets'] as $key => $data ) {
-				$normalized = \WooElementorColors\Element_Registry::normalize_key( $key );
-				if ( $normalized !== $key ) {
-					if ( ! isset( $saved['widgets'][ $normalized ] ) ) {
-						$saved['widgets'][ $normalized ] = $data;
-					}
-					unset( $saved['widgets'][ $key ] );
-					$needs_update = true;
-				}
-			}
-			if ( $needs_update ) {
-				update_option( 'wooce_colors_mappings', $saved );
-			}
+		if ( Mapping_Service::normalize_all( $saved ) ) {
+			update_option( 'wooce_colors_mappings', $saved );
 		}
 
 		if ( isset( $_POST['wooce_colors'] ) && is_array( $_POST['wooce_colors'] ) ) {
