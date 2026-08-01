@@ -78,6 +78,22 @@
 					});
 				}
 			});
+
+			$(document).on('click', '.wooce-wizard-skip-link', function (e) {
+				e.preventDefault();
+				var link = this;
+				$.ajax({
+					url: ajaxurl,
+					type: 'POST',
+					data: {
+						action: 'wooce_dismiss_onboarding',
+						nonce: wooceData ? wooceData.nonce : ''
+					},
+					complete: function () {
+						window.location.href = $(link).attr('href');
+					}
+				});
+			});
 		},
 
 		showStep: function (n) {

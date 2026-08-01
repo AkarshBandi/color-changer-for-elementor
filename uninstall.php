@@ -5,6 +5,7 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 delete_option( 'wooce_dequeue_settings' );
 delete_option( 'wooce_colors_mappings' );
 delete_option( 'wooce_onboarding_completed' );
+delete_option( 'wooce_wizard_dismissed' );
 delete_option( 'wooce_pro_optin_email' );
 
 global $wpdb;

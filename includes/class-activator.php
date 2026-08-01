@@ -15,11 +15,14 @@ class Activator {
 		}
 
 		add_option( 'wooce_onboarding_completed', false );
+		add_option( 'wooce_wizard_dismissed', false );
 
 		add_option( 'wooce_dequeue_settings', array(
 			'dequeue_core'   => 'yes',
 			'dequeue_blocks' => 'yes',
 		) );
+
+		set_transient( 'wooce_wizard_redirect', true, 60 );
 
 		$discovery    = new Discovery_Engine();
 		$widget_types = $discovery->scan_all_pages();
