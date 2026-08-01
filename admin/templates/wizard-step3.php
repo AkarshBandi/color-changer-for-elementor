@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wooce-wizard-step" data-step="3">
 	<h2 style="margin-bottom:8px;"><?php echo esc_html__( 'CSS Dequeue Settings', 'woocommerce-elementor-colors' ); ?></h2>
 	<p style="color:#50575e;margin-bottom:20px;"><?php echo esc_html__( 'Choose which default WooCommerce stylesheets to disable. Your Elementor styles will replace them.', 'woocommerce-elementor-colors' ); ?></p>

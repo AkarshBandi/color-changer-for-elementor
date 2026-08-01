@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wooce-wizard-step" data-step="4">
 	<div class="wooce-launch-area">
 		<span class="wooce-launch-icon">🎉</span>

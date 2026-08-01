@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wooce-gallery">
 	<?php foreach ( $mappings as $widget_key => $widget_data ) : ?>
 		<?php

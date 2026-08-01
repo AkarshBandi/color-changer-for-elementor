@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wrap wooce-wrap">
 	<div class="wooce-header">
 		<h1><?php echo esc_html__( 'WooCommerce Elementor Colors', 'woocommerce-elementor-colors' ); ?></h1>

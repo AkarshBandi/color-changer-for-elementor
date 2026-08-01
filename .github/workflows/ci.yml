@@ -68,3 +68,7 @@ jobs:
         with:
           build-dir: './'
           ignore-warnings: true
+          # tests/ is a PHPUnit bootstrap (defines ABSPATH itself, mirrors core
+          # shims) that does not ship in the plugin package.
+          exclude-directories: |
+            tests

@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wooce-wizard-step" data-step="2">
 	<h2 style="text-align:center;margin-bottom:8px;"><?php echo esc_html__( 'See the Difference', 'woocommerce-elementor-colors' ); ?></h2>
 	<p style="text-align:center;color:#50575e;margin-bottom:20px;"><?php echo esc_html__( 'Compare your store before and after applying your brand colors.', 'woocommerce-elementor-colors' ); ?></p>

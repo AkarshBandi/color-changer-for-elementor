@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || exit;
+
 $definition = WooElementorColors\Element_Registry::lookup( $widget_key );
 $row_status = isset( $widget_data['status'] ) ? $widget_data['status'] : 'default';
 $slots      = isset( $widget_data['slots'] ) ? $widget_data['slots'] : array();

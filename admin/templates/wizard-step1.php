@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <div class="wooce-wizard-step" data-step="1">
 	<div class="wooce-scan-area">
 		<div class="wooce-radar">

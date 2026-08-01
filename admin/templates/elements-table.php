@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) || exit; ?>
 <table class="wp-list-table widefat fixed striped wooce-table">
 	<thead>
 		<tr>
