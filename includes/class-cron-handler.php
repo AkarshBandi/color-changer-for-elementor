@@ -24,6 +24,10 @@ class Cron_Handler {
 			$needs_update = true;
 		}
 
+		if ( Mapping_Service::ensure_defaults( $saved ) ) {
+			$needs_update = true;
+		}
+
 		if ( $needs_update ) {
 			update_option( 'wooce_colors_mappings', $saved );
 		}

@@ -27,6 +27,25 @@
 	margin: 0 0 24px;
 }
 
+.wooce-wizard-colors-notice {
+	margin: 0 40px 24px;
+	padding: 14px 16px;
+	background: #f0f6fc;
+	border: 1px solid #c5d9ed;
+	border-left: 4px solid #2271b1;
+	border-radius: 4px;
+	color: #1d2327;
+}
+
+.wooce-wizard-colors-notice p {
+	margin: 0 0 10px;
+	font-size: 13px;
+}
+
+.wooce-wizard-colors-notice p:last-child {
+	margin-bottom: 0;
+}
+
 .wooce-wizard-step {
 	display: none;
 	padding: 0 40px 32px;

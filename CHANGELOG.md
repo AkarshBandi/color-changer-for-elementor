@@ -5,6 +5,52 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-02
+
+### Added
+
+- `Mapping_Service::ensure_defaults()` seeds every registry widget with
+  heuristic defaults when mappings are empty or slots are missing. Wired
+  into activation, cron rescan and the manual rescan AJAX handler so the
+  option can never be empty and the frontend always receives replacement CSS.
+- `Dequeue_Manager::should_dequeue()` gates core/block stylesheet removal on
+  the presence of element mappings, preventing unstyled storefronts.
+- Advanced Settings page refactored into components: PHP partials under
+  `admin/templates/components/`, vanilla JS modules under
+  `admin/js/components/` (no build step) and per-component stylesheets under
+  `admin/css/components/`.
+
+### Changed
+
+- Button text and SVG fill now use an auto-derived WCAG contrast color
+  (white on dark backgrounds, near-black on light backgrounds) whenever a
+  slot paints a background color, so labels stay readable.
+- Settings page shell (`settings-page.php`) now orchestrates component
+  partials and exposes `defaults` / `newCount` to the frontend via
+  `wooceData`.
+- Dismiss All New button is disabled when there are no "new" widgets.
+- Dequeue toggles are disabled (with an explanatory notice) when no element
+  mappings exist, mirroring the frontend gating.
+- Onboarding wizard Step 3 simplified for non-technical users: the technical
+  "CSS Dequeue Settings" checkboxes are replaced with a single plain-language
+  toggle ("Turn off WooCommerce's default styling") that sets both dequeue
+  options, both on by default.
+- Onboarding wizard now detects whether Elementor global colors are set and,
+  when they are not, shows a friendly notice with a link to set them.
+- `CSS_Generator::has_kit_colors()` added to distinguish a kit with real
+  brand colors from the plugin's fallback palette.
+- readme.txt rewritten to lead with a plain-language 3-step setup.
+
+### Fixed
+
+- Buttons rendered with identical background and text color when the mapped
+  Elementor global color was applied to both (`color` now uses the contrast
+  helper instead of the raw background color).
+- Dequeueing WooCommerce core CSS while mappings were empty left the shop
+  page structurally unstyled; dequeue is now inert without mappings.
+- Reset-to-default now uses the heuristic default token instead of a fixed
+  value, and includes dequeue checkboxes in the unsaved-changes guard.
+
 ## [1.1.0] - 2026-08-01
 
 ### Added

@@ -165,6 +165,106 @@ class CSS_Generator {
 		);
 	}
 
+	/**
+	 * Whether the active Elementor kit defines its own global colors.
+	 *
+	 * Distinguishes a kit with real brand colors from the plugin's fallback
+	 * palette, so the onboarding wizard can prompt users to set their colors.
+	 *
+	 * @return bool True when the active kit has at least one global color.
+	 */
+	public static function has_kit_colors() {
+		$kit_id = get_option( 'elementor_active_kit' );
+
+		if ( ! $kit_id ) {
+			return false;
+		}
+
+		$settings = get_post_meta( $kit_id, '_elementor_page_settings', true );
+
+		if ( ! is_array( $settings ) ) {
+			return false;
+		}
+
+		$system_colors = isset( $settings['system_colors'] ) ? $settings['system_colors'] : array();
+		$custom_colors = isset( $settings['custom_colors'] ) ? $settings['custom_colors'] : array();
+
+		foreach ( array_merge( $system_colors, $custom_colors ) as $c ) {
+			if ( ! empty( $c['_id'] ) && ! empty( $c['color'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Pick a readable text color for a given background hex.
+	 *
+	 * Uses WCAG relative luminance: dark backgrounds get white text,
+	 * light backgrounds get near-black text.
+	 *
+	 * @param string $hex Background color hex (with or without #).
+	 * @return string '#ffffff' or '#111111'.
+	 */
+	public static function contrast_text( $hex ) {
+		$hex = ltrim( trim( (string) $hex ), '#' );
+
+		if ( 3 === strlen( $hex ) ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+
+		if ( ! preg_match( '/^[0-9a-fA-F]{6}$/', $hex ) ) {
+			return '#111111';
+		}
+
+		$rgb = array_map( 'hexdec', str_split( $hex, 2 ) );
+
+		$linear = array_map(
+			function ( $channel ) {
+				$c = $channel / 255;
+
+				if ( $c <= 0.03928 ) {
+					return $c / 12.92;
+				}
+
+				return pow( ( $c + 0.055 ) / 1.055, 2.4 );
+			},
+			$rgb
+		);
+
+		$luminance = 0.2126 * $linear[0] + 0.7152 * $linear[1] + 0.0722 * $linear[2];
+
+		return $luminance > 0.179 ? '#111111' : '#ffffff';
+	}
+
+	/**
+	 * Build declaration rules for a slot's property list.
+	 *
+	 * When a slot paints a background-color, its text color and SVG fill
+	 * are auto-derived via contrast so button labels stay readable.
+	 *
+	 * @param array  $properties Property names from the registry.
+	 * @param string $hex        The mapped color hex.
+	 * @return array CSS declarations (e.g. array( 'color: #fff !important' )).
+	 */
+	private function build_rules( array $properties, $hex ) {
+		$rules    = array();
+		$has_bg   = in_array( 'background-color', $properties, true );
+		$text_hex = $has_bg ? self::contrast_text( $hex ) : $hex;
+
+		foreach ( $properties as $prop ) {
+			if ( $has_bg && ( 'color' === $prop || 'fill' === $prop ) ) {
+				$rules[] = $prop . ': ' . $text_hex . ' !important';
+				continue;
+			}
+
+			$rules[] = $prop . ': ' . $hex . ' !important';
+		}
+
+		return $rules;
+	}
+
 	private function build_css( $mappings ) {
 		$css        = '';
 		$kit_colors = self::get_kit_colors();
@@ -180,11 +280,7 @@ class CSS_Generator {
 						$state_selectors = $this->get_state_selectors( $selector, $state );
 
 						foreach ( $state_selectors as $state_selector ) {
-							$rules = array();
-
-							foreach ( $slot_def['properties'] as $prop ) {
-								$rules[] = $prop . ': ' . $hex . ' !important';
-							}
+							$rules = $this->build_rules( $slot_def['properties'], $hex );
 
 							if ( 'disabled' === $state ) {
 								$rules[] = 'opacity: 0.5 !important';
@@ -256,11 +352,7 @@ class CSS_Generator {
 				$state_selectors = $instance->get_state_selectors( $selector, $state );
 
 				foreach ( $state_selectors as $state_selector ) {
-					$rules = array();
-
-					foreach ( $slot_def['properties'] as $prop ) {
-						$rules[] = $prop . ': ' . $hex . ' !important';
-					}
+					$rules = $instance->build_rules( $slot_def['properties'], $hex );
 
 					if ( 'disabled' === $state ) {
 						$rules[] = 'opacity: 0.5 !important';

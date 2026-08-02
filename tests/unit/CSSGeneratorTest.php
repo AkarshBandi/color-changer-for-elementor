@@ -97,4 +97,58 @@ class CSSGeneratorTest extends TestCase {
 		$this->assertArrayHasKey( 'wc-add-to-cart', $map );
 		$this->assertNotEmpty( $map['wc-add-to-cart'] );
 	}
+
+	public function test_contrast_text_dark_background_gets_white() {
+		$this->assertSame( '#ffffff', CSS_Generator::contrast_text( '#161515' ) );
+		$this->assertSame( '#ffffff', CSS_Generator::contrast_text( '#54595F' ) );
+	}
+
+	public function test_contrast_text_light_background_gets_dark() {
+		$this->assertSame( '#111111', CSS_Generator::contrast_text( '#FBF4F4' ) );
+		$this->assertSame( '#111111', CSS_Generator::contrast_text( '#61CE70' ) );
+	}
+
+	public function test_contrast_text_handles_missing_hash_and_short_hex() {
+		$this->assertSame( '#111111', CSS_Generator::contrast_text( '6EC1E4' ) );
+		$this->assertSame( '#ffffff', CSS_Generator::contrast_text( '#000' ) );
+	}
+
+	public function test_contrast_text_falls_back_on_invalid_input() {
+		$this->assertSame( '#111111', CSS_Generator::contrast_text( 'invalid' ) );
+	}
+
+	public function test_button_slot_text_gets_contrast_color() {
+		$css = CSS_Generator::build_single_css( 'wc-add-to-cart', 'button_normal', '#1B9E77' );
+		$this->assertStringContainsString( 'background-color: #1B9E77 !important', $css );
+		$this->assertStringContainsString( 'color: #111111 !important', $css );
+		$this->assertStringNotContainsString( '{color: #1B9E77 !important', $css );
+		$this->assertStringNotContainsString( ';color: #1B9E77 !important', $css );
+	}
+
+	public function test_button_slot_fill_follows_text_contrast() {
+		$css = CSS_Generator::build_single_css( 'wc-add-to-cart', 'button_normal', '#161515' );
+		$this->assertStringContainsString( 'fill: #ffffff !important', $css );
+	}
+
+	public function test_text_only_slot_keeps_mapped_color() {
+		$css = CSS_Generator::build_single_css( 'wc-product-price', 'price_regular', '#1B9E77' );
+		$this->assertStringContainsString( 'color: #1B9E77 !important', $css );
+		$this->assertStringNotContainsString( '#111111', $css );
+	}
+
+	public function test_contrast_applies_in_full_css_build() {
+		WP_Shims::$options['elementor_active_kit']           = 99;
+		WP_Shims::$post_meta[99]['_elementor_page_settings'] = array(
+			'system_colors' => array(
+				array(
+					'_id'   => 'primary',
+					'color' => '#161515',
+				),
+			),
+		);
+
+		$mappings = $this->mappings_for( array( 'wc-add-to-cart' ) );
+		$css      = CSS_Generator::get_css_for_mappings( $mappings, 'generic' );
+		$this->assertStringContainsString( 'color: #ffffff !important', $css );
+	}
 }

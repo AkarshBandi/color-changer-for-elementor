@@ -50,6 +50,62 @@ class Mapping_Service {
 	}
 
 	/**
+	 * Ensure every registry widget exists in mappings with its default slots.
+	 *
+	 * Seeds missing widgets with heuristic defaults (status 'default') and
+	 * backfills any missing slot within existing widgets. Guarantees the
+	 * mappings option is never empty so the frontend always receives the
+	 * replacement dynamic CSS.
+	 *
+	 * @param array $saved Mappings option, by reference.
+	 * @return bool Whether the option needs saving.
+	 */
+	public static function ensure_defaults( &$saved ) {
+		if ( ! isset( $saved['widgets'] ) || ! is_array( $saved['widgets'] ) ) {
+			$saved['widgets'] = array();
+		}
+
+		$registry     = Element_Registry::get_registry();
+		$heuristic    = new Heuristic_Engine();
+		$needs_update = empty( $saved['widgets'] );
+
+		foreach ( $registry as $widget_key => $definition ) {
+			if ( ! isset( $saved['widgets'][ $widget_key ] ) ) {
+				$seeded = $heuristic->apply_defaults( array( $widget_key ) );
+
+				if ( isset( $seeded[ $widget_key ] ) ) {
+					$seeded[ $widget_key ]['status'] = 'default';
+					$saved['widgets'][ $widget_key ] = $seeded[ $widget_key ];
+					$needs_update                    = true;
+				}
+
+				continue;
+			}
+
+			$slots = isset( $saved['widgets'][ $widget_key ]['slots'] ) && is_array( $saved['widgets'][ $widget_key ]['slots'] )
+				? $saved['widgets'][ $widget_key ]['slots']
+				: array();
+
+			foreach ( $definition['slots'] as $slot ) {
+				$slot_id = $slot['slot_id'];
+
+				if ( ! isset( $slots[ $slot_id ] ) || ! is_array( $slots[ $slot_id ] ) || ! isset( $slots[ $slot_id ]['color'] ) ) {
+					$slots[ $slot_id ] = array( 'color' => $heuristic->determine_color( $slot_id ) );
+					$needs_update      = true;
+				}
+			}
+
+			$saved['widgets'][ $widget_key ]['slots'] = $slots;
+		}
+
+		if ( $needs_update && ! isset( $saved['last_scan'] ) ) {
+			$saved['last_scan'] = current_time( 'mysql' );
+		}
+
+		return $needs_update;
+	}
+
+	/**
 	 * Merge newly discovered widget types into saved mappings.
 	 *
 	 * @param array $saved        Mappings option, by reference.

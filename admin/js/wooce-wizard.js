@@ -31,15 +31,7 @@
 				$('.wooce-split-column.after').toggleClass('wooce-after-toggled');
 			});
 
-			$(document).on('change', '#wooce_dequeue_blocks', function () {
-				if (!$(this).is(':checked')) {
-					$('.wooce-diagram-overlay.blocks').addClass('visible');
-				} else {
-					$('.wooce-diagram-overlay.blocks').removeClass('visible');
-				}
-			});
-
-			$(document).on('change', '#wooce_dequeue_core', function () {
+			$(document).on('change', '#wooce_dequeue_all', function () {
 				if (!$(this).is(':checked')) {
 					$('.wooce-diagram-overlay.core').addClass('visible');
 				} else {
@@ -272,8 +264,8 @@
 				data: {
 					action: 'wooce_complete_onboarding',
 					nonce: wooceData ? wooceData.nonce : '',
-					dequeue_core: $('#wooce_dequeue_core').is(':checked') ? 'yes' : 'no',
-					dequeue_blocks: $('#wooce_dequeue_blocks').is(':checked') ? 'yes' : 'no'
+					dequeue_core: $('#wooce_dequeue_all').is(':checked') ? 'yes' : 'no',
+					dequeue_blocks: $('#wooce_dequeue_all').is(':checked') ? 'yes' : 'no'
 				},
 				complete: function () {
 					if (typeof callback === 'function') {

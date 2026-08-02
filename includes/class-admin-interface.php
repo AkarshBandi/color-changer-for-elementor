@@ -41,19 +41,38 @@ class Admin_Interface {
 		}
 
 		wp_enqueue_style(
-			'wooce-admin',
-			WOOEC_URL . 'admin/css/admin-style.css',
+			'wooce-admin-base',
+			WOOEC_URL . 'admin/css/base.css',
 			array(),
 			WOOEC_VERSION
 		);
 
+		foreach ( array( 'dequeue', 'elements', 'gallery' ) as $component ) {
+			wp_enqueue_style(
+				'wooce-admin-' . $component,
+				WOOEC_URL . 'admin/css/components/' . $component . '.css',
+				array( 'wooce-admin-base' ),
+				WOOEC_VERSION
+			);
+		}
+
 		wp_enqueue_script(
-			'wooce-admin-preview',
-			WOOEC_URL . 'admin/js/admin-preview.js',
+			'wooce-admin-settings',
+			WOOEC_URL . 'admin/js/admin-settings.js',
 			array( 'jquery' ),
 			WOOEC_VERSION,
 			true
 		);
+
+		foreach ( array( 'element-row', 'gallery', 'dequeue-card', 'actions' ) as $component ) {
+			wp_enqueue_script(
+				'wooce-admin-' . $component,
+				WOOEC_URL . 'admin/js/components/' . $component . '.js',
+				array( 'wooce-admin-settings' ),
+				WOOEC_VERSION,
+				true
+			);
+		}
 
 		$kit_colors = CSS_Generator::get_kit_colors();
 		$colors_js  = array();
@@ -66,16 +85,59 @@ class Admin_Interface {
 			);
 		}
 
+		$defaults  = $this->get_slot_defaults();
+		$saved     = get_option( 'wooce_colors_mappings', array() );
+		$mappings  = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
+		$new_count = $this->count_new_widgets( $mappings );
+
 		wp_localize_script(
-			'wooce-admin-preview',
+			'wooce-admin-settings',
 			'wooceData',
 			array(
 				'kitColors' => $colors_js,
+				'defaults'  => $defaults,
+				'newCount'  => $new_count,
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'wooce_admin_nonce' ),
 				'siteUrl'   => home_url(),
 			)
 		);
+	}
+
+	/**
+	 * Build a map of slot_id => default color token from the registry.
+	 *
+	 * @return array Associative array keyed by slot_id.
+	 */
+	private function get_slot_defaults() {
+		$heuristic = new Heuristic_Engine();
+		$defaults  = array();
+
+		foreach ( Element_Registry::get_registry() as $definition ) {
+			foreach ( $definition['slots'] as $slot ) {
+				$defaults[ $slot['slot_id'] ] = $heuristic->determine_color( $slot['slot_id'] );
+			}
+		}
+
+		return $defaults;
+	}
+
+	/**
+	 * Count widgets whose status is "new".
+	 *
+	 * @param array $mappings Widget mappings.
+	 * @return int
+	 */
+	private function count_new_widgets( $mappings ) {
+		$count = 0;
+
+		foreach ( $mappings as $widget_data ) {
+			if ( isset( $widget_data['status'] ) && 'new' === $widget_data['status'] ) {
+				++$count;
+			}
+		}
+
+		return $count;
 	}
 
 	public function render_settings_page() {
@@ -88,6 +150,13 @@ class Admin_Interface {
 		$dequeue_settings = get_option( 'wooce_dequeue_settings', array() );
 		$kit_colors       = CSS_Generator::get_kit_colors();
 		$saved_version    = isset( $saved['version'] ) ? $saved['version'] : 1;
+		$defaults         = $this->get_slot_defaults();
+		$new_count        = $this->count_new_widgets( $mappings );
+		$dequeue_disabled = empty( $mappings );
+
+		$shop_page       = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : false;
+		$shop_url        = $shop_page ? $shop_page : home_url();
+		$live_editor_url = add_query_arg( 'wooce_editor', '1', $shop_url );
 
 		include WOOEC_PATH . 'admin/templates/settings-page.php';
 	}

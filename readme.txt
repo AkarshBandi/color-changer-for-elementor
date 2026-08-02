@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce, elementor
 WC requires at least: 7.0
 WC tested up to: 10.9
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -15,7 +15,7 @@ Replaces WooCommerce default CSS with dynamic CSS that maps Elementor global col
 
 == Description ==
 
-WooCommerce Elementor Colors removes WooCommerce default stylesheets and dynamically applies your Elementor global colors -- Primary, Secondary, Text, Accent -- to every WooCommerce element:
+WooCommerce Elementor Colors makes your store match your brand — automatically. It takes the colors you already set in Elementor (Primary, Secondary, Text, Accent) and applies them to every WooCommerce element, so your shop looks like the rest of your site.
 
 * Add to Cart buttons (normal, hover, focus, disabled)
 * Product prices (regular and sale)
@@ -30,29 +30,34 @@ WooCommerce Elementor Colors removes WooCommerce default stylesheets and dynamic
 * General WooCommerce links
 * Shop loop buttons
 
-Your WooCommerce pages fully inherit your Elementor design system with zero bloat.
+No coding, no design skills, and no extra setup. Your WooCommerce pages simply inherit your Elementor design system.
 
 == Features ==
 
-* **Onboarding Wizard** — 4-step setup that scans your site, shows a live A/B comparison, configures dequeue settings, and launches you into the editor.
-* **Live Visual Editor** — Click any WooCommerce element on your site to customize its color instantly. No page reload needed.
+* **Onboarding Wizard** — A friendly 4-step setup that scans your site, shows a before/after comparison, and launches you into the editor.
+* **Live Visual Editor** — Click any WooCommerce element on your site to change its color instantly. No page reload needed.
 * **Color State Controls** — Customize Normal, Hover, Focus, and Disabled states for each element.
-* **Audit Mode** — Visual coverage counter showing how many WooCommerce elements are being styled.
-* **WCAG Contrast Scoring** — Real-time contrast ratio calculations against WCAG AA standards.
-* **Share Preview Links** — Generate temporary share links to show draft changes to clients before committing.
-* **Performance Badge** — See how much CSS weight you're saving by replacing WooCommerce defaults.
-* **Undo Support** — Ctrl+Z or click Undo to revert changes, with a 10-action history stack.
-* **Advanced Settings** — Full table-based settings page under WooCommerce > Advanced Settings for bulk edits and fine-tuning.
+* **Audit Mode** — See how many WooCommerce elements are being styled.
+* **WCAG Contrast Scoring** — Real-time contrast checks against accessibility standards.
+* **Share Preview Links** — Send a temporary preview link to clients before committing changes.
+* **Undo Support** — Ctrl+Z or click Undo to revert changes.
+* **Advanced Settings** — For fine-tuning, under WooCommerce > Advanced Settings.
 
 == Installation ==
 
-1. Upload the `woocommerce-elementor-colors` folder to `/wp-content/plugins/`
-2. Activate the plugin through the Plugins screen
-3. The **Onboarding Wizard** launches automatically — follow the 4-step setup
-4. After setup, use the **Live Editor** by clicking "Open Live Editor" from any admin notice, or visit your shop page with `?wooce_editor=1`
-5. For bulk edits, go to **WooCommerce > Advanced Settings**
+Getting started takes about a minute:
+
+1. **Set your brand colors in Elementor** (optional but recommended). Go to Elementor → Site Settings → Global Colors and pick your Primary, Secondary, Text, and Accent colors. If you skip this, the plugin uses temporary defaults you can change later.
+2. **Install and activate the plugin** through the Plugins screen.
+3. **Follow the short setup wizard** that opens automatically. It scans your store, shows you a before/after preview, and turns off WooCommerce's default styling so your colors show through.
+
+That's it — your store is now styled with your brand colors. You can fine-tune anything later from WooCommerce > Advanced Settings, or click any element on your store to edit it live.
 
 == Frequently Asked Questions ==
+
+= Do I need to be technical to use this? =
+
+No. After activation, everything runs automatically. The only thing you may want to do is set your brand colors in Elementor (Elementor → Site Settings → Global Colors). If you don't, the plugin uses temporary defaults you can change anytime.
 
 = Does this require Elementor Pro? =
 
@@ -64,7 +69,7 @@ No. The plugin only removes CSS, not markup. Your theme layout and spacing remai
 
 = How are colors assigned? =
 
-On activation, the plugin scans your Elementor pages for WooCommerce widgets and auto-assigns heuristic defaults. You can override any assignment from the settings page or the Live Editor.
+On activation, the plugin scans your Elementor pages for WooCommerce widgets and auto-assigns sensible defaults. You can override any assignment from the settings page or the Live Editor.
 
 = How do I use the Live Editor? =
 
@@ -79,6 +84,13 @@ Yes. Use the "Share Preview" button in the Live Editor toolbar. It generates a t
 This plugin may collect an email address during the optional step of the Onboarding Wizard. The address is stored locally in your site's database (WordPress option `wooce_pro_optin_email`) and is only used to notify you about the plugin's Pro add-on. It is not sent to any third party and can be removed at any time by deleting the option or deactivating the plugin.
 
 == Changelog ==
+
+= 1.2.0 =
+* Simplified the setup wizard: the technical "CSS Dequeue" step is now a single, plain-language toggle that turns off WooCommerce's default styling.
+* Added a friendly notice in the wizard when Elementor global colors aren't set yet, with a link to set them.
+* Rewrote the readme to lead with a plain-language, 3-step setup for non-technical users.
+* Fixed button text contrast so labels stay readable on any background color.
+* Fixed dequeue so WooCommerce default CSS is only removed when replacement styles exist.
 
 = 1.1.0 =
 * Added Onboarding Wizard with 4-step setup (scan, A/B test, dequeue, launch)

@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use WooElementorColors\Mapping_Service;
 use WooElementorColors\Element_Registry;
+use WooElementorColors\CSS_Generator;
 
 /**
  * Tests for Mapping_Service.
@@ -12,6 +13,13 @@ class MappingServiceTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		WP_Shims::reset();
+
+		// sanitize_mappings() resolves valid colors via the kit cache; keep
+		// it in a clean state so earlier test classes cannot leak colors in.
+		$reflection = new ReflectionClass( CSS_Generator::class );
+		$colors     = $reflection->getProperty( 'kit_colors' );
+		$colors->setAccessible( true );
+		$colors->setValue( null );
 	}
 
 	public function test_normalize_all_migrates_widget_keys() {
@@ -181,5 +189,64 @@ class MappingServiceTest extends TestCase {
 		$clean = Mapping_Service::sanitize_mappings( $raw );
 		$this->assertArrayHasKey( 'badwidget', $clean );
 		$this->assertArrayHasKey( 'slotone', $clean['badwidget']['slots'] );
+	}
+
+	public function test_ensure_defaults_seeds_full_registry_when_empty() {
+		$saved = array(
+			'version' => 1,
+			'widgets' => array(),
+		);
+
+		$updated = Mapping_Service::ensure_defaults( $saved );
+
+		$this->assertTrue( $updated );
+		$this->assertSame( count( Element_Registry::get_registry() ), count( $saved['widgets'] ) );
+		$this->assertArrayHasKey( 'wc-add-to-cart', $saved['widgets'] );
+		$this->assertSame( 'default', $saved['widgets']['wc-add-to-cart']['status'] );
+	}
+
+	public function test_ensure_defaults_backfills_missing_slots() {
+		$saved = array(
+			'version' => 1,
+			'widgets' => array(
+				'wc-add-to-cart' => array(
+					'label'  => 'Add to Cart Button',
+					'status' => 'configured',
+					'slots'  => array(
+						'button_normal' => array( 'color' => 'primary' ),
+					),
+				),
+			),
+		);
+
+		$updated = Mapping_Service::ensure_defaults( $saved );
+
+		$this->assertTrue( $updated );
+		$this->assertArrayHasKey( 'button_hover', $saved['widgets']['wc-add-to-cart']['slots'] );
+		$this->assertArrayHasKey( 'button_focus', $saved['widgets']['wc-add-to-cart']['slots'] );
+		$this->assertSame( 'primary', $saved['widgets']['wc-add-to-cart']['slots']['button_normal']['color'] );
+	}
+
+	public function test_ensure_defaults_is_idempotent_when_fully_populated() {
+		$saved = array(
+			'version' => 1,
+			'widgets' => array(),
+		);
+		Mapping_Service::ensure_defaults( $saved );
+
+		$updated = Mapping_Service::ensure_defaults( $saved );
+
+		$this->assertFalse( $updated );
+		$this->assertSame( count( Element_Registry::get_registry() ), count( $saved['widgets'] ) );
+	}
+
+	public function test_ensure_defaults_handles_missing_widgets_key() {
+		$saved = array( 'version' => 1 );
+
+		$updated = Mapping_Service::ensure_defaults( $saved );
+
+		$this->assertTrue( $updated );
+		$this->assertArrayHasKey( 'widgets', $saved );
+		$this->assertSame( count( Element_Registry::get_registry() ), count( $saved['widgets'] ) );
 	}
 }

@@ -33,15 +33,18 @@ class Activator {
 		$heuristic = new Heuristic_Engine();
 		$mappings  = $heuristic->apply_defaults( $widget_types );
 
-		add_option(
-			'wooce_colors_mappings',
-			array(
-				'version'       => 1,
-				'widgets'       => $mappings,
-				'dismissed_new' => array(),
-				'last_scan'     => current_time( 'mysql' ),
-			)
+		$saved = array(
+			'version'       => 1,
+			'widgets'       => $mappings,
+			'dismissed_new' => array(),
+			'last_scan'     => current_time( 'mysql' ),
 		);
+
+		// Seed the full registry so mappings are never empty, even when the
+		// initial scan finds no Elementor widgets yet.
+		Mapping_Service::ensure_defaults( $saved );
+
+		add_option( 'wooce_colors_mappings', $saved );
 
 		if ( ! wp_next_scheduled( 'wooce_daily_scan' ) ) {
 			wp_schedule_event( time(), 'daily', 'wooce_daily_scan' );

@@ -1,0 +1,89 @@
+/* Advanced Settings - Gallery card. */
+
+.wooce-gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 16px;
+}
+
+.wooce-gallery-item {
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	padding: 12px;
+}
+
+.wooce-gallery-item-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #2c3338;
+}
+
+.wooce-gallery-item-body > div {
+	margin-bottom: 10px;
+}
+
+.wooce-gallery-item-body > div:last-child {
+	margin-bottom: 0;
+}
+
+.wooce-gallery-preview-label {
+	font-size: 11px;
+	color: #646970;
+	margin-bottom: 4px;
+}
+
+.wooce-gallery-preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 10px;
+	border-radius: 4px;
+	background: #f9f9f9;
+	border: 1px dashed #dcdcde;
+	font-size: 12px;
+	font-weight: 600;
+	text-align: center;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.wooce-gallery-preview.is-button {
+	min-height: 48px;
+	border: none;
+	border-radius: 6px;
+	background-color: #e0e0e0;
+	color: #111111;
+}
+
+.wooce-gallery-preview.is-link {
+	padding: 0;
+	min-height: auto;
+	background: none;
+	border: none;
+	text-decoration: underline;
+}
+
+.wooce-gallery-preview.is-badge {
+	display: inline-flex;
+	padding: 4px 14px;
+	min-height: auto;
+	width: auto;
+}
+
+.wooce-gallery-preview.is-input,
+.wooce-gallery-preview.is-tab,
+.wooce-gallery-preview.is-notice {
+	border-radius: 4px;
+}
+
+.wooce-gallery-preview.is-nav {
+	background: transparent;
+	border: none;
+}

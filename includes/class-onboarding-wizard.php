@@ -179,6 +179,12 @@ class Onboarding_Wizard {
 		$dequeue_settings = get_option( 'wooce_dequeue_settings', array() );
 		$settings_url     = admin_url( 'admin.php?page=wooce-settings' );
 
+		$has_kit_colors = CSS_Generator::has_kit_colors();
+		$kit_id         = get_option( 'elementor_active_kit' );
+		$colors_url     = $kit_id
+			? admin_url( 'post.php?post=' . (int) $kit_id . '&action=elementor' )
+			: admin_url( 'admin.php?page=elementor-app' );
+
 		$shop_url = home_url( '/' );
 		if ( function_exists( 'wc_get_page_permalink' ) ) {
 			$shop_page = wc_get_page_permalink( 'shop' );
@@ -194,6 +200,23 @@ class Onboarding_Wizard {
 				<h1><?php echo esc_html__( 'Welcome to WooCommerce Elementor Colors', 'woocommerce-elementor-colors' ); ?></h1>
 				<p><?php echo esc_html__( 'Let\'s get your store styled with your Elementor brand colors in just a few steps.', 'woocommerce-elementor-colors' ); ?></p>
 			</div>
+
+			<?php if ( ! $has_kit_colors ) : ?>
+				<div class="wooce-wizard-colors-notice">
+					<p>
+						<strong><?php echo esc_html__( 'One quick thing first:', 'woocommerce-elementor-colors' ); ?></strong>
+						<?php echo esc_html__( 'This plugin styles your store using your Elementor global colors. You haven\'t set any yet, so we\'ll use temporary defaults for now.', 'woocommerce-elementor-colors' ); ?>
+					</p>
+					<p>
+						<a href="<?php echo esc_url( $colors_url ); ?>" class="button button-secondary" target="_blank" rel="noopener noreferrer">
+							<?php echo esc_html__( 'Set my brand colors in Elementor', 'woocommerce-elementor-colors' ); ?>
+						</a>
+						<span style="color:#50575e;font-size:12px;margin-left:8px;">
+							<?php echo esc_html__( 'You can do this anytime — your store keeps working either way.', 'woocommerce-elementor-colors' ); ?>
+						</span>
+					</p>
+				</div>
+			<?php endif; ?>
 
 			<div class="wooce-wizard-progress">
 				<?php for ( $i = 1; $i <= 4; $i++ ) : ?>
