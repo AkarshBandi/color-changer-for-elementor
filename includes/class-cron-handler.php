@@ -30,8 +30,7 @@ class Cron_Handler {
 
 		if ( $needs_update ) {
 			update_option( 'wooce_colors_mappings', $saved );
+			Cache_Manager::clear_css();
 		}
-
-		Cache_Manager::clear_all();
 	}
 }

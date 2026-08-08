@@ -81,6 +81,41 @@ class Live_Editor {
 			);
 		}
 
+		$live_draft = get_transient( 'wooce_live_draft' );
+
+		// Coverage counter: how many of the registry widgets are currently
+		// configured (have at least one explicitly set color), combining the
+		// saved mappings and any in-progress live draft.
+		$saved      = get_option( 'wooce_colors_mappings', array() );
+		$configured = 0;
+		$registry   = Element_Registry::get_registry();
+
+		foreach ( $registry as $widget_key => $definition ) {
+			$has_color = false;
+
+			if ( isset( $saved['widgets'][ $widget_key ]['slots'] ) ) {
+				foreach ( $saved['widgets'][ $widget_key ]['slots'] as $slot_data ) {
+					if ( isset( $slot_data['color'] ) && ! empty( $slot_data['color'] ) ) {
+						$has_color = true;
+						break;
+					}
+				}
+			}
+
+			if ( ! $has_color && isset( $live_draft[ $widget_key ]['slots'] ) ) {
+				foreach ( $live_draft[ $widget_key ]['slots'] as $slot_data ) {
+					if ( isset( $slot_data['color'] ) && ! empty( $slot_data['color'] ) ) {
+						$has_color = true;
+						break;
+					}
+				}
+			}
+
+			if ( $has_color ) {
+				++$configured;
+			}
+		}
+
 		wp_localize_script(
 			'wooce-editor',
 			'wooceData',
@@ -92,6 +127,11 @@ class Live_Editor {
 				'registrySelectors' => CSS_Generator::get_registry_selectors(),
 				'widgetSlots'       => $widget_slots,
 				'settingsUrl'       => $settings_url,
+				'liveDraft'         => is_array( $live_draft ) ? $live_draft : array(),
+				'coverage'          => array(
+					'configured' => $configured,
+					'total'      => count( $registry ),
+				),
 			)
 		);
 	}
@@ -103,9 +143,12 @@ class Live_Editor {
 				<div class="wooce-toolbar-idle-state">
 					<span class="wooce-toolbar-icon">🎨</span>
 					<span class="wooce-toolbar-text"><?php echo esc_html__( 'Click any button, price, or badge on this page to change its color.', 'woocommerce-elementor-colors' ); ?></span>
+					<span class="wooce-coverage-badge" title="<?php echo esc_attr__( 'How many of the detected WooCommerce element types are styled with your brand colors', 'woocommerce-elementor-colors' ); ?>"></span>
 					<span class="wooce-unsaved-badge" style="display:none;">● Unsaved changes</span>
 				</div>
 				<div class="wooce-toolbar-actions-global">
+					<button type="button" class="button wooce-share-btn" title="<?php echo esc_attr__( 'Generate a temporary preview link to share with a client', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( '🔗 Share', 'woocommerce-elementor-colors' ); ?></button>
+					<button type="button" class="button wooce-undo-btn" title="<?php echo esc_attr__( 'Undo last save (Ctrl+Z)', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( '↩ Undo', 'woocommerce-elementor-colors' ); ?></button>
 					<button type="button" class="button button-hero wooce-save-btn" disabled><?php echo esc_html__( '💾 Save Changes', 'woocommerce-elementor-colors' ); ?></button>
 					<button type="button" class="button wooce-reset-btn" title="<?php echo esc_attr__( 'Reset all elements to defaults', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( '↺ Reset', 'woocommerce-elementor-colors' ); ?></button>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wooce-settings' ) ); ?>" class="wooce-advanced-link"><?php echo esc_html__( 'Settings table view', 'woocommerce-elementor-colors' ); ?></a>

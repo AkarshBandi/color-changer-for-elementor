@@ -180,11 +180,18 @@ class Mapping_Service {
 					continue;
 				}
 
-				$color = sanitize_key( $slot_config['color'] );
+				$color = strtolower( (string) $slot_config['color'] );
 
-				// Accept either a kit color token or a raw hex value.
-				if ( ! in_array( $color, $valid_ids, true ) && ! preg_match( '/^[0-9a-f]{6}$/', $color ) ) {
-					continue;
+				// Accept either a kit color token or a raw hex value
+				// (custom colors from the Live Editor may include the #).
+				$hex = ltrim( $color, '#' );
+
+				if ( ! in_array( $color, $valid_ids, true ) ) {
+					if ( ! preg_match( '/^[0-9a-f]{6}$/', $hex ) ) {
+						continue;
+					}
+
+					$color = '#' . $hex;
 				}
 
 				$clean_slots[ $slot_id ] = array( 'color' => $color );

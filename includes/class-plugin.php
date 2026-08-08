@@ -51,7 +51,7 @@ class Plugin {
 		$css_gen = new CSS_Generator();
 		add_action( 'wp', array( $css_gen, 'maybe_generate_and_inject' ) );
 
-		add_action( 'elementor/kit/after_save', array( __NAMESPACE__ . '\\Cache_Manager', 'clear_all' ) );
+		add_action( 'elementor/kit/after_save', array( __NAMESPACE__ . '\\Cache_Manager', 'clear_css' ) );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'on_plugin_update' ), 10, 2 );
 
 		$admin = new Admin_Interface();
@@ -135,6 +135,7 @@ class Plugin {
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'wooce_daily_scan' );
+		delete_option( 'wooce_pro_optin_email' );
 	}
 
 	public static function on_plugin_update( $upgrader, $options ) {
@@ -145,7 +146,7 @@ class Plugin {
 		$basename = plugin_basename( WOOEC_PATH . 'woocommerce-elementor-colors.php' );
 
 		if ( ! empty( $options['plugins'] ) && in_array( $basename, (array) $options['plugins'], true ) ) {
-			Cache_Manager::clear_all();
+			Cache_Manager::clear_css();
 		}
 	}
 }

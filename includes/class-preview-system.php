@@ -121,7 +121,7 @@ class Preview_System {
 			setcookie( 'wooce_preview_active', '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
 		}
 
-		Cache_Manager::clear_all();
+		Cache_Manager::clear_css();
 
 		wp_safe_redirect( home_url() );
 		exit;

@@ -19,8 +19,61 @@
 			this.injectWidgetAttributes();
 			this.bindEvents();
 			this.injectLiveStyle();
+			this.renderCoverageBadge();
+			this.restoreLiveDraft();
 			this.updateUnsavedIndicator();
 			this.initialized = true;
+		},
+
+		renderCoverageBadge: function () {
+			var badge = document.querySelector('.wooce-coverage-badge');
+			if (!badge) return;
+
+			var coverage = wooceData.coverage;
+			if (!coverage || !coverage.total) {
+				badge.style.display = 'none';
+				return;
+			}
+
+			var pct = Math.round((coverage.configured / coverage.total) * 100);
+			badge.textContent = '🛡 ' + coverage.configured + '/' + coverage.total + ' styled (' + pct + '%)';
+			badge.style.display = 'inline';
+
+			if (pct >= 80) {
+				badge.style.color = '#46b450';
+			} else if (pct >= 40) {
+				badge.style.color = '#f0ad4e';
+			} else {
+				badge.style.color = '#b32d2e';
+			}
+		},
+
+		restoreLiveDraft: function () {
+			if (!wooceData.liveDraft || typeof wooceData.liveDraft !== 'object') {
+				return;
+			}
+
+			var hasColors = false;
+			var self = this;
+
+			Object.keys(wooceData.liveDraft).forEach(function (wk) {
+				var wd = wooceData.liveDraft[wk];
+				if (!wd || !wd.slots) return;
+
+				Object.keys(wd.slots).forEach(function (sid) {
+					if (wd.slots[sid] && wd.slots[sid].color) {
+						if (!self.draft[wk]) {
+							self.draft[wk] = { slots: {} };
+						}
+						self.draft[wk].slots[sid] = { color: wd.slots[sid].color };
+						hasColors = true;
+					}
+				});
+			});
+
+			if (hasColors) {
+				this.rebuildLocalCss();
+			}
 		},
 
 		buildColorMap: function () {
@@ -94,6 +147,21 @@
 
 			document.querySelector('.wooce-reset-btn') && document.querySelector('.wooce-reset-btn').addEventListener('click', function () {
 				self.resetDefaults();
+			});
+
+			document.querySelector('.wooce-share-btn') && document.querySelector('.wooce-share-btn').addEventListener('click', function () {
+				self.generateShare();
+			});
+
+			document.querySelector('.wooce-undo-btn') && document.querySelector('.wooce-undo-btn').addEventListener('click', function () {
+				self.undoLastSave();
+			});
+
+			document.addEventListener('keydown', function (e) {
+				if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+					e.preventDefault();
+					self.undoLastSave();
+				}
 			});
 
 			document.querySelector('.wooce-exit-btn') && document.querySelector('.wooce-exit-btn').addEventListener('click', function () {
@@ -248,6 +316,7 @@
 		},
 
 		loadCurrentColor: function (slotId) {
+			var self = this;
 			var widgetKey = this.currentWidget;
 			var hex = '#000000';
 
@@ -288,8 +357,8 @@
 								if (wooceData.kitColors.length > 0) {
 									defaultColorId = wooceData.kitColors[0].id;
 								}
-								if (wooceData.colorMap && wooceData.colorMap[defaultColorId]) {
-									hex = wooceData.colorMap[defaultColorId];
+								if (self.colorMap && self.colorMap[defaultColorId]) {
+									hex = self.colorMap[defaultColorId];
 								}
 							}
 						});
@@ -330,27 +399,46 @@
 				clearTimeout(this.liveTimer);
 			}
 
-			this.liveTimer = setTimeout(function () {
-				var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(self.currentWidget) +
-					'&slot_id=' + encodeURIComponent(self.currentSlotId) +
-					'&hex=' + encodeURIComponent(hex) +
-					'&nonce=' + encodeURIComponent(wooceData.nonce);
+			// Remember the pending change so saveAll() can flush it before
+			// committing, preventing a color picked <150ms ago from being lost.
+			this.pendingUpdate = {
+				widgetKey: this.currentWidget,
+				slotId: this.currentSlotId,
+				hex: hex
+			};
 
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', wooceData.ajaxUrl, true);
-				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				xhr.onload = function () {
-					if (xhr.status === 200) {
-						try {
-							var resp = JSON.parse(xhr.responseText);
-							if (resp.success && resp.data.css) {
-								self.applyCss(resp.data.css);
-							}
-						} catch (e) {}
-					}
-				};
-				xhr.send(params);
+			this.liveTimer = setTimeout(function () {
+				self.flushLiveUpdate();
 			}, 150);
+		},
+
+		flushLiveUpdate: function () {
+			if (!this.pendingUpdate) return;
+
+			var self = this;
+			var update = this.pendingUpdate;
+			this.pendingUpdate = null;
+			this.liveTimer = null;
+
+			var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(update.widgetKey) +
+				'&slot_id=' + encodeURIComponent(update.slotId) +
+				'&hex=' + encodeURIComponent(update.hex) +
+				'&nonce=' + encodeURIComponent(wooceData.nonce);
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onload = function () {
+				if (xhr.status === 200) {
+					try {
+						var resp = JSON.parse(xhr.responseText);
+						if (resp.success && resp.data.css) {
+							self.applyCss(resp.data.css);
+						}
+					} catch (e) {}
+				}
+			};
+			xhr.send(params);
 		},
 
 		revertColor: function () {
@@ -390,6 +478,13 @@
 		saveAll: function () {
 			var self = this;
 
+			// Flush any color picked within the last 150ms so the commit
+			// includes it instead of a stale server transient.
+			if (this.liveTimer) {
+				clearTimeout(this.liveTimer);
+				this.flushLiveUpdate();
+			}
+
 			var btn = document.querySelector('.wooce-save-btn');
 			if (btn) {
 				btn.textContent = 'Saving...';
@@ -426,7 +521,8 @@
 				}
 			};
 
-			var params = 'action=wooce_commit_live&nonce=' + encodeURIComponent(wooceData.nonce);
+			var params = 'action=wooce_commit_live&draft=' + encodeURIComponent(JSON.stringify(self.draft)) +
+				'&nonce=' + encodeURIComponent(wooceData.nonce);
 			xhr.send(params);
 		},
 
@@ -460,6 +556,143 @@
 			};
 
 			var params = 'action=wooce_reset_defaults&nonce=' + encodeURIComponent(wooceData.nonce);
+			xhr.send(params);
+		},
+
+		generateShare: function () {
+			var self = this;
+
+			if (this.liveTimer) {
+				clearTimeout(this.liveTimer);
+				this.flushLiveUpdate();
+			}
+
+			var btn = document.querySelector('.wooce-share-btn');
+			if (btn) {
+				btn.textContent = 'Generating...';
+				btn.disabled = true;
+			}
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onload = function () {
+				btn && (btn.textContent = '🔗 Share');
+				btn && (btn.disabled = false);
+
+				if (xhr.status === 200) {
+					try {
+						var resp = JSON.parse(xhr.responseText);
+						if (resp.success && resp.data.share_url) {
+							self.showShareDialog(resp.data.share_url);
+						} else {
+							self.showToast(resp.data.message || 'Nothing to share yet.', 'info');
+						}
+					} catch (e) {
+						self.showToast('Share failed', 'error');
+					}
+				} else {
+					self.showToast('Connection error', 'error');
+				}
+			};
+
+			var params = 'action=wooce_generate_share&nonce=' + encodeURIComponent(wooceData.nonce);
+			xhr.send(params);
+		},
+
+		showShareDialog: function (url) {
+			var existing = document.querySelector('.wooce-share-dialog');
+			if (existing) existing.remove();
+
+			var overlay = document.createElement('div');
+			overlay.className = 'wooce-share-dialog';
+			overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999999;display:flex;align-items:center;justify-content:center;';
+
+			var box = document.createElement('div');
+			box.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:520px;width:90%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,0.25);';
+
+			var title = document.createElement('h3');
+			title.textContent = '🔗 Share Preview Link';
+			title.style.cssText = 'margin:0 0 8px;font-size:16px;color:#1d2327;';
+
+			var desc = document.createElement('p');
+			desc.textContent = 'Anyone with this link can view the current colors on the live site. The link expires after one hour.';
+			desc.style.cssText = 'margin:0 0 14px;font-size:13px;color:#50575e;';
+
+			var input = document.createElement('input');
+			input.type = 'text';
+			input.readOnly = true;
+			input.value = url;
+			input.style.cssText = 'width:100%;padding:10px;border:1px solid #dcdcde;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:12px;';
+
+			var actions = document.createElement('div');
+			actions.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;';
+
+			var copyBtn = document.createElement('button');
+			copyBtn.type = 'button';
+			copyBtn.textContent = '📋 Copy Link';
+			copyBtn.className = 'button button-primary';
+			copyBtn.addEventListener('click', function () {
+				input.select();
+				try {
+					document.execCommand('copy');
+				} catch (e) {}
+				self.showToast('Link copied!', 'success');
+			});
+
+			var closeBtn = document.createElement('button');
+			closeBtn.type = 'button';
+			closeBtn.textContent = 'Close';
+			closeBtn.className = 'button';
+			closeBtn.addEventListener('click', function () {
+				overlay.remove();
+			});
+
+			overlay.addEventListener('click', function (e) {
+				if (e.target === overlay) overlay.remove();
+			});
+
+			actions.appendChild(copyBtn);
+			actions.appendChild(closeBtn);
+			box.appendChild(title);
+			box.appendChild(desc);
+			box.appendChild(input);
+			box.appendChild(actions);
+			overlay.appendChild(box);
+			document.body.appendChild(overlay);
+
+			input.focus();
+			input.select();
+		},
+
+		undoLastSave: function () {
+			var self = this;
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onload = function () {
+				if (xhr.status === 200) {
+					try {
+						var resp = JSON.parse(xhr.responseText);
+						if (resp.success) {
+							self.draft = {};
+							self.clearAllLocalCss();
+							self.updateUnsavedIndicator();
+							self.showToast('↩ Previous save restored', 'success');
+							location.reload();
+						} else {
+							self.showToast(resp.data.message || 'Nothing to undo.', 'info');
+						}
+					} catch (e) {
+						self.showToast('Undo failed', 'error');
+					}
+				} else {
+					self.showToast('Connection error', 'error');
+				}
+			};
+
+			var params = 'action=wooce_undo_action&nonce=' + encodeURIComponent(wooceData.nonce);
 			xhr.send(params);
 		},
 
@@ -514,6 +747,9 @@
 			}
 			if (!slotDef || !slotDef.props || !slotDef.states) return;
 
+			var hasBg = slotDef.props.indexOf('background-color') !== -1;
+			var textHex = hasBg ? this.contrastText(hex) : hex;
+
 			var css = '';
 			selectors.forEach(function (sel) {
 				slotDef.states.forEach(function (state) {
@@ -525,6 +761,10 @@
 
 					css += sel + stateSuffix + ' { ';
 					slotDef.props.forEach(function (prop) {
+						if (hasBg && (prop === 'color' || prop === 'fill')) {
+							css += prop + ': ' + textHex + ' !important; ';
+							return;
+						}
 						css += prop + ': ' + hex + ' !important; ';
 					});
 					if (state === 'disabled') {
@@ -535,6 +775,20 @@
 			});
 
 			this.applyCss(css);
+		},
+
+		contrastText: function (hex) {
+			try {
+				var rgb = this.hexToRgb(hex);
+				var linear = [rgb.r, rgb.g, rgb.b].map(function (c) {
+					c = c / 255;
+					return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+				});
+				var luminance = 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+				return luminance > 0.179 ? '#111111' : '#ffffff';
+			} catch (e) {
+				return '#ffffff';
+			}
 		},
 
 		clearAllLocalCss: function () {

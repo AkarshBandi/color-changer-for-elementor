@@ -29,14 +29,30 @@ class Cache_Manager {
 			)
 		);
 
-		delete_transient( 'wooce_preview_draft' );
-		delete_transient( 'wooce_live_draft' );
-
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
 				$wpdb->esc_like( '_transient_wooce_share_' ) . '%',
 				$wpdb->esc_like( '_transient_timeout_wooce_share_' ) . '%'
+			)
+		);
+	}
+
+	/**
+	 * Clear the CSS cache only.
+	 *
+	 * Unlike clear_all(), this leaves user drafts (live editor, preview)
+	 * untouched. Used by flows that regenerate CSS without wanting to
+	 * discard in-progress customization.
+	 */
+	public static function clear_css() {
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( '_transient_wooce_css_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_wooce_css_' ) . '%'
 			)
 		);
 	}

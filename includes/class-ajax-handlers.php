@@ -115,7 +115,7 @@ class AJAX_Handlers {
 			update_option( 'wooce_colors_mappings', $saved );
 		}
 
-		Cache_Manager::clear_all();
+		Cache_Manager::clear_css();
 
 		wp_send_json_success(
 			array(
@@ -276,7 +276,22 @@ class AJAX_Handlers {
 	public function commit_live() {
 		$this->verify_request();
 
-		$draft = get_transient( 'wooce_live_draft' );
+		// The client sends its in-memory draft so a color picked just before
+		// Save is never lost to the debounce or a stale transient. Fall back
+		// to the persisted live draft for safety.
+		// Nonce and capability verified in verify_request() above.
+		// phpcs:disable WordPress.Security.NonceVerification
+		$draft = array();
+
+		if ( isset( $_POST['draft'] ) ) {
+			$draft = json_decode( wp_unslash( $_POST['draft'] ), true );
+			$draft = is_array( $draft ) ? $draft : array();
+		}
+
+		if ( empty( $draft ) ) {
+			$draft = get_transient( 'wooce_live_draft' );
+		}
+		// phpcs:enable WordPress.Security.NonceVerification
 
 		if ( empty( $draft ) ) {
 			wp_send_json_error( array( 'message' => __( 'No draft changes to save.', 'woocommerce-elementor-colors' ) ) );
@@ -321,21 +336,33 @@ class AJAX_Handlers {
 				continue;
 			}
 
-			foreach ( $widget_data['slots'] as $slot_id => $slot_config ) {
-				$hex = isset( $slot_config['color'] ) ? $slot_config['color'] : '';
+			$saved['widgets'][ $widget_key ]['slots'] = isset( $saved['widgets'][ $widget_key ]['slots'] ) && is_array( $saved['widgets'][ $widget_key ]['slots'] )
+				? $saved['widgets'][ $widget_key ]['slots']
+				: array();
 
-				$color_token = array_search( strtolower( $hex ), array_map( 'strtolower', $kit_colors ), true );
+			foreach ( $widget_data['slots'] as $slot_id => $slot_config ) {
+				$slot_id = sanitize_key( (string) $slot_id );
+				$hex     = isset( $slot_config['color'] ) ? strtolower( (string) $slot_config['color'] ) : '';
+
+				$color_token = array_search( $hex, array_map( 'strtolower', $kit_colors ), true );
 
 				if ( false === $color_token ) {
 					// Custom color not present in the kit: store the raw hex
 					// so the user's choice is preserved instead of being
-					// silently coerced to the "text" token.
-					$color_token = strtolower( $hex );
+					// silently coerced to the "text" token. Validate it first
+					// so a malformed value can never reach the CSS output.
+					$raw_hex = ltrim( $hex, '#' );
+
+					if ( ! preg_match( '/^[0-9a-f]{6}$/', $raw_hex ) ) {
+						continue;
+					}
+
+					$color_token = '#' . $raw_hex;
 				}
 
-				if ( isset( $saved['widgets'][ $widget_key ]['slots'][ $slot_id ] ) ) {
-					$saved['widgets'][ $widget_key ]['slots'][ $slot_id ]['color'] = $color_token;
-				}
+				// Always write the slot, even for widgets created from the
+				// live editor whose slot list was empty at creation time.
+				$saved['widgets'][ $widget_key ]['slots'][ $slot_id ] = array( 'color' => $color_token );
 			}
 
 			if ( isset( $saved['widgets'][ $widget_key ] ) && 'configured' !== $saved['widgets'][ $widget_key ]['status'] ) {
@@ -350,7 +377,7 @@ class AJAX_Handlers {
 
 		delete_transient( 'wooce_live_draft' );
 
-		Cache_Manager::clear_all();
+		Cache_Manager::clear_css();
 
 		wp_send_json_success(
 			array(
@@ -377,7 +404,7 @@ class AJAX_Handlers {
 
 		delete_transient( 'wooce_live_draft' );
 
-		Cache_Manager::clear_all();
+		Cache_Manager::clear_css();
 
 		wp_send_json_success( array( 'message' => __( 'Undo successful.', 'woocommerce-elementor-colors' ) ) );
 	}
@@ -429,7 +456,7 @@ class AJAX_Handlers {
 
 		delete_transient( 'wooce_live_draft' );
 
-		Cache_Manager::clear_all();
+		Cache_Manager::clear_css();
 
 		wp_send_json_success( array( 'message' => __( 'All elements reset to defaults.', 'woocommerce-elementor-colors' ) ) );
 	}

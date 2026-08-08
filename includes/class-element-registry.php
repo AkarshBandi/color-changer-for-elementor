@@ -249,7 +249,7 @@ class Element_Registry {
 				array(
 					'slot_id'    => 'stars_filled',
 					'label'      => __( 'Filled Stars', 'woocommerce-elementor-colors' ),
-					'selectors'  => array( '.star-rating', '.star-rating span', '.wc-block-components-product-rating__stars' ),
+					'selectors'  => array( '.star-rating', '.star-rating span', '.star-rating span::before', '.wc-block-components-product-rating__stars' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 					'page_types' => array( 'all' ),

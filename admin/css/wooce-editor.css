@@ -53,6 +53,39 @@ body.admin-bar #wooce-editor-toolbar {
 	border-radius: 10px;
 }
 
+.wooce-coverage-badge {
+	font-size: 11px;
+	font-weight: 600;
+	color: #46b450;
+	background: rgba(70, 180, 80, 0.12);
+	border: 1px solid rgba(70, 180, 80, 0.35);
+	padding: 2px 8px;
+	border-radius: 10px;
+	white-space: nowrap;
+}
+
+.wooce-share-btn,
+.wooce-undo-btn {
+	font-size: 12px;
+	background: none;
+	border: 1px solid #50575e;
+	color: #c3c4c7;
+	padding: 4px 12px;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.wooce-share-btn:hover,
+.wooce-undo-btn:hover {
+	color: #fff;
+	border-color: #a7aaad;
+}
+
+.wooce-share-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
 .wooce-reset-btn {
 	font-size: 12px;
 	color: #f0ad4e;

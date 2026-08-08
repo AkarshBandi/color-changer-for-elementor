@@ -199,18 +199,26 @@ class Admin_Interface {
 
 				$changed = false;
 
-				foreach ( $slots as $slot_id => $color_token ) {
-					$color_token = sanitize_key( $color_token );
+				foreach ( $slots as $slot_id => $color_value ) {
+					$color_value = strtolower( (string) $color_value );
 
-					if ( ! in_array( $color_token, $valid_ids, true ) ) {
-						continue;
+					// Accept either a kit color token or a raw hex value
+					// (custom colors chosen in the Live Editor).
+					if ( ! in_array( $color_value, $valid_ids, true ) ) {
+						$hex = ltrim( $color_value, '#' );
+
+						if ( ! preg_match( '/^[0-9a-f]{6}$/', $hex ) ) {
+							continue;
+						}
+
+						$color_value = '#' . $hex;
 					}
 
 					if ( ! isset( $saved['widgets'][ $widget_key ]['slots'][ $slot_id ] ) ) {
 						continue;
 					}
 
-					$saved['widgets'][ $widget_key ]['slots'][ $slot_id ]['color'] = $color_token;
+					$saved['widgets'][ $widget_key ]['slots'][ $slot_id ]['color'] = $color_value;
 					$changed = true;
 				}
 
@@ -222,7 +230,7 @@ class Admin_Interface {
 
 		update_option( 'wooce_colors_mappings', $saved );
 
-		Cache_Manager::clear_all();
+		Cache_Manager::clear_css();
 
 		wp_safe_redirect(
 			add_query_arg( 'saved', '1', admin_url( 'admin.php?page=wooce-settings' ) )

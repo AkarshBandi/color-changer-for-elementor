@@ -35,13 +35,22 @@ foreach ( $slots as $slot_id => $slot_config ) {
 	$current_color = isset( $slot_config['color'] ) ? $slot_config['color'] : 'text';
 	$is_button     = false !== strpos( $slot_id, 'button' ) || false !== strpos( $slot_id, 'proceed' ) || false !== strpos( $slot_id, 'place_order' ) || false !== strpos( $slot_id, 'update_cart' ) || false !== strpos( $slot_id, 'loop' );
 
+	$is_hex    = is_string( $current_color ) && preg_match( '/^#?[0-9a-fA-F]{6}$/', $current_color );
+	$hex_value = '';
+
+	if ( $is_hex ) {
+		$hex_value = '#' . strtolower( ltrim( $current_color, '#' ) );
+	}
+
 	$rendered_slots[] = array(
 		'slot_id'       => $slot_id,
 		'slot_label'    => $slot_label,
 		'current_color' => $current_color,
 		'default_color' => isset( $defaults[ $slot_id ] ) ? $defaults[ $slot_id ] : 'text',
-		'color_hex'     => isset( $kit_colors[ $current_color ] ) ? $kit_colors[ $current_color ] : '#000',
+		'color_hex'     => $is_hex ? $hex_value : ( isset( $kit_colors[ $current_color ] ) ? $kit_colors[ $current_color ] : '#000' ),
 		'is_button'     => $is_button,
+		'is_hex'        => $is_hex,
+		'hex_value'     => $hex_value,
 	);
 }
 ?>
@@ -68,6 +77,11 @@ foreach ( $slots as $slot_id => $slot_config ) {
 								<?php echo esc_html( ucfirst( str_replace( '_', ' ', $color_id ) ) . ' - ' . $color_hex ); ?>
 							</option>
 						<?php endforeach; ?>
+						<?php if ( $rs['is_hex'] ) : ?>
+							<option value="<?php echo esc_attr( $rs['hex_value'] ); ?>" selected="selected">
+								<?php echo esc_html( __( 'Custom', 'woocommerce-elementor-colors' ) . ' - ' . strtoupper( $rs['hex_value'] ) ); ?>
+							</option>
+						<?php endif; ?>
 					</select>
 					<span class="wooce-swatch" style="background-color:<?php echo esc_attr( $rs['color_hex'] ); ?>;"></span>
 					<button type="button" class="button-link wooce-reset-link" data-default="<?php echo esc_attr( $rs['default_color'] ); ?>">

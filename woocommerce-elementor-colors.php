@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Elementor Colors
  * Plugin URI:  https://github.com/AkarshBandi/woocommerce-elementor-colors
  * Description: Replaces WooCommerce default CSS with dynamic CSS that maps Elementor global colors to WooCommerce elements.
- * Version:     1.2.0
+ * Version:     1.0.0
  * Author:      Akarsh Bandi
  * Author URI:  https://github.com/AkarshBandi
  * License:     GPL-2.0+
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WOOEC_VERSION', '1.2.0' );
+define( 'WOOEC_VERSION', '1.0.0' );
 define( 'WOOEC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WOOEC_URL', plugin_dir_url( __FILE__ ) );
 

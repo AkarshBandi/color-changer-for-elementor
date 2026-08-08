@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce, elementor
 WC requires at least: 7.0
 WC tested up to: 10.9
-Stable tag: 1.2.0
+Stable tag: 1.0.0
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -85,14 +85,8 @@ This plugin may collect an email address during the optional step of the Onboard
 
 == Changelog ==
 
-= 1.2.0 =
-* Simplified the setup wizard: the technical "CSS Dequeue" step is now a single, plain-language toggle that turns off WooCommerce's default styling.
-* Added a friendly notice in the wizard when Elementor global colors aren't set yet, with a link to set them.
-* Rewrote the readme to lead with a plain-language, 3-step setup for non-technical users.
-* Fixed button text contrast so labels stay readable on any background color.
-* Fixed dequeue so WooCommerce default CSS is only removed when replacement styles exist.
-
-= 1.1.0 =
+= 1.0.0 =
+* Initial release: dynamic CSS mapping Elementor global colors to WooCommerce elements.
 * Added Onboarding Wizard with 4-step setup (scan, A/B test, dequeue, launch)
 * Added Live Visual Editor with click-to-customize on the frontend
 * Added color state controls (Normal, Hover, Focus, Disabled)
@@ -103,6 +97,9 @@ This plugin may collect an email address during the optional step of the Onboard
 * Added performance badge showing CSS savings
 * Renamed admin menu to "Advanced Settings"
 * New options: wooce_onboarding_completed, wooce_live_draft, wooce_history_*, wooce_share_*
-
-= 1.0.0 =
-* Initial release
+* Simplified the setup wizard: the technical "CSS Dequeue" step is now a single, plain-language toggle that turns off WooCommerce's default styling.
+* Added a friendly notice in the wizard when Elementor global colors aren't set yet, with a link to set them.
+* Rewrote the readme to lead with a plain-language, 3-step setup for non-technical users.
+* Fixed button text contrast so labels stay readable on any background color.
+* Fixed dequeue so WooCommerce default CSS is only removed when replacement styles exist.
+* Live editor: clicking an element opens its color card instead of triggering the element's action, with an instant kit-color palette for non-technical users.

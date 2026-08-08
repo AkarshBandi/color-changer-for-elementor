@@ -39,7 +39,7 @@ defined( 'ABSPATH' ) || exit;
 					}
 
 					$current_color = isset( $slot_config['color'] ) ? $slot_config['color'] : 'text';
-					$color_hex     = isset( $kit_colors[ $current_color ] ) ? $kit_colors[ $current_color ] : '#000';
+					$color_hex     = WooElementorColors\CSS_Generator::resolve_color( $current_color );
 					$is_button     = false !== strpos( $slot_id, 'button' ) || false !== strpos( $slot_id, 'proceed' ) || false !== strpos( $slot_id, 'place_order' ) || false !== strpos( $slot_id, 'update_cart' ) || false !== strpos( $slot_id, 'loop' );
 					$text_hex      = $is_button ? WooElementorColors\CSS_Generator::contrast_text( $color_hex ) : $color_hex;
 
