@@ -95,6 +95,16 @@ function is_product() {
 	return ! empty( WP_Shims::$page_flags['is_product'] ); }
 function is_cart() {
 	return ! empty( WP_Shims::$page_flags['is_cart'] ); }
+function is_admin() {
+	return ! empty( WP_Shims::$page_flags['is_admin'] ); }
+function wp_dequeue_style( $handle ) {
+	WP_Shims::$dequeued[] = $handle;
+	return true;
+}
+function wp_deregister_style( $handle ) {
+	WP_Shims::$dequeued[] = $handle;
+	return true;
+}
 function is_checkout() {
 	return ! empty( WP_Shims::$page_flags['is_checkout'] ); }
 function is_account_page() {

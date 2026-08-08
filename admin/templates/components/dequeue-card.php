@@ -23,10 +23,9 @@ defined( 'ABSPATH' ) || exit;
 				<?php echo esc_html__( 'Dequeue is inactive: no element mappings exist yet, so there is no replacement CSS to apply.', 'woocommerce-elementor-colors' ); ?>
 			</div>
 		<?php endif; ?>
-		<label class="wooce-dequeue-toggle">
-			<input type="checkbox" name="wooce_dequeue_core" value="yes" <?php checked( isset( $dequeue_settings['dequeue_core'] ) ? $dequeue_settings['dequeue_core'] : 'yes', 'yes' ); ?> <?php echo $dequeue_disabled ? ' disabled' : ''; ?>>
-			<span><?php echo esc_html__( 'Dequeue WooCommerce core CSS (general, layout, smallscreen)', 'woocommerce-elementor-colors' ); ?></span>
-		</label>
+		<p class="description">
+			<?php echo esc_html__( 'Your brand colors replace WooCommerce colors on top of the default stylesheet, so the shop layout (product grid and buttons) stays intact. You can optionally remove the WooCommerce Blocks stylesheet used by block-based layouts.', 'woocommerce-elementor-colors' ); ?>
+		</p>
 		<label class="wooce-dequeue-toggle">
 			<input type="checkbox" name="wooce_dequeue_blocks" value="yes" <?php checked( isset( $dequeue_settings['dequeue_blocks'] ) ? $dequeue_settings['dequeue_blocks'] : 'yes', 'yes' ); ?> <?php echo $dequeue_disabled ? ' disabled' : ''; ?>>
 			<span><?php echo esc_html__( 'Dequeue WooCommerce Blocks CSS (block styles)', 'woocommerce-elementor-colors' ); ?></span>

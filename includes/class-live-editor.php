@@ -82,8 +82,7 @@ class Live_Editor {
 		}
 
 		$dequeue_settings = get_option( 'wooce_dequeue_settings', array() );
-		$dequeue_enabled  = ( isset( $dequeue_settings['dequeue_core'] ) && 'yes' === $dequeue_settings['dequeue_core'] ) ||
-			( isset( $dequeue_settings['dequeue_blocks'] ) && 'yes' === $dequeue_settings['dequeue_blocks'] );
+		$dequeue_enabled  = ( isset( $dequeue_settings['dequeue_blocks'] ) && 'yes' === $dequeue_settings['dequeue_blocks'] );
 
 		wp_localize_script(
 			'wooce-editor',
@@ -114,6 +113,7 @@ class Live_Editor {
 						<span class="wooce-audit-label"><?php echo esc_html__( 'Audit Mode', 'woocommerce-elementor-colors' ); ?></span>
 					</label>
 					<span class="wooce-performance-badge"></span>
+					<span class="wooce-unsaved-badge" style="display:none;">● Unsaved changes</span>
 				</div>
 				<div class="wooce-toolbar-active-state" style="display:none;">
 					<div class="wooce-toolbar-element-info">
@@ -132,6 +132,7 @@ class Live_Editor {
 				<div class="wooce-toolbar-actions-global">
 					<button type="button" class="button button-hero wooce-save-btn"><?php echo esc_html__( '💾 Save Changes', 'woocommerce-elementor-colors' ); ?></button>
 					<button type="button" class="button wooce-share-btn" title="<?php echo esc_attr__( 'Share Preview', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( '📤 Share Preview', 'woocommerce-elementor-colors' ); ?></button>
+					<button type="button" class="button wooce-reset-btn" title="<?php echo esc_attr__( 'Reset all elements to defaults', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( '↺ Reset to Defaults', 'woocommerce-elementor-colors' ); ?></button>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wooce-settings' ) ); ?>" class="wooce-advanced-link"><?php echo esc_html__( 'Prefer a table view?', 'woocommerce-elementor-colors' ); ?></a>
 					<button type="button" class="button wooce-exit-btn"><?php echo esc_html__( '✕ Exit', 'woocommerce-elementor-colors' ); ?></button>
 				</div>

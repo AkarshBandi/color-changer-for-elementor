@@ -70,6 +70,32 @@ body.admin-bar #wooce-editor-toolbar {
 	margin-left: auto;
 }
 
+.wooce-unsaved-badge {
+	font-size: 11px;
+	font-weight: 600;
+	color: #f0ad4e;
+	background: rgba(240, 173, 78, 0.15);
+	border: 1px solid rgba(240, 173, 78, 0.4);
+	padding: 2px 8px;
+	border-radius: 10px;
+}
+
+.wooce-reset-btn {
+	font-size: 12px;
+	color: #f0ad4e;
+	border-color: #f0ad4e;
+	background: none;
+}
+
+.wooce-reset-btn:hover {
+	background: rgba(240, 173, 78, 0.1);
+	color: #f0ad4e;
+}
+
+.wooce-element-highlight {
+	transition: all 0.15s ease;
+}
+
 .wooce-toolbar-element-info {
 	margin-right: 12px;
 }

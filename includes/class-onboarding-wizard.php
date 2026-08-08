@@ -353,7 +353,6 @@ class Onboarding_Wizard {
 		update_option( 'wooce_onboarding_completed', true );
 
 		$dequeue_settings = array(
-			'dequeue_core'   => isset( $_POST['dequeue_core'] ) && 'yes' === $_POST['dequeue_core'] ? 'yes' : 'no',
 			'dequeue_blocks' => isset( $_POST['dequeue_blocks'] ) && 'yes' === $_POST['dequeue_blocks'] ? 'yes' : 'no',
 		);
 		update_option( 'wooce_dequeue_settings', $dequeue_settings );

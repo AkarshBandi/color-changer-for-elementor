@@ -10,6 +10,7 @@ class WP_Shims {
 	public static $current_time = '2026-01-01 00:00:00';
 	public static $transients   = array();
 	public static $filters      = array();
+	public static $dequeued     = array();
 
 	public static function reset() {
 		self::$options      = array();
@@ -18,6 +19,7 @@ class WP_Shims {
 		self::$current_time = '2026-01-01 00:00:00';
 		self::$transients   = array();
 		self::$filters      = array();
+		self::$dequeued     = array();
 	}
 
 	public static function set_page_flag( $flag, $value ) {

@@ -171,7 +171,6 @@ class Admin_Interface {
 		}
 
 		$dequeue_settings = array(
-			'dequeue_core'   => isset( $_POST['wooce_dequeue_core'] ) && 'yes' === $_POST['wooce_dequeue_core'] ? 'yes' : 'no',
 			'dequeue_blocks' => isset( $_POST['wooce_dequeue_blocks'] ) && 'yes' === $_POST['wooce_dequeue_blocks'] ? 'yes' : 'no',
 		);
 

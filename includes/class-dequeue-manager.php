@@ -36,21 +36,7 @@ class Dequeue_Manager {
 
 		$settings = get_option( 'wooce_dequeue_settings', array() );
 
-		$dequeue_core   = isset( $settings['dequeue_core'] ) ? $settings['dequeue_core'] : 'yes';
 		$dequeue_blocks = isset( $settings['dequeue_blocks'] ) ? $settings['dequeue_blocks'] : 'yes';
-
-		if ( 'yes' === $dequeue_core ) {
-			$core_handles = array(
-				'woocommerce-general',
-				'woocommerce-layout',
-				'woocommerce-smallscreen',
-			);
-
-			foreach ( $core_handles as $handle ) {
-				wp_dequeue_style( $handle );
-				wp_deregister_style( $handle );
-			}
-		}
 
 		if ( 'yes' === $dequeue_blocks ) {
 			$block_handles = array(

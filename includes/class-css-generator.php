@@ -265,15 +265,39 @@ class CSS_Generator {
 		return $rules;
 	}
 
-	private function build_css( $mappings ) {
-		$css        = '';
+	/**
+	 * Resolve a stored color value to a concrete hex.
+	 *
+	 * A stored value may be either a kit color token (e.g. "primary") or a
+	 * raw hex string (e.g. "#FF5733") saved from the live editor. Tokens are
+	 * looked up in the active kit; raw hex is returned as-is.
+	 *
+	 * @param string $value Stored color token or hex.
+	 * @return string Resolved hex (with leading #).
+	 */
+	public static function resolve_color( $value ) {
 		$kit_colors = self::get_kit_colors();
+
+		if ( isset( $kit_colors[ $value ] ) ) {
+			return $kit_colors[ $value ];
+		}
+
+		$hex = ltrim( (string) $value, '#' );
+
+		if ( preg_match( '/^[0-9a-fA-F]{6}$/', $hex ) ) {
+			return '#' . strtolower( $hex );
+		}
+
+		return '#000000';
+	}
+
+	private function build_css( $mappings ) {
+		$css = '';
 
 		foreach ( $mappings as $widget_type => $widget ) {
 			foreach ( $widget['slots'] as $slot_id => $slot_data ) {
-				$slot_def    = $slot_data['definition'];
-				$color_token = $slot_data['color'];
-				$hex         = isset( $kit_colors[ $color_token ] ) ? $kit_colors[ $color_token ] : '#000000';
+				$slot_def = $slot_data['definition'];
+				$hex      = self::resolve_color( $slot_data['color'] );
 
 				foreach ( $slot_def['selectors'] as $selector ) {
 					foreach ( $slot_def['states'] as $state ) {

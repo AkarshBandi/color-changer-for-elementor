@@ -16,7 +16,7 @@
 	var settings = window.WooceSettings;
 
 	function bindEvents() {
-		$('#wooce-settings-form input[name="wooce_dequeue_core"], #wooce-settings-form input[name="wooce_dequeue_blocks"]').on('change', function () {
+		$('#wooce-settings-form input[name="wooce_dequeue_blocks"]').on('change', function () {
 			settings.markDirty();
 		});
 	}

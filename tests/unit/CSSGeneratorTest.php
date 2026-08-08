@@ -151,4 +151,33 @@ class CSSGeneratorTest extends TestCase {
 		$css      = CSS_Generator::get_css_for_mappings( $mappings, 'generic' );
 		$this->assertStringContainsString( 'color: #ffffff !important', $css );
 	}
+
+	public function test_resolve_color_returns_kit_token_hex() {
+		WP_Shims::$options['elementor_active_kit']           = 99;
+		WP_Shims::$post_meta[99]['_elementor_page_settings'] = array(
+			'system_colors' => array(
+				array(
+					'_id'   => 'primary',
+					'color' => '#1B9E77',
+				),
+			),
+		);
+
+		$this->assertSame( '#1B9E77', CSS_Generator::resolve_color( 'primary' ) );
+	}
+
+	public function test_resolve_color_returns_raw_hex() {
+		$this->assertSame( '#ff5733', CSS_Generator::resolve_color( '#FF5733' ) );
+		$this->assertSame( '#ff5733', CSS_Generator::resolve_color( 'ff5733' ) );
+	}
+
+	public function test_resolve_color_falls_back_on_unknown() {
+		$this->assertSame( '#000000', CSS_Generator::resolve_color( 'not-a-color' ) );
+	}
+
+	public function test_build_single_css_with_raw_hex_preserves_custom_color() {
+		$css = CSS_Generator::build_single_css( 'wc-add-to-cart', 'button_normal', '#FF5733' );
+		$this->assertStringContainsString( 'background-color: #FF5733 !important', $css );
+		$this->assertStringContainsString( 'color: #111111 !important', $css );
+	}
 }

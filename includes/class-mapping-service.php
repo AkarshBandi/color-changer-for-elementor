@@ -182,7 +182,8 @@ class Mapping_Service {
 
 				$color = sanitize_key( $slot_config['color'] );
 
-				if ( ! in_array( $color, $valid_ids, true ) ) {
+				// Accept either a kit color token or a raw hex value.
+				if ( ! in_array( $color, $valid_ids, true ) && ! preg_match( '/^[0-9a-f]{6}$/', $color ) ) {
 					continue;
 				}
 

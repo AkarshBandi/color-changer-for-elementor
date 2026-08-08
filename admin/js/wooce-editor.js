@@ -100,6 +100,10 @@
 				self.generateShareLink();
 			});
 
+			document.querySelector('.wooce-reset-btn') && document.querySelector('.wooce-reset-btn').addEventListener('click', function () {
+				self.resetDefaults();
+			});
+
 			document.querySelector('.wooce-exit-btn') && document.querySelector('.wooce-exit-btn').addEventListener('click', function () {
 				window.location.href = wooceData.settingsUrl || '/wp-admin/admin.php?page=wooce-settings';
 			});
@@ -150,6 +154,8 @@
 			var widgetData = wooceData.widgetSlots[widgetKey];
 			if (!widgetData) return;
 
+			this.highlightElement(target);
+
 			document.querySelector('.wooce-active-element-name').textContent = widgetData.label;
 
 			var activeStateEl = document.querySelector('.wooce-state-tabs');
@@ -193,6 +199,28 @@
 		switchSlot: function (slotId) {
 			this.currentSlotId = slotId;
 			this.loadCurrentColor(slotId);
+		},
+
+		highlightElement: function (target) {
+			this.clearHighlight();
+			if (!target) return;
+
+			var ring = document.createElement('div');
+			ring.className = 'wooce-element-highlight';
+			var rect = target.getBoundingClientRect();
+			var scrollY = window.scrollY || window.pageYOffset;
+			var scrollX = window.scrollX || window.pageXOffset;
+
+			ring.style.cssText = 'position:absolute;pointer-events:none;z-index:99997;border:2px solid #2271b1;border-radius:3px;box-shadow:0 0 0 4px rgba(34,113,177,0.25);top:' + (rect.top + scrollY) + 'px;left:' + (rect.left + scrollX) + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;transition:all 0.15s ease;';
+			document.body.appendChild(ring);
+			this.highlightRing = ring;
+		},
+
+		removeHighlight: function () {
+			if (this.highlightRing) {
+				this.highlightRing.remove();
+				this.highlightRing = null;
+			}
 		},
 
 		loadCurrentColor: function (slotId) {
@@ -261,10 +289,15 @@
 
 			this.draft[this.currentWidget].slots[this.currentSlotId] = { color: hex };
 
+			this.updateUnsavedIndicator();
+
+			this.setButtonLoading('.wooce-apply-btn', true, 'Applying...');
+
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
+				self.setButtonLoading('.wooce-apply-btn', false);
 				if (xhr.status === 200) {
 					try {
 						var resp = JSON.parse(xhr.responseText);
@@ -290,10 +323,13 @@
 			if (!this.currentWidget || !this.currentSlotId) return;
 
 			var self = this;
+			this.setButtonLoading('.wooce-revert-btn', true, 'Reverting...');
+
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
+				self.setButtonLoading('.wooce-revert-btn', false);
 				if (xhr.status === 200) {
 					try {
 						var resp = JSON.parse(xhr.responseText);
@@ -323,11 +359,13 @@
 
 		undo: function () {
 			var self = this;
+			this.setButtonLoading('.wooce-undo-btn', true, 'Undoing...');
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
+				self.setButtonLoading('.wooce-undo-btn', false);
 				if (xhr.status === 200) {
 					try {
 						var resp = JSON.parse(xhr.responseText);
@@ -335,6 +373,7 @@
 							self.draft = {};
 							self.clearAllLocalCss();
 							self.showToast('Undo successful', 'success');
+							// Reload the page to reflect the restored mappings.
 							location.reload();
 						} else {
 							self.showToast(resp.data.message || 'Nothing to undo', 'info');
@@ -374,6 +413,7 @@
 						var resp = JSON.parse(xhr.responseText);
 						if (resp.success) {
 							self.draft = {};
+							self.updateUnsavedIndicator();
 							self.showToast('✅ Changes saved permanently!', 'success');
 						} else {
 							self.showToast('Save failed: ' + (resp.data.message || 'Unknown error'), 'error');
@@ -392,11 +432,13 @@
 
 		generateShareLink: function () {
 			var self = this;
+			this.setButtonLoading('.wooce-share-btn', true, 'Generating...');
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
+				self.setButtonLoading('.wooce-share-btn', false);
 				if (xhr.status === 200) {
 					try {
 						var resp = JSON.parse(xhr.responseText);
@@ -420,6 +462,41 @@
 			};
 
 			var params = 'action=wooce_generate_share&nonce=' + encodeURIComponent(wooceData.nonce);
+			xhr.send(params);
+		},
+
+		resetDefaults: function () {
+			var self = this;
+			if (!window.confirm('Reset all elements to their default colors? This cannot be undone.')) {
+				return;
+			}
+
+			this.setButtonLoading('.wooce-reset-btn', true, 'Resetting...');
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.onload = function () {
+				self.setButtonLoading('.wooce-reset-btn', false);
+				if (xhr.status === 200) {
+					try {
+						var resp = JSON.parse(xhr.responseText);
+						if (resp.success) {
+							self.draft = {};
+							self.showToast('All elements reset to defaults', 'success');
+							location.reload();
+						} else {
+							self.showToast(resp.data.message || 'Reset failed', 'error');
+						}
+					} catch (e) {
+						self.showToast('Reset failed', 'error');
+					}
+				} else {
+					self.showToast('Connection error', 'error');
+				}
+			};
+
+			var params = 'action=wooce_reset_defaults&nonce=' + encodeURIComponent(wooceData.nonce);
 			xhr.send(params);
 		},
 
@@ -450,6 +527,7 @@
 			document.getElementById('wooce-editor-card').style.display = 'none';
 			document.querySelector('.wooce-toolbar-idle-state').style.display = 'flex';
 			document.querySelector('.wooce-toolbar-active-state').style.display = 'none';
+			this.removeHighlight();
 			this.currentTarget = null;
 			this.currentWidget = null;
 			this.currentSlotId = null;
@@ -682,6 +760,26 @@
 			} else {
 				badge.textContent = '';
 			}
+		},
+
+		setButtonLoading: function (selector, loading, loadingText) {
+			var btn = document.querySelector(selector);
+			if (!btn) return;
+			if (loading) {
+				btn.dataset.originalText = btn.textContent;
+				btn.textContent = loadingText || 'Working...';
+				btn.disabled = true;
+			} else {
+				btn.textContent = btn.dataset.originalText || btn.textContent;
+				btn.disabled = false;
+			}
+		},
+
+		updateUnsavedIndicator: function () {
+			var badge = document.querySelector('.wooce-unsaved-badge');
+			if (!badge) return;
+			var hasDraft = Object.keys(this.draft).length > 0;
+			badge.style.display = hasDraft ? 'inline' : 'none';
 		},
 
 		showToast: function (message, type) {

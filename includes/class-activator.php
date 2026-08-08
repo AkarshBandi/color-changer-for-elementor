@@ -20,7 +20,6 @@ class Activator {
 		add_option(
 			'wooce_dequeue_settings',
 			array(
-				'dequeue_core'   => 'yes',
 				'dequeue_blocks' => 'yes',
 			)
 		);

@@ -16,6 +16,7 @@ class AJAX_Handlers {
 		add_action( 'wp_ajax_wooce_commit_live', array( $this, 'commit_live' ) );
 		add_action( 'wp_ajax_wooce_undo_action', array( $this, 'undo_action' ) );
 		add_action( 'wp_ajax_wooce_generate_share', array( $this, 'generate_share' ) );
+		add_action( 'wp_ajax_wooce_reset_defaults', array( $this, 'reset_defaults' ) );
 	}
 
 	private function verify_request() {
@@ -326,7 +327,10 @@ class AJAX_Handlers {
 				$color_token = array_search( strtolower( $hex ), array_map( 'strtolower', $kit_colors ), true );
 
 				if ( false === $color_token ) {
-					$color_token = 'text';
+					// Custom color not present in the kit: store the raw hex
+					// so the user's choice is preserved instead of being
+					// silently coerced to the "text" token.
+					$color_token = strtolower( $hex );
 				}
 
 				if ( isset( $saved['widgets'][ $widget_key ]['slots'][ $slot_id ] ) ) {
@@ -407,6 +411,27 @@ class AJAX_Handlers {
 				'nonce'     => $nonce,
 			)
 		);
+	}
+
+	public function reset_defaults() {
+		$this->verify_request();
+
+		$saved = get_option( 'wooce_colors_mappings', array() );
+
+		$widget_types = array_keys( isset( $saved['widgets'] ) ? $saved['widgets'] : array() );
+
+		$heuristic = new Heuristic_Engine();
+		$mappings  = $heuristic->apply_defaults( $widget_types );
+
+		$saved['widgets'] = $mappings;
+
+		update_option( 'wooce_colors_mappings', $saved );
+
+		delete_transient( 'wooce_live_draft' );
+
+		Cache_Manager::clear_all();
+
+		wp_send_json_success( array( 'message' => __( 'All elements reset to defaults.', 'woocommerce-elementor-colors' ) ) );
 	}
 
 	private function migrate_widget_keys( &$saved ) {

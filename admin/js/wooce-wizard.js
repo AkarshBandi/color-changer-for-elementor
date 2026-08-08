@@ -264,7 +264,6 @@
 				data: {
 					action: 'wooce_complete_onboarding',
 					nonce: wooceData ? wooceData.nonce : '',
-					dequeue_core: $('#wooce_dequeue_all').is(':checked') ? 'yes' : 'no',
 					dequeue_blocks: $('#wooce_dequeue_all').is(':checked') ? 'yes' : 'no'
 				},
 				complete: function () {
