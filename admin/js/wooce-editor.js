@@ -6,9 +6,9 @@
 		currentWidget: null,
 		currentSlotId: null,
 		draft: {},
-		auditMode: false,
 		initialized: false,
 		colorMap: {},
+		liveTimer: null,
 
 		init: function () {
 			if (typeof wooceData === 'undefined') {
@@ -19,7 +19,7 @@
 			this.injectWidgetAttributes();
 			this.bindEvents();
 			this.injectLiveStyle();
-			this.calcPerformance();
+			this.updateUnsavedIndicator();
 			this.initialized = true;
 		},
 
@@ -88,16 +88,8 @@
 				}
 			});
 
-			document.getElementById('wooce-audit-mode') && document.getElementById('wooce-audit-mode').addEventListener('change', function () {
-				self.toggleAuditMode(this.checked);
-			});
-
 			document.querySelector('.wooce-save-btn') && document.querySelector('.wooce-save-btn').addEventListener('click', function () {
 				self.saveAll();
-			});
-
-			document.querySelector('.wooce-share-btn') && document.querySelector('.wooce-share-btn').addEventListener('click', function () {
-				self.generateShareLink();
 			});
 
 			document.querySelector('.wooce-reset-btn') && document.querySelector('.wooce-reset-btn').addEventListener('click', function () {
@@ -108,14 +100,11 @@
 				window.location.href = wooceData.settingsUrl || '/wp-admin/admin.php?page=wooce-settings';
 			});
 
-			document.querySelector('.wooce-undo-btn') && document.querySelector('.wooce-undo-btn').addEventListener('click', function () {
-				self.undo();
-			});
-
 			document.querySelector('.wooce-card-picker') && document.querySelector('.wooce-card-picker').addEventListener('input', function () {
 				var hex = this.value;
 				document.querySelector('.wooce-card-hex-input').value = hex;
 				self.updateContrast(hex);
+				self.applyColor(hex);
 			});
 
 			document.querySelector('.wooce-card-hex-input') && document.querySelector('.wooce-card-hex-input').addEventListener('input', function () {
@@ -123,12 +112,8 @@
 				if (/^#[0-9a-f]{6}$/i.test(hex)) {
 					document.querySelector('.wooce-card-picker').value = hex;
 					self.updateContrast(hex);
+					self.applyColor(hex);
 				}
-			});
-
-			document.querySelector('.wooce-apply-btn') && document.querySelector('.wooce-apply-btn').addEventListener('click', function () {
-				var hex = document.querySelector('.wooce-card-picker').value;
-				self.pickColor(hex);
 			});
 
 			document.querySelector('.wooce-revert-btn') && document.querySelector('.wooce-revert-btn').addEventListener('click', function () {
@@ -137,13 +122,6 @@
 
 			document.querySelector('.wooce-card-close') && document.querySelector('.wooce-card-close').addEventListener('click', function () {
 				self.dismissCard();
-			});
-
-			document.addEventListener('keydown', function (e) {
-				if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-					e.preventDefault();
-					self.undo();
-				}
 			});
 		},
 
@@ -156,29 +134,27 @@
 
 			this.highlightElement(target);
 
-			document.querySelector('.wooce-active-element-name').textContent = widgetData.label;
-
-			var activeStateEl = document.querySelector('.wooce-state-tabs');
-			activeStateEl.innerHTML = '';
+			var tabsEl = document.querySelector('.wooce-card-tabs');
+			tabsEl.innerHTML = '';
 
 			var firstSlot = null;
 
 			widgetData.slots.forEach(function (slot, idx) {
 				var tab = document.createElement('button');
 				tab.type = 'button';
-				tab.className = 'wooce-state-tab' + (idx === 0 ? ' active' : '');
+				tab.className = 'wooce-card-tab' + (idx === 0 ? ' active' : '');
 				tab.textContent = slot.label;
 				tab.dataset.slotId = slot.slot_id;
 
 				tab.addEventListener('click', function () {
-					activeStateEl.querySelectorAll('.wooce-state-tab').forEach(function (t) {
+					tabsEl.querySelectorAll('.wooce-card-tab').forEach(function (t) {
 						t.classList.remove('active');
 					});
 					this.classList.add('active');
 					self.switchSlot(slot.slot_id);
 				});
 
-				activeStateEl.appendChild(tab);
+				tabsEl.appendChild(tab);
 
 				if (idx === 0) {
 					firstSlot = slot.slot_id;
@@ -186,14 +162,13 @@
 			});
 
 			this.currentSlotId = firstSlot;
+
+			document.querySelector('.wooce-card-element-name').textContent = widgetData.label;
 			this.showCard(target);
 
 			if (firstSlot) {
 				this.loadCurrentColor(firstSlot);
 			}
-
-			document.querySelector('.wooce-toolbar-idle-state').style.display = 'none';
-			document.querySelector('.wooce-toolbar-active-state').style.display = 'flex';
 		},
 
 		switchSlot: function (slotId) {
@@ -278,7 +253,7 @@
 			this.updateContrast(hex);
 		},
 
-		pickColor: function (hex) {
+		applyColor: function (hex) {
 			if (!this.currentWidget || !this.currentSlotId) return;
 
 			var self = this;
@@ -288,22 +263,58 @@
 			}
 
 			this.draft[this.currentWidget].slots[this.currentSlotId] = { color: hex };
-
+			this.applyLocalCss(this.currentWidget, this.currentSlotId, hex);
 			this.updateUnsavedIndicator();
 
-			this.setButtonLoading('.wooce-apply-btn', true, 'Applying...');
+			if (this.liveTimer) {
+				clearTimeout(this.liveTimer);
+			}
+
+			this.liveTimer = setTimeout(function () {
+				var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(self.currentWidget) +
+					'&slot_id=' + encodeURIComponent(self.currentSlotId) +
+					'&hex=' + encodeURIComponent(hex) +
+					'&nonce=' + encodeURIComponent(wooceData.nonce);
+
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', wooceData.ajaxUrl, true);
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				xhr.onload = function () {
+					if (xhr.status === 200) {
+						try {
+							var resp = JSON.parse(xhr.responseText);
+							if (resp.success && resp.data.css) {
+								self.applyCss(resp.data.css);
+							}
+						} catch (e) {}
+					}
+				};
+				xhr.send(params);
+			}, 150);
+		},
+
+		revertColor: function () {
+			if (!this.currentWidget || !this.currentSlotId) return;
+
+			var self = this;
+
+			if (this.draft[this.currentWidget] && this.draft[this.currentWidget].slots[this.currentSlotId]) {
+				delete this.draft[this.currentWidget].slots[this.currentSlotId];
+			}
+
+			this.rebuildLocalCss();
+			this.updateUnsavedIndicator();
 
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
-				self.setButtonLoading('.wooce-apply-btn', false);
 				if (xhr.status === 200) {
 					try {
 						var resp = JSON.parse(xhr.responseText);
-						if (resp.success && resp.data.css) {
-							self.applyCss(resp.data.css);
-							self.showToast('Color applied', 'success');
+						if (resp.success) {
+							self.loadCurrentColor(self.currentSlotId);
+							self.showToast('Reset to default', 'info');
 						}
 					} catch (e) {}
 				}
@@ -311,82 +322,8 @@
 
 			var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(this.currentWidget) +
 				'&slot_id=' + encodeURIComponent(this.currentSlotId) +
-				'&hex=' + encodeURIComponent(hex) +
-				'&nonce=' + encodeURIComponent(wooceData.nonce);
-
-			xhr.send(params);
-
-			this.applyLocalCss(this.currentWidget, this.currentSlotId, hex);
-		},
-
-		revertColor: function () {
-			if (!this.currentWidget || !this.currentSlotId) return;
-
-			var self = this;
-			this.setButtonLoading('.wooce-revert-btn', true, 'Reverting...');
-
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
-			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			xhr.onload = function () {
-				self.setButtonLoading('.wooce-revert-btn', false);
-				if (xhr.status === 200) {
-					try {
-						var resp = JSON.parse(xhr.responseText);
-						if (resp.success) {
-							if (self.draft[self.currentWidget] && self.draft[self.currentWidget].slots[self.currentSlotId]) {
-								delete self.draft[self.currentWidget].slots[self.currentSlotId];
-							}
-							self.rebuildLocalCss();
-							self.showToast('Reverted to default', 'info');
-						} else {
-							self.showToast('Revert failed', 'error');
-						}
-					} catch (e) {
-						self.showToast('Revert failed', 'error');
-					}
-				} else {
-					self.showToast('Connection error', 'error');
-				}
-			};
-
-			var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(this.currentWidget) +
-				'&slot_id=' + encodeURIComponent(this.currentSlotId) +
 				'&remove=1&nonce=' + encodeURIComponent(wooceData.nonce);
 
-			xhr.send(params);
-		},
-
-		undo: function () {
-			var self = this;
-			this.setButtonLoading('.wooce-undo-btn', true, 'Undoing...');
-
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
-			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			xhr.onload = function () {
-				self.setButtonLoading('.wooce-undo-btn', false);
-				if (xhr.status === 200) {
-					try {
-						var resp = JSON.parse(xhr.responseText);
-						if (resp.success) {
-							self.draft = {};
-							self.clearAllLocalCss();
-							self.showToast('Undo successful', 'success');
-							// Reload the page to reflect the restored mappings.
-							location.reload();
-						} else {
-							self.showToast(resp.data.message || 'Nothing to undo', 'info');
-						}
-					} catch (e) {
-						self.showToast('Undo failed', 'error');
-					}
-				} else {
-					self.showToast('Connection error', 'error');
-				}
-			};
-
-			var params = 'action=wooce_undo_action&nonce=' + encodeURIComponent(wooceData.nonce);
 			xhr.send(params);
 		},
 
@@ -405,7 +342,6 @@
 			xhr.onload = function () {
 				if (btn) {
 					btn.textContent = '💾 Save Changes';
-					btn.disabled = false;
 				}
 
 				if (xhr.status === 200) {
@@ -413,15 +349,19 @@
 						var resp = JSON.parse(xhr.responseText);
 						if (resp.success) {
 							self.draft = {};
+							self.clearAllLocalCss();
 							self.updateUnsavedIndicator();
 							self.showToast('✅ Changes saved permanently!', 'success');
 						} else {
-							self.showToast('Save failed: ' + (resp.data.message || 'Unknown error'), 'error');
+							btn && (btn.disabled = false);
+							self.showToast(resp.data.message || 'Nothing to save yet — pick a color first.', 'info');
 						}
 					} catch (e) {
+						btn && (btn.disabled = false);
 						self.showToast('Save failed', 'error');
 					}
 				} else {
+					btn && (btn.disabled = false);
 					self.showToast('Connection error', 'error');
 				}
 			};
@@ -430,59 +370,22 @@
 			xhr.send(params);
 		},
 
-		generateShareLink: function () {
-			var self = this;
-			this.setButtonLoading('.wooce-share-btn', true, 'Generating...');
-
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
-			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			xhr.onload = function () {
-				self.setButtonLoading('.wooce-share-btn', false);
-				if (xhr.status === 200) {
-					try {
-						var resp = JSON.parse(xhr.responseText);
-						if (resp.success && resp.data.share_url) {
-							if (navigator.clipboard && navigator.clipboard.writeText) {
-								navigator.clipboard.writeText(resp.data.share_url).then(function () {
-									self.showToast('📋 Share link copied to clipboard!', 'success');
-								}).catch(function () {
-									self.showToast('Share URL: ' + resp.data.share_url, 'info');
-								});
-							} else {
-								self.showToast('Share URL: ' + resp.data.share_url, 'info');
-							}
-						} else {
-							self.showToast('Failed to generate share link', 'error');
-						}
-					} catch (e) {
-						self.showToast('Failed to generate share link', 'error');
-					}
-				}
-			};
-
-			var params = 'action=wooce_generate_share&nonce=' + encodeURIComponent(wooceData.nonce);
-			xhr.send(params);
-		},
-
 		resetDefaults: function () {
 			var self = this;
-			if (!window.confirm('Reset all elements to their default colors? This cannot be undone.')) {
+			if (!window.confirm('Reset every element on this site back to its default color? This cannot be undone.')) {
 				return;
 			}
 
-			this.setButtonLoading('.wooce-reset-btn', true, 'Resetting...');
-
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
-				self.setButtonLoading('.wooce-reset-btn', false);
 				if (xhr.status === 200) {
 					try {
 						var resp = JSON.parse(xhr.responseText);
 						if (resp.success) {
 							self.draft = {};
+							self.updateUnsavedIndicator();
 							self.showToast('All elements reset to defaults', 'success');
 							location.reload();
 						} else {
@@ -525,64 +428,10 @@
 
 		dismissCard: function () {
 			document.getElementById('wooce-editor-card').style.display = 'none';
-			document.querySelector('.wooce-toolbar-idle-state').style.display = 'flex';
-			document.querySelector('.wooce-toolbar-active-state').style.display = 'none';
 			this.removeHighlight();
 			this.currentTarget = null;
 			this.currentWidget = null;
 			this.currentSlotId = null;
-		},
-
-		toggleAuditMode: function (enabled) {
-			this.auditMode = enabled;
-
-			var allElements = document.querySelectorAll('[data-wooce-widget]');
-			var existingOutlines = document.querySelectorAll('.wooce-audit-outline');
-
-			if (!enabled) {
-				existingOutlines.forEach(function (el) { el.remove(); });
-				return;
-			}
-
-			existingOutlines.forEach(function (el) { el.remove(); });
-
-			var seen = new Set();
-			var selectors = wooceData.registrySelectors;
-			if (selectors) {
-				for (var wk in selectors) {
-					if (!selectors.hasOwnProperty(wk)) continue;
-					selectors[wk].forEach(function (sel) {
-						try {
-							document.querySelectorAll(sel).forEach(function (el) { seen.add(el); });
-						} catch (e) {}
-					});
-				}
-			}
-			var totalElements = seen.size;
-			var covered = 0;
-
-			allElements.forEach(function (el) {
-				var outline = document.createElement('div');
-				outline.className = 'wooce-audit-outline';
-				var rect = el.getBoundingClientRect();
-				var scrollY = window.scrollY || window.pageYOffset;
-				var scrollX = window.scrollX || window.pageXOffset;
-
-				outline.style.cssText = 'position:absolute;pointer-events:none;z-index:99998;border:2px solid #00c853;border-radius:2px;top:' + (rect.top + scrollY) + 'px;left:' + (rect.left + scrollX) + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;';
-				document.body.appendChild(outline);
-				covered++;
-			});
-
-			var toolbar = document.querySelector('.wooce-toolbar-inner');
-			if (toolbar) {
-				var existing = toolbar.querySelector('.wooce-audit-counter');
-				if (existing) existing.remove();
-
-				var counter = document.createElement('span');
-				counter.className = 'wooce-audit-counter';
-				counter.textContent = 'Coverage: ' + covered + '/' + totalElements;
-				toolbar.querySelector('.wooce-toolbar-idle-state').appendChild(counter);
-			}
 		},
 
 		applyCss: function (css) {
@@ -666,13 +515,13 @@
 
 			if (badge) {
 				if (ratio >= 4.5) {
-					badge.innerHTML = '✅ WCAG AA Pass (' + ratio.toFixed(1) + ':1)';
+					badge.textContent = '✅ Readable on this background (' + ratio.toFixed(1) + ':1)';
 					badge.style.color = '#46b450';
 				} else if (ratio >= 3) {
-					badge.innerHTML = '⚠️ ' + ratio.toFixed(1) + ':1 — needs improvement';
+					badge.textContent = '⚠️ Barely readable (' + ratio.toFixed(1) + ':1)';
 					badge.style.color = '#f0ad4e';
 				} else {
-					badge.innerHTML = '❌ ' + ratio.toFixed(1) + ':1 — low readability';
+					badge.textContent = '❌ Hard to read (' + ratio.toFixed(1) + ':1)';
 					badge.style.color = '#b32d2e';
 				}
 			}
@@ -729,39 +578,6 @@
 			return '#ffffff';
 		},
 
-		calcPerformance: function () {
-			var badge = document.querySelector('.wooce-performance-badge');
-			if (!badge) return;
-
-			if (!wooceData.dequeueEnabled) {
-				badge.textContent = '⚡ Enable CSS dequeue to reduce page weight';
-				return;
-			}
-
-			var wcSize = wooceData.wcCssSize || 0;
-			var generatedSize = 0;
-
-			var style = document.getElementById('wooce-dynamic-css');
-			if (style) {
-				generatedSize += style.textContent.length;
-			}
-
-			var liveStyle = document.getElementById('wooce-live-style');
-			if (liveStyle) {
-				generatedSize += liveStyle.textContent.length;
-			}
-
-			var saved = Math.max(0, wcSize - generatedSize);
-
-			if (saved > 1024) {
-				badge.textContent = '⚡ Saved ' + (saved / 1024).toFixed(1) + ' KB of CSS';
-			} else if (saved > 0) {
-				badge.textContent = '⚡ Saved ' + saved + ' B of CSS';
-			} else {
-				badge.textContent = '';
-			}
-		},
-
 		setButtonLoading: function (selector, loading, loadingText) {
 			var btn = document.querySelector(selector);
 			if (!btn) return;
@@ -777,9 +593,16 @@
 
 		updateUnsavedIndicator: function () {
 			var badge = document.querySelector('.wooce-unsaved-badge');
-			if (!badge) return;
-			var hasDraft = Object.keys(this.draft).length > 0;
-			badge.style.display = hasDraft ? 'inline' : 'none';
+			if (badge) {
+				var hasDraft = Object.keys(this.draft).length > 0;
+				badge.style.display = hasDraft ? 'inline' : 'none';
+			}
+
+			var saveBtn = document.querySelector('.wooce-save-btn');
+			if (saveBtn) {
+				var hasDrafts = Object.keys(this.draft).length > 0;
+				saveBtn.disabled = !hasDrafts;
+			}
 		},
 
 		showToast: function (message, type) {
