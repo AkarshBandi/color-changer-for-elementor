@@ -78,7 +78,7 @@
 						return;
 					}
 					e.preventDefault();
-					e.stopPropagation();
+					e.stopImmediatePropagation();
 					self.handleElementClick(target, widgetKey);
 					return;
 				}
@@ -86,7 +86,7 @@
 				if (!target.closest('#wooce-editor-toolbar') && !target.closest('#wooce-editor-card')) {
 					self.dismissCard();
 				}
-			});
+			}, true);
 
 			document.querySelector('.wooce-save-btn') && document.querySelector('.wooce-save-btn').addEventListener('click', function () {
 				self.saveAll();
@@ -104,6 +104,7 @@
 				var hex = this.value;
 				document.querySelector('.wooce-card-hex-input').value = hex;
 				self.updateContrast(hex);
+				self.setActiveSwatch(hex);
 				self.applyColor(hex);
 			});
 
@@ -112,6 +113,7 @@
 				if (/^#[0-9a-f]{6}$/i.test(hex)) {
 					document.querySelector('.wooce-card-picker').value = hex;
 					self.updateContrast(hex);
+					self.setActiveSwatch(hex);
 					self.applyColor(hex);
 				}
 			});
@@ -126,6 +128,7 @@
 		},
 
 		handleElementClick: function (target, widgetKey) {
+			var self = this;
 			this.currentTarget = target;
 			this.currentWidget = widgetKey;
 
@@ -136,6 +139,7 @@
 
 			var tabsEl = document.querySelector('.wooce-card-tabs');
 			tabsEl.innerHTML = '';
+			this.renderPalette();
 
 			var firstSlot = null;
 
@@ -171,13 +175,58 @@
 			}
 		},
 
+		renderPalette: function () {
+			var self = this;
+			var palette = document.querySelector('.wooce-card-palette');
+			if (!palette) return;
+			palette.innerHTML = '';
+
+			var colors = wooceData.kitColors || [];
+			var currentHex = (document.querySelector('.wooce-card-picker') || {}).value || '';
+
+			if (!colors.length) {
+				palette.style.display = 'none';
+				return;
+			}
+
+			palette.style.display = 'block';
+
+			colors.forEach(function (c) {
+				var swatch = document.createElement('button');
+				swatch.type = 'button';
+				swatch.className = 'wooce-card-swatch';
+				swatch.title = (c.label || c.id) + ' · ' + c.hex;
+				swatch.dataset.hex = c.hex;
+				swatch.dataset.label = c.label || c.id;
+				swatch.style.background = c.hex;
+
+				if (c.hex.toLowerCase() === currentHex.toLowerCase()) {
+					swatch.classList.add('active');
+				}
+
+				swatch.addEventListener('click', function () {
+					var hex = this.dataset.hex;
+					document.querySelector('.wooce-card-picker').value = hex;
+					document.querySelector('.wooce-card-hex-input').value = hex;
+					palette.querySelectorAll('.wooce-card-swatch').forEach(function (s) {
+						s.classList.remove('active');
+					});
+					this.classList.add('active');
+					self.updateContrast(hex);
+					self.applyColor(hex);
+				});
+
+				palette.appendChild(swatch);
+			});
+		},
+
 		switchSlot: function (slotId) {
 			this.currentSlotId = slotId;
 			this.loadCurrentColor(slotId);
 		},
 
 		highlightElement: function (target) {
-			this.clearHighlight();
+			this.removeHighlight();
 			if (!target) return;
 
 			var ring = document.createElement('div');
@@ -251,6 +300,17 @@
 			document.querySelector('.wooce-card-picker').value = hex;
 			document.querySelector('.wooce-card-hex-input').value = hex;
 			this.updateContrast(hex);
+			this.setActiveSwatch(hex);
+		},
+
+		setActiveSwatch: function (hex) {
+			var palette = document.querySelector('.wooce-card-palette');
+			if (!palette) return;
+
+			palette.querySelectorAll('.wooce-card-swatch').forEach(function (s) {
+				var isMatch = s.dataset.hex && s.dataset.hex.toLowerCase() === hex.toLowerCase();
+				s.classList.toggle('active', isMatch);
+			});
 		},
 
 		applyColor: function (hex) {

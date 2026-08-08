@@ -215,6 +215,34 @@ body.admin-bar #wooce-editor-toolbar {
 	margin-bottom: 8px;
 }
 
+.wooce-card-palette {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 10px;
+}
+
+.wooce-card-swatch {
+	width: 30px;
+	height: 30px;
+	border-radius: 4px;
+	border: 2px solid #fff;
+	box-shadow: 0 0 0 1px #dcdcde;
+	cursor: pointer;
+	padding: 0;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wooce-card-swatch:hover {
+	transform: scale(1.1);
+	box-shadow: 0 0 0 2px #2271b1;
+}
+
+.wooce-card-swatch.active {
+	box-shadow: 0 0 0 2px #2271b1;
+	outline: 2px solid #fff;
+}
+
 .wooce-card-picker {
 	width: 44px;
 	height: 44px;

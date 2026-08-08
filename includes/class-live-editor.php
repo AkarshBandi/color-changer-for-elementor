@@ -122,6 +122,7 @@ class Live_Editor {
 			</div>
 			<div class="wooce-card-body">
 				<div class="wooce-card-tabs"></div>
+				<div class="wooce-card-palette"></div>
 				<div class="wooce-card-color-row">
 					<input type="color" class="wooce-card-picker" value="#000000">
 					<input type="text" class="wooce-card-hex-input" value="#000000">
