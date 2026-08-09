@@ -22,7 +22,15 @@
 			this.renderCoverageBadge();
 			this.restoreLiveDraft();
 			this.updateUnsavedIndicator();
+			this.syncToolbarHeight();
 			this.initialized = true;
+		},
+
+		syncToolbarHeight: function () {
+			var toolbar = document.querySelector('#wooce-editor-toolbar');
+			var panel = document.querySelector('#wooce-editor-panel');
+			if (!toolbar || !panel) return;
+			panel.style.setProperty('--wooce-toolbar-height', toolbar.offsetHeight + 'px');
 		},
 
 		renderCoverageBadge: function () {
@@ -193,6 +201,24 @@
 			document.querySelector('.wooce-panel-close') && document.querySelector('.wooce-panel-close').addEventListener('click', function () {
 				self.dismissPanel();
 			});
+
+			var resizeTimer = null;
+			window.addEventListener('resize', function () {
+				clearTimeout(resizeTimer);
+				resizeTimer = setTimeout(function () {
+					self.syncToolbarHeight();
+				}, 150);
+			});
+
+			window.addEventListener('load', function () {
+				self.syncToolbarHeight();
+			});
+
+			if (document.fonts && document.fonts.ready) {
+				document.fonts.ready.then(function () {
+					self.syncToolbarHeight();
+				});
+			}
 		},
 
 		handleElementClick: function (target, widgetKey) {
@@ -700,6 +726,7 @@
 			var panel = document.getElementById('wooce-editor-panel');
 			if (!panel) return;
 
+			this.syncToolbarHeight();
 			panel.classList.add('wooce-open');
 			panel.setAttribute('aria-hidden', 'false');
 		},
