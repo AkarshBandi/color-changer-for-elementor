@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 <?php endif; ?>
 
 <div class="wooce-notice wooce-notice-promo">
-	<span><?php echo esc_html__( '🎨 Try the new Live Editor — click any WooCommerce element on your site to customize colors instantly.', 'woocommerce-elementor-colors' ); ?></span>
+	<span><?php echo esc_html__( 'Try the new Live Editor — click any WooCommerce element on your site to customize colors instantly.', 'woocommerce-elementor-colors' ); ?></span>
 	<a href="<?php echo esc_url( $live_editor_url ); ?>" class="button button-primary wooce-promo-cta">
 		<?php echo esc_html__( 'Open Live Editor', 'woocommerce-elementor-colors' ); ?>
 	</a>

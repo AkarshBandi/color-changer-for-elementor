@@ -36,7 +36,7 @@
 			}
 
 			var pct = Math.round((coverage.configured / coverage.total) * 100);
-			badge.textContent = '🛡 ' + coverage.configured + '/' + coverage.total + ' styled (' + pct + '%)';
+			badge.textContent = coverage.configured + '/' + coverage.total + ' styled (' + pct + '%)';
 			badge.style.display = 'inline';
 
 			if (pct >= 80) {
@@ -496,7 +496,7 @@
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				if (btn) {
-					btn.textContent = '💾 Save Changes';
+					btn.textContent = 'Save Changes';
 				}
 
 				if (xhr.status === 200) {
@@ -506,7 +506,7 @@
 							self.draft = {};
 							self.clearAllLocalCss();
 							self.updateUnsavedIndicator();
-							self.showToast('✅ Changes saved permanently!', 'success');
+							self.showToast('Changes saved permanently!', 'success');
 						} else {
 							btn && (btn.disabled = false);
 							self.showToast(resp.data.message || 'Nothing to save yet — pick a color first.', 'info');
@@ -577,7 +577,7 @@
 			xhr.open('POST', wooceData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
-				btn && (btn.textContent = '🔗 Share');
+				btn && (btn.textContent = 'Share');
 				btn && (btn.disabled = false);
 
 				if (xhr.status === 200) {
@@ -612,7 +612,7 @@
 			box.style.cssText = 'background:#fff;border-radius:8px;padding:24px;max-width:520px;width:90%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,0.25);';
 
 			var title = document.createElement('h3');
-			title.textContent = '🔗 Share Preview Link';
+			title.textContent = 'Share Preview Link';
 			title.style.cssText = 'margin:0 0 8px;font-size:16px;color:#1d2327;';
 
 			var desc = document.createElement('p');
@@ -630,7 +630,7 @@
 
 			var copyBtn = document.createElement('button');
 			copyBtn.type = 'button';
-			copyBtn.textContent = '📋 Copy Link';
+			copyBtn.textContent = 'Copy Link';
 			copyBtn.className = 'button button-primary';
 			copyBtn.addEventListener('click', function () {
 				input.select();
@@ -679,7 +679,7 @@
 							self.draft = {};
 							self.clearAllLocalCss();
 							self.updateUnsavedIndicator();
-							self.showToast('↩ Previous save restored', 'success');
+							self.showToast('Previous save restored', 'success');
 							location.reload();
 						} else {
 							self.showToast(resp.data.message || 'Nothing to undo.', 'info');
@@ -829,13 +829,13 @@
 
 			if (badge) {
 				if (ratio >= 4.5) {
-					badge.textContent = '✅ Readable on this background (' + ratio.toFixed(1) + ':1)';
+					badge.textContent = 'Readable on this background (' + ratio.toFixed(1) + ':1)';
 					badge.style.color = '#46b450';
 				} else if (ratio >= 3) {
-					badge.textContent = '⚠️ Barely readable (' + ratio.toFixed(1) + ':1)';
+					badge.textContent = 'Barely readable (' + ratio.toFixed(1) + ':1)';
 					badge.style.color = '#f0ad4e';
 				} else {
-					badge.textContent = '❌ Hard to read (' + ratio.toFixed(1) + ':1)';
+					badge.textContent = 'Hard to read (' + ratio.toFixed(1) + ':1)';
 					badge.style.color = '#b32d2e';
 				}
 			}

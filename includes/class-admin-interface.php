@@ -19,7 +19,7 @@ class Admin_Interface {
 		add_submenu_page(
 			'woocommerce',
 			__( 'Advanced Settings', 'woocommerce-elementor-colors' ),
-			__( '⚙️ Advanced Settings', 'woocommerce-elementor-colors' ),
+			__( 'Advanced Settings', 'woocommerce-elementor-colors' ),
 			'manage_options',
 			'wooce-settings',
 			array( $this, 'render_settings_page' )

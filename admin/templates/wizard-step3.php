@@ -33,7 +33,7 @@
 					</div>
 				</div>
 				<div class="wooce-diagram-overlay core">
-					<div class="wooce-diagram-warning"><?php echo esc_html__( '✓ Layout stays intact — grid and button sizing are preserved.', 'woocommerce-elementor-colors' ); ?></div>
+					<div class="wooce-diagram-warning"><?php echo esc_html__( 'Layout stays intact — grid and button sizing are preserved.', 'woocommerce-elementor-colors' ); ?></div>
 				</div>
 			</div>
 		</div>

@@ -5,6 +5,28 @@
 	margin: 20px 0;
 }
 
+.wooce-card-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 24px;
+	align-items: stretch;
+}
+
+.wooce-card-grid > .wooce-card {
+	margin-bottom: 0;
+}
+
+.wooce-card-grid-wide {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 24px;
+}
+
+.wooce-card-grid-wide > .wooce-card {
+	margin-bottom: 0;
+}
+
 .wooce-header {
 	display: flex;
 	align-items: center;
@@ -24,20 +46,45 @@
 }
 
 .wooce-status-bar {
-	display: flex;
-	gap: 24px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0;
 	margin-bottom: 24px;
-	padding: 16px 20px;
+	padding: 0;
 	background: #fff;
 	border: 1px solid #dcdcde;
 	border-radius: 4px;
+	overflow: hidden;
 }
 
 .wooce-status-item {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 8px;
+	padding: 16px 20px;
 	font-size: 13px;
+	text-align: center;
+	border-right: 1px solid #dcdcde;
+}
+
+.wooce-status-item:last-child {
+	border-right: none;
+}
+
+@media (max-width: 782px) {
+	.wooce-status-bar {
+		grid-template-columns: 1fr;
+	}
+
+	.wooce-status-item {
+		border-right: none;
+		border-bottom: 1px solid #dcdcde;
+	}
+
+	.wooce-status-item:last-child {
+		border-bottom: none;
+	}
 }
 
 .wooce-notice {

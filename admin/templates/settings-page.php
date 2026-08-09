@@ -31,14 +31,23 @@ $mapping_count   = count( $mappings );
 		<input type="hidden" name="action" value="wooce_save_settings">
 		<?php wp_nonce_field( 'wooce_save_settings', 'wooce_save_nonce' ); ?>
 
-		<?php require WOOEC_PATH . 'admin/templates/components/dequeue-card.php'; ?>
-
 		<?php if ( ! empty( $mappings ) ) : ?>
-			<?php include WOOEC_PATH . 'admin/templates/components/elements-card.php'; ?>
-			<?php include WOOEC_PATH . 'admin/templates/components/gallery-card.php'; ?>
+			<div class="wooce-card-grid">
+				<div class="wooce-card-grid-wide">
+					<?php include WOOEC_PATH . 'admin/templates/components/elements-card.php'; ?>
+				</div>
+
+				<?php require WOOEC_PATH . 'admin/templates/components/dequeue-card.php'; ?>
+
+				<?php include WOOEC_PATH . 'admin/templates/components/gallery-card.php'; ?>
+			</div>
 		<?php else : ?>
-			<div class="wooce-notice wooce-notice-info">
-				<?php echo esc_html__( 'No WooCommerce Elementor widgets found. Add WooCommerce widgets to your Elementor pages and click Rescan.', 'woocommerce-elementor-colors' ); ?>
+			<div class="wooce-card-grid">
+				<?php require WOOEC_PATH . 'admin/templates/components/dequeue-card.php'; ?>
+
+				<div class="wooce-notice wooce-notice-info">
+					<?php echo esc_html__( 'No WooCommerce Elementor widgets found. Add WooCommerce widgets to your Elementor pages and click Rescan.', 'woocommerce-elementor-colors' ); ?>
+				</div>
 			</div>
 		<?php endif; ?>
 
