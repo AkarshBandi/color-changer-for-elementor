@@ -1,6 +1,6 @@
-=== WooCommerce Elementor Colors ===
+=== Color Changer for Elementor and WooCommerce ===
 Contributors: AkarshBandi
-Tags: woocommerce, elementor, css, design, colors, global colors, live editor, visual editor
+Tags: woocommerce, elementor, css, design, colors
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -15,7 +15,7 @@ Replaces WooCommerce default CSS with dynamic CSS that maps Elementor global col
 
 == Description ==
 
-WooCommerce Elementor Colors makes your store match your brand — automatically. It takes the colors you already set in Elementor (Primary, Secondary, Text, Accent) and applies them to every WooCommerce element, so your shop looks like the rest of your site.
+Color Changer for Elementor and WooCommerce makes your store match your brand — automatically. It takes the colors you already set in Elementor (Primary, Secondary, Text, Accent) and applies them to every WooCommerce element, so your shop looks like the rest of your site.
 
 * Add to Cart buttons (normal, hover, focus, disabled)
 * Product prices (regular and sale)
@@ -41,7 +41,7 @@ No coding, no design skills, and no extra setup. Your WooCommerce pages simply i
 * **WCAG Contrast Scoring** — Real-time contrast checks against accessibility standards.
 * **Share Preview Links** — Send a temporary preview link to clients before committing changes.
 * **Undo Support** — Ctrl+Z or click Undo to revert changes.
-* **Advanced Settings** — For fine-tuning, under WooCommerce > Advanced Settings.
+* **Elementor Colors** — For fine-tuning, under WooCommerce > Elementor Colors.
 
 == Installation ==
 
@@ -51,7 +51,7 @@ Getting started takes about a minute:
 2. **Install and activate the plugin** through the Plugins screen.
 3. **Follow the short setup wizard** that opens automatically. It scans your store, shows you a before/after preview, and turns off WooCommerce's default styling so your colors show through.
 
-That's it — your store is now styled with your brand colors. You can fine-tune anything later from WooCommerce > Advanced Settings, or click any element on your store to edit it live.
+That's it — your store is now styled with your brand colors. You can fine-tune anything later from WooCommerce > Elementor Colors, or click any element on your store to edit it live.
 
 == Frequently Asked Questions ==
 
@@ -73,7 +73,7 @@ On activation, the plugin scans your Elementor pages for WooCommerce widgets and
 
 = How do I use the Live Editor? =
 
-Click "Open Live Editor" from the Advanced Settings page or add `?wooce_editor=1` to any WooCommerce page URL while logged in as admin. Click any element to customize.
+Click "Open Live Editor" from the Elementor Colors page or add `?eccw_editor=1` to any WooCommerce page URL while logged in as admin. Click any element to customize.
 
 = Can I share a preview with my client? =
 
@@ -81,7 +81,7 @@ Yes. Use the "Share Preview" button in the Live Editor toolbar. It generates a t
 
 == Privacy Notices ==
 
-This plugin may collect an email address during the optional step of the Onboarding Wizard. The address is stored locally in your site's database (WordPress option `wooce_pro_optin_email`) and is only used to notify you about the plugin's Pro add-on. It is not sent to any third party and can be removed at any time by deleting the option or deactivating the plugin.
+This plugin may collect an email address during the optional step of the Onboarding Wizard. The address is stored locally in your site's database (WordPress option `eccw_pro_optin_email`) and is only used to notify you about the plugin's Pro add-on. It is not sent to any third party and can be removed at any time by deleting the option or deactivating the plugin.
 
 == Changelog ==
 
@@ -95,8 +95,8 @@ This plugin may collect an email address during the optional step of the Onboard
 * Added share preview links for client feedback
 * Added undo support (10-action history stack)
 * Added performance badge showing CSS savings
-* Renamed admin menu to "Advanced Settings"
-* New options: wooce_onboarding_completed, wooce_live_draft, wooce_history_*, wooce_share_*
+* Renamed admin menu to "Elementor Colors"
+* New options: eccw_onboarding_completed, eccw_live_draft, eccw_history_*, eccw_share_*
 * Simplified the setup wizard: the technical "CSS Dequeue" step is now a single, plain-language toggle that turns off WooCommerce's default styling.
 * Added a friendly notice in the wizard when Elementor global colors aren't set yet, with a link to set them.
 * Rewrote the readme to lead with a plain-language, 3-step setup for non-technical users.

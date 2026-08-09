@@ -1,19 +1,19 @@
-/* Advanced Settings - Gallery card. */
+/* Elementor Colors - Gallery card. */
 
-.wooce-gallery {
+.eccw-gallery {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 	gap: 16px;
 }
 
-.wooce-gallery-item {
+.eccw-gallery-item {
 	background: #fff;
 	border: 1px solid #e0e0e0;
 	border-radius: 4px;
 	padding: 12px;
 }
 
-.wooce-gallery-item-header {
+.eccw-gallery-item-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -25,21 +25,21 @@
 	color: #2c3338;
 }
 
-.wooce-gallery-item-body > div {
+.eccw-gallery-item-body > div {
 	margin-bottom: 10px;
 }
 
-.wooce-gallery-item-body > div:last-child {
+.eccw-gallery-item-body > div:last-child {
 	margin-bottom: 0;
 }
 
-.wooce-gallery-preview-label {
+.eccw-gallery-preview-label {
 	font-size: 11px;
 	color: #646970;
 	margin-bottom: 4px;
 }
 
-.wooce-gallery-preview {
+.eccw-gallery-preview {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -54,7 +54,7 @@
 	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.wooce-gallery-preview.is-button {
+.eccw-gallery-preview.is-button {
 	min-height: 48px;
 	border: none;
 	border-radius: 6px;
@@ -62,7 +62,7 @@
 	color: #111111;
 }
 
-.wooce-gallery-preview.is-link {
+.eccw-gallery-preview.is-link {
 	padding: 0;
 	min-height: auto;
 	background: none;
@@ -70,20 +70,20 @@
 	text-decoration: underline;
 }
 
-.wooce-gallery-preview.is-badge {
+.eccw-gallery-preview.is-badge {
 	display: inline-flex;
 	padding: 4px 14px;
 	min-height: auto;
 	width: auto;
 }
 
-.wooce-gallery-preview.is-input,
-.wooce-gallery-preview.is-tab,
-.wooce-gallery-preview.is-notice {
+.eccw-gallery-preview.is-input,
+.eccw-gallery-preview.is-tab,
+.eccw-gallery-preview.is-notice {
 	border-radius: 4px;
 }
 
-.wooce-gallery-preview.is-nav {
+.eccw-gallery-preview.is-nav {
 	background: transparent;
 	border: none;
 }

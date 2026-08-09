@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,7 +19,7 @@ class Dequeue_Manager {
 	 * @return bool
 	 */
 	public static function should_dequeue() {
-		$saved    = get_option( 'wooce_colors_mappings', array() );
+		$saved    = get_option( 'eccw_colors_mappings', array() );
 		$mappings = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
 
 		return ! empty( $mappings );
@@ -34,7 +34,7 @@ class Dequeue_Manager {
 			return;
 		}
 
-		$settings = get_option( 'wooce_dequeue_settings', array() );
+		$settings = get_option( 'eccw_dequeue_settings', array() );
 
 		$dequeue_blocks = isset( $settings['dequeue_blocks'] ) ? $settings['dequeue_blocks'] : 'yes';
 

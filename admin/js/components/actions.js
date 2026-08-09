@@ -1,5 +1,5 @@
 /**
- * Advanced Settings - Actions component.
+ * Elementor Colors - Actions component.
  *
  * Handles the header action buttons: Rescan, Dismiss All New, and
  * Preview on Site.
@@ -9,7 +9,7 @@
 (function ($) {
 	'use strict';
 
-	if (typeof wooceData === 'undefined' || typeof window.WooceSettings === 'undefined') {
+	if (typeof eccwData === 'undefined' || typeof window.WooceSettings === 'undefined') {
 		return;
 	}
 
@@ -17,9 +17,9 @@
 
 	function request(data, done) {
 		$.ajax({
-			url: wooceData.ajaxUrl,
+			url: eccwData.ajaxUrl,
 			type: 'POST',
-			data: $.extend({ nonce: wooceData.nonce }, data),
+			data: $.extend({ nonce: eccwData.nonce }, data),
 			success: function (response) {
 				if (response.success) {
 					done(response.data);
@@ -35,11 +35,11 @@
 	}
 
 	function rescan() {
-		var button = $('[data-wooce-action="rescan"]');
+		var button = $('[data-eccw-action="rescan"]');
 
 		button.text('Scanning...').prop('disabled', true);
 
-		request({ action: 'wooce_rescan' }, function (data) {
+		request({ action: 'eccw_rescan' }, function (data) {
 			alert(data.message);
 
 			if (data.new_count > 0 && window.confirm('New elements found. Reload the page to see them?')) {
@@ -53,8 +53,8 @@
 	function dismissNew() {
 		var widgets = [];
 
-		$('.wooce-badge-new').each(function () {
-			var widgetKey = $(this).closest('tr').find('.wooce-color-select').first().data('widget-key');
+		$('.eccw-badge-new').each(function () {
+			var widgetKey = $(this).closest('tr').find('.eccw-color-select').first().data('widget-key');
 
 			if (widgetKey) {
 				widgets.push(widgetKey);
@@ -66,21 +66,21 @@
 			return;
 		}
 
-		request({ action: 'wooce_dismiss_new', widgets: widgets }, function () {
-			$('.wooce-badge-new').each(function () {
-				$(this).removeClass('wooce-badge-new').addClass('wooce-badge-default').text('default');
+		request({ action: 'eccw_dismiss_new', widgets: widgets }, function () {
+			$('.eccw-badge-new').each(function () {
+				$(this).removeClass('eccw-badge-new').addClass('eccw-badge-default').text('default');
 			});
 
-			var button = $('[data-wooce-action="dismiss-new"]');
+			var button = $('[data-eccw-action="dismiss-new"]');
 			button.prop('disabled', true);
 		});
 	}
 
 	function previewOnSite() {
-		var button = $('[data-wooce-action="preview-on-site"]');
+		var button = $('[data-eccw-action="preview-on-site"]');
 		var mappings = {};
 
-		$('.wooce-color-select').each(function () {
+		$('.eccw-color-select').each(function () {
 			var widgetKey = $(this).data('widget-key');
 			var state = $(this).data('state');
 
@@ -93,7 +93,7 @@
 
 		button.text('Opening preview...').prop('disabled', true);
 
-		request({ action: 'wooce_save_preview', mappings: mappings }, function (data) {
+		request({ action: 'eccw_save_preview', mappings: mappings }, function (data) {
 			window.open(data.preview_url, '_blank');
 		}).always(function () {
 			button.text('Preview on Site').prop('disabled', false);
@@ -101,17 +101,17 @@
 	}
 
 	function bindEvents() {
-		$(document).on('click', '[data-wooce-action="rescan"]', function (e) {
+		$(document).on('click', '[data-eccw-action="rescan"]', function (e) {
 			e.preventDefault();
 			rescan();
 		});
 
-		$(document).on('click', '[data-wooce-action="dismiss-new"]', function (e) {
+		$(document).on('click', '[data-eccw-action="dismiss-new"]', function (e) {
 			e.preventDefault();
 			dismissNew();
 		});
 
-		$(document).on('click', '[data-wooce-action="preview-on-site"]', function (e) {
+		$(document).on('click', '[data-eccw-action="preview-on-site"]', function (e) {
 			e.preventDefault();
 			previewOnSite();
 		});

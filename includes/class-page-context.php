@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 

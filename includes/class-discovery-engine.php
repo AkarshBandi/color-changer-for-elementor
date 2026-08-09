@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -8,7 +8,7 @@ class Discovery_Engine {
 
 	public function scan_all_pages() {
 		$post_types = apply_filters(
-			'wooce_scan_post_types',
+			'eccw_scan_post_types',
 			array( 'page', 'product' )
 		);
 
@@ -16,6 +16,8 @@ class Discovery_Engine {
 			array(
 				'post_type'      => $post_types,
 				'post_status'    => 'publish',
+				// Intentional: Elementor stores widget data in this meta key.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'       => '_elementor_data',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',

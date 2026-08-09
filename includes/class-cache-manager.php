@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,21 +21,24 @@ class Cache_Manager {
 	public static function clear_all() {
 		global $wpdb;
 
+		// Intentional: bulk-delete plugin transients; WP has no bulk API.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_wooce_css_' ) . '%',
-				$wpdb->esc_like( '_transient_timeout_wooce_css_' ) . '%'
+				$wpdb->esc_like( '_transient_eccw_css_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_eccw_css_' ) . '%'
 			)
 		);
 
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_wooce_share_' ) . '%',
-				$wpdb->esc_like( '_transient_timeout_wooce_share_' ) . '%'
+				$wpdb->esc_like( '_transient_eccw_share_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_eccw_share_' ) . '%'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -48,12 +51,15 @@ class Cache_Manager {
 	public static function clear_css() {
 		global $wpdb;
 
+		// Intentional: bulk-delete CSS transients on a cache clear.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_wooce_css_' ) . '%',
-				$wpdb->esc_like( '_transient_timeout_wooce_css_' ) . '%'
+				$wpdb->esc_like( '_transient_eccw_css_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_eccw_css_' ) . '%'
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
 	}
 }

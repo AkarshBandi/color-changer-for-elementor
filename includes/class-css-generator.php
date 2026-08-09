@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,7 +10,7 @@ class CSS_Generator {
 	private static $fallback_css = '';
 
 	public function maybe_generate_and_inject() {
-		if ( defined( 'WOOEC_DISABLE' ) && WOOEC_DISABLE ) {
+		if ( defined( 'ECCw_DISABLE' ) && ECCw_DISABLE ) {
 			return;
 		}
 
@@ -22,13 +22,13 @@ class CSS_Generator {
 		$preview   = Preview_System::is_preview_mode();
 
 		if ( $preview ) {
-			$mappings_raw = get_transient( 'wooce_preview_draft' );
+			$mappings_raw = get_transient( 'eccw_preview_draft' );
 
 			if ( empty( $mappings_raw ) ) {
 				return;
 			}
 		} else {
-			$saved        = get_option( 'wooce_colors_mappings', array() );
+			$saved        = get_option( 'eccw_colors_mappings', array() );
 			$mappings_raw = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
 		}
 
@@ -43,7 +43,7 @@ class CSS_Generator {
 		// serialize() here only feeds an md5 cache key; no serialized data is persisted.
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$kit_ver   = md5( serialize( $kit_colors ) );
-		$cache_key = 'wooce_css_' . md5( $page_type . $mappings_ver . $kit_ver );
+		$cache_key = 'eccw_css_' . md5( $page_type . $mappings_ver . $kit_ver );
 
 		if ( ! $preview ) {
 			$cached = Cache_Manager::get( $cache_key );
@@ -436,7 +436,7 @@ class CSS_Generator {
 
 		// CSS is generated internally from sanitized kit colors and mappings.
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo '<style id="wooce-dynamic-css">' . self::$fallback_css . '</style>';
+		echo '<style id="eccw-dynamic-css">' . self::$fallback_css . '</style>';
 
 		self::$fallback_css = '';
 	}

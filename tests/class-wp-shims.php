@@ -1,7 +1,10 @@
 <?php
 /**
  * Mutable state for WordPress function shims.
+ *
+ * Test-only helper; not a plugin global.
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 class WP_Shims {
 
 	public static $options      = array();

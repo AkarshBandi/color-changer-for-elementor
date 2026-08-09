@@ -22,15 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addon widget discovery: Essential Addons (`eael-woo-*`, `eicon-woocommerce`)
   and Premium Addons (`premium-woo-*`) widget types now auto-map to their
   matching WooCommerce registry elements on scan.
-- Filterable widget registry and addon map via `wooce_element_registry` and
-  `wooce_addon_widget_map` filters.
+- Filterable widget registry and addon map via `eccw_element_registry` and
+  `eccw_addon_widget_map` filters.
 - `Mapping_Service::ensure_defaults()` seeds every registry widget with
   heuristic defaults when mappings are empty or slots are missing. Wired
   into activation, cron rescan and the manual rescan AJAX handler so the
   option can never be empty and the frontend always receives replacement CSS.
 - `Dequeue_Manager::should_dequeue()` gates core/block stylesheet removal on
   the presence of element mappings, preventing unstyled storefronts.
-- Advanced Settings page refactored into components: PHP partials under
+- Elementor Colors page refactored into components: PHP partials under
   `admin/templates/components/`, vanilla JS modules under
   `admin/js/components/` (no build step) and per-component stylesheets under
   `admin/css/components/`.
@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   slot paints a background color, so labels stay readable.
 - Settings page shell (`settings-page.php`) now orchestrates component
   partials and exposes `defaults` / `newCount` to the frontend via
-  `wooceData`.
+  `eccwData`.
 - Dismiss All New button is disabled when there are no "new" widgets.
 - Dequeue toggles are disabled (with an explanatory notice) when no element
   mappings exist, mirroring the frontend gating.
@@ -60,13 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CSS_Generator::has_kit_colors()` added to distinguish a kit with real
   brand colors from the plugin's fallback palette.
 - readme.txt rewritten to lead with a plain-language 3-step setup.
-- Renamed admin menu to "Advanced Settings".
+- Renamed admin menu to "Elementor Colors".
 - Consolidated the six duplicated widget-key migration loops, the two
   `walk_elements()` copies and the mapping sanitizer into a single
   `Mapping_Service` class.
 - Plugin source now passes `WordPress-Extra` with zero errors and warnings.
 - One-time onboarding redirect no longer hijacks every admin page; a
-  dismissible admin notice takes over (see `wooce_wizard_dismissed`).
+  dismissible admin notice takes over (see `eccw_wizard_dismissed`).
 - Plugin header now declares `Requires Plugins: woocommerce, elementor`,
   `Tested up to: 7.0`, and aligns version with the readme stable tag (1.0.0).
 - Readme now includes a privacy notice for the optional Pro opt-in email.

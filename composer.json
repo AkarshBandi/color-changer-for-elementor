@@ -1,11 +1,11 @@
 {
-    "name": "akarshbandi/woocommerce-elementor-colors",
+    "name": "akarshbandi/color-changer-for-elementor",
     "description": "Replaces WooCommerce default CSS with dynamic CSS that maps Elementor global colors to WooCommerce elements.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "WooCommerce Elementor Colors Team"
+            "name": "Color Changer for Elementor and WooCommerce Team"
         }
     ],
     "require": {},

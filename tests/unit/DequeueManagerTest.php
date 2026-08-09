@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use WooElementorColors\Dequeue_Manager;
+use ElementorColorChanger\Dequeue_Manager;
 
 /**
  * Tests for Dequeue_Manager gating logic.
@@ -14,7 +14,7 @@ class DequeueManagerTest extends TestCase {
 	}
 
 	public function test_should_dequeue_false_when_no_mappings() {
-		WP_Shims::$options['wooce_colors_mappings'] = array(
+		WP_Shims::$options['eccw_colors_mappings'] = array(
 			'version' => 1,
 			'widgets' => array(),
 		);
@@ -27,7 +27,7 @@ class DequeueManagerTest extends TestCase {
 	}
 
 	public function test_should_dequeue_true_when_mappings_exist() {
-		WP_Shims::$options['wooce_colors_mappings'] = array(
+		WP_Shims::$options['eccw_colors_mappings'] = array(
 			'version' => 1,
 			'widgets' => array(
 				'wc-add-to-cart' => array(
@@ -41,7 +41,7 @@ class DequeueManagerTest extends TestCase {
 	}
 
 	private function seed_mappings() {
-		WP_Shims::$options['wooce_colors_mappings'] = array(
+		WP_Shims::$options['eccw_colors_mappings'] = array(
 			'version' => 1,
 			'widgets' => array(
 				'wc-add-to-cart' => array(
@@ -51,7 +51,7 @@ class DequeueManagerTest extends TestCase {
 			),
 		);
 
-		WP_Shims::$options['wooce_dequeue_settings'] = array(
+		WP_Shims::$options['eccw_dequeue_settings'] = array(
 			'dequeue_blocks' => 'yes',
 		);
 
@@ -87,7 +87,7 @@ class DequeueManagerTest extends TestCase {
 
 	public function test_blocks_key_dequeued_when_disabled() {
 		$manager                                     = $this->seed_mappings();
-		WP_Shims::$options['wooce_dequeue_settings'] = array(
+		WP_Shims::$options['eccw_dequeue_settings'] = array(
 			'dequeue_blocks' => 'no',
 		);
 

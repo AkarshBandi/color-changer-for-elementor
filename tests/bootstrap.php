@@ -5,18 +5,26 @@
  * Loads the plugin classes in isolation and provides minimal WordPress
  * function shims so the pure logic (registry, mapping, heuristics, page
  * context, CSS generation) can be tested without a WordPress install.
+ *
+ * This file intentionally defines ABSPATH itself (it is a test bootstrap,
+ * not a WordPress-loaded file), so the direct-access guard is not applicable.
  */
 
-define( 'ABSPATH', dirname( __DIR__ ) . '/' );
-define( 'WOOEC_PATH', dirname( __DIR__ ) . '/' );
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', dirname( __DIR__ ) . '/' );
+}
+define( 'ECCw_PATH', dirname( __DIR__ ) . '/' );
 
-define( 'WOOEC_VERSION', 'test' );
-define( 'WOOEC_URL', 'http://example.test/plugins/woocommerce-elementor-colors/' );
+define( 'ECCw_VERSION', 'test' );
+define( 'ECCw_URL', 'http://example.test/plugins/color-changer-for-elementor/' );
 
-require WOOEC_PATH . 'includes/class-autoloader.php';
+require ECCw_PATH . 'includes/class-autoloader.php';
 require __DIR__ . '/class-wp-shims.php';
 
 // -- WordPress function shims ----------------------------------------------
+// These intentionally mimic WordPress core functions so the pure logic can be
+// tested without a WordPress install. They are not plugin globals.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound, WordPress.WP.AlternativeFunctions.strip_tags_strip_tags
 
 function get_option( $option, $default = false ) {
 	return array_key_exists( $option, WP_Shims::$options ) ? WP_Shims::$options[ $option ] : $default;
@@ -117,5 +125,7 @@ function is_product_tag() {
 	return ! empty( WP_Shims::$page_flags['is_product_tag'] ); }
 function is_woocommerce() {
 	return ! empty( WP_Shims::$page_flags['is_woocommerce'] ); }
+
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 // No plugin-specific polyfills are needed beyond this point.

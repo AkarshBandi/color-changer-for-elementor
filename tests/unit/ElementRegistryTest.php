@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use WooElementorColors\Element_Registry;
+use ElementorColorChanger\Element_Registry;
 
 /**
  * Tests for Element_Registry.
@@ -38,7 +38,7 @@ class Element_RegistryTest extends TestCase {
 	}
 
 	public function test_registry_is_filterable() {
-		WP_Shims::$filters['wooce_element_registry'] = array(
+		WP_Shims::$filters['eccw_element_registry'] = array(
 			'wc-add-to-cart' => array(
 				'label' => 'Custom',
 				'slots' => array(

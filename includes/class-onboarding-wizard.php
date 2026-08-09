@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,10 +12,10 @@ class Onboarding_Wizard {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 
-		add_action( 'wp_ajax_wooce_wizard_ab_test', array( $this, 'ajax_ab_test' ) );
-		add_action( 'wp_ajax_wooce_complete_onboarding', array( $this, 'ajax_complete_onboarding' ) );
-		add_action( 'wp_ajax_wooce_save_email', array( $this, 'ajax_save_email' ) );
-		add_action( 'wp_ajax_wooce_dismiss_onboarding', array( $this, 'ajax_dismiss_onboarding' ) );
+		add_action( 'wp_ajax_eccw_wizard_ab_test', array( $this, 'ajax_ab_test' ) );
+		add_action( 'wp_ajax_eccw_complete_onboarding', array( $this, 'ajax_complete_onboarding' ) );
+		add_action( 'wp_ajax_eccw_save_email', array( $this, 'ajax_save_email' ) );
+		add_action( 'wp_ajax_eccw_dismiss_onboarding', array( $this, 'ajax_dismiss_onboarding' ) );
 	}
 
 	public function maybe_redirect_to_wizard() {
@@ -23,11 +23,11 @@ class Onboarding_Wizard {
 			return;
 		}
 
-		if ( get_option( 'wooce_onboarding_completed' ) ) {
+		if ( get_option( 'eccw_onboarding_completed' ) ) {
 			return;
 		}
 
-		if ( get_option( 'wooce_wizard_dismissed' ) ) {
+		if ( get_option( 'eccw_wizard_dismissed' ) ) {
 			return;
 		}
 
@@ -38,7 +38,7 @@ class Onboarding_Wizard {
 		// Read-only checks: don't redirect when already on the wizard page
 		// or when a form is being submitted.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_GET['page'] ) && 'wooce-wizard' === $_GET['page'] ) {
+		if ( isset( $_GET['page'] ) && 'eccw-wizard' === $_GET['page'] ) {
 			return;
 		}
 
@@ -47,24 +47,24 @@ class Onboarding_Wizard {
 			return;
 		}
 
-		$redirect_once = get_transient( 'wooce_wizard_redirect' );
+		$redirect_once = get_transient( 'eccw_wizard_redirect' );
 
 		if ( empty( $redirect_once ) ) {
 			return;
 		}
 
-		delete_transient( 'wooce_wizard_redirect' );
+		delete_transient( 'eccw_wizard_redirect' );
 
-		wp_safe_redirect( admin_url( 'admin.php?page=wooce-wizard' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=eccw-wizard' ) );
 		exit;
 	}
 
 	public function admin_notice() {
-		if ( get_option( 'wooce_onboarding_completed' ) ) {
+		if ( get_option( 'eccw_onboarding_completed' ) ) {
 			return;
 		}
 
-		if ( get_option( 'wooce_wizard_dismissed' ) ) {
+		if ( get_option( 'eccw_wizard_dismissed' ) ) {
 			return;
 		}
 
@@ -74,77 +74,77 @@ class Onboarding_Wizard {
 
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
-		if ( $screen && 'admin_page_wooce-wizard' === $screen->id ) {
+		if ( $screen && 'admin_page_eccw-wizard' === $screen->id ) {
 			return;
 		}
 
-		$wizard_url   = admin_url( 'admin.php?page=wooce-wizard' );
-		$dismiss_url  = admin_url( 'admin-ajax.php?action=wooce_dismiss_onboarding&nonce=' . wp_create_nonce( 'wooce_admin_nonce' ) );
-		$settings_url = admin_url( 'admin.php?page=wooce-settings' );
+		$wizard_url   = admin_url( 'admin.php?page=eccw-wizard' );
+		$dismiss_url  = admin_url( 'admin-ajax.php?action=eccw_dismiss_onboarding&nonce=' . wp_create_nonce( 'eccw_admin_nonce' ) );
+		$settings_url = admin_url( 'admin.php?page=eccw-settings' );
 
-		echo '<div class="notice notice-info is-dismissible wooce-onboarding-notice">';
+		echo '<div class="notice notice-info is-dismissible eccw-onboarding-notice">';
 		echo '<p>';
-		echo '<strong>' . esc_html__( 'WooCommerce Elementor Colors', 'woocommerce-elementor-colors' ) . '</strong> — ';
-		echo esc_html__( 'Finish the 60-second setup to style your store with your Elementor colors.', 'woocommerce-elementor-colors' );
-		echo ' <a href="' . esc_url( $wizard_url ) . '" class="button button-primary" style="margin:0 8px;">' . esc_html__( 'Finish Setup', 'woocommerce-elementor-colors' ) . '</a>';
-		echo ' <a href="' . esc_url( $settings_url ) . '" style="margin-right:8px;">' . esc_html__( 'Go to Settings', 'woocommerce-elementor-colors' ) . '</a>';
-		echo ' <a href="#" class="wooce-skip-onboarding" data-dismiss="' . esc_url( $dismiss_url ) . '" style="color:#b32d2e;">' . esc_html__( 'Skip for now', 'woocommerce-elementor-colors' ) . '</a>';
+		echo '<strong>' . esc_html__( 'Color Changer for Elementor and WooCommerce', 'color-changer-for-elementor' ) . '</strong> — ';
+		echo esc_html__( 'Finish the 60-second setup to style your store with your Elementor colors.', 'color-changer-for-elementor' );
+		echo ' <a href="' . esc_url( $wizard_url ) . '" class="button button-primary" style="margin:0 8px;">' . esc_html__( 'Finish Setup', 'color-changer-for-elementor' ) . '</a>';
+		echo ' <a href="' . esc_url( $settings_url ) . '" style="margin-right:8px;">' . esc_html__( 'Go to Settings', 'color-changer-for-elementor' ) . '</a>';
+		echo ' <a href="#" class="eccw-skip-onboarding" data-dismiss="' . esc_url( $dismiss_url ) . '" style="color:#b32d2e;">' . esc_html__( 'Skip for now', 'color-changer-for-elementor' ) . '</a>';
 		echo '</p>';
 		echo '</div>';
 
 		echo '<script>';
 		echo '(function($){$(function(){';
-		echo '$(".wooce-skip-onboarding").on("click",function(e){e.preventDefault();var $t=$(this),notice=$t.closest(".wooce-onboarding-notice");$.post($t.data("dismiss")).done(function(){notice.fadeOut();}).fail(function(){notice.fadeOut();});});';
+		echo '$(".eccw-skip-onboarding").on("click",function(e){e.preventDefault();var $t=$(this),notice=$t.closest(".eccw-onboarding-notice");$.post($t.data("dismiss")).done(function(){notice.fadeOut();}).fail(function(){notice.fadeOut();});});';
 		echo '});})(jQuery);';
 		echo '</script>';
 	}
 
 	public function ajax_dismiss_onboarding() {
-		if ( ! check_ajax_referer( 'wooce_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'woocommerce-elementor-colors' ) ) );
+		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) ) );
 		}
 
-		update_option( 'wooce_wizard_dismissed', true );
+		update_option( 'eccw_wizard_dismissed', true );
 
-		wp_send_json_success( array( 'message' => __( 'Onboarding skipped.', 'woocommerce-elementor-colors' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Onboarding skipped.', 'color-changer-for-elementor' ) ) );
 	}
 
 	public function register_wizard_page() {
 		add_submenu_page(
 			null,
-			__( 'Onboarding Wizard', 'woocommerce-elementor-colors' ),
-			__( 'Onboarding Wizard', 'woocommerce-elementor-colors' ),
+			__( 'Onboarding Wizard', 'color-changer-for-elementor' ),
+			__( 'Onboarding Wizard', 'color-changer-for-elementor' ),
 			'manage_options',
-			'wooce-wizard',
+			'eccw-wizard',
 			array( $this, 'render' )
 		);
 	}
 
 	public function enqueue_assets( $hook_suffix ) {
-		if ( 'admin_page_wooce-wizard' !== $hook_suffix ) {
+		if ( 'admin_page_eccw-wizard' !== $hook_suffix ) {
 			// Read-only admin page flag; hook suffix is checked above.
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( ! isset( $_GET['page'] ) || 'wooce-wizard' !== $_GET['page'] ) {
+			if ( ! isset( $_GET['page'] ) || 'eccw-wizard' !== $_GET['page'] ) {
 				return;
 			}
 		}
 
 		wp_enqueue_style(
-			'wooce-wizard',
-			WOOEC_URL . 'admin/css/wooce-wizard.css',
+			'eccw-wizard',
+			ECCw_URL . 'admin/css/eccw-wizard.css',
 			array(),
-			WOOEC_VERSION
+			ECCw_VERSION
 		);
 
 		wp_enqueue_script(
-			'wooce-wizard',
-			WOOEC_URL . 'admin/js/wooce-wizard.js',
+			'eccw-wizard',
+			ECCw_URL . 'admin/js/eccw-wizard.js',
 			array( 'jquery' ),
-			WOOEC_VERSION,
+			ECCw_VERSION,
 			true
 		);
 
@@ -160,12 +160,12 @@ class Onboarding_Wizard {
 		}
 
 		wp_localize_script(
-			'wooce-wizard',
-			'wooceData',
+			'eccw-wizard',
+			'eccwData',
 			array(
 				'kitColors' => $colors_js,
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'wooce_admin_nonce' ),
+				'nonce'     => wp_create_nonce( 'eccw_admin_nonce' ),
 				'siteUrl'   => home_url(),
 			)
 		);
@@ -176,8 +176,8 @@ class Onboarding_Wizard {
 			return;
 		}
 
-		$dequeue_settings = get_option( 'wooce_dequeue_settings', array() );
-		$settings_url     = admin_url( 'admin.php?page=wooce-settings' );
+		$dequeue_settings = get_option( 'eccw_dequeue_settings', array() );
+		$settings_url     = admin_url( 'admin.php?page=eccw-settings' );
 
 		$has_kit_colors = CSS_Generator::has_kit_colors();
 		$kit_id         = get_option( 'elementor_active_kit' );
@@ -192,53 +192,53 @@ class Onboarding_Wizard {
 				$shop_url = $shop_page;
 			}
 		}
-		$live_editor_url = add_query_arg( 'wooce_editor', '1', $shop_url );
+		$live_editor_url = add_query_arg( 'eccw_editor', '1', $shop_url );
 
 		?>
-		<div class="wooce-wizard-wrap">
-			<div class="wooce-wizard-header">
-				<h1><?php echo esc_html__( 'Welcome to WooCommerce Elementor Colors', 'woocommerce-elementor-colors' ); ?></h1>
-				<p><?php echo esc_html__( 'Let\'s get your store styled with your Elementor brand colors in just a few steps.', 'woocommerce-elementor-colors' ); ?></p>
+		<div class="eccw-wizard-wrap">
+			<div class="eccw-wizard-header">
+				<h1><?php echo esc_html__( 'Welcome to Color Changer for Elementor and WooCommerce', 'color-changer-for-elementor' ); ?></h1>
+				<p><?php echo esc_html__( 'Let\'s get your store styled with your Elementor brand colors in just a few steps.', 'color-changer-for-elementor' ); ?></p>
 			</div>
 
 			<?php if ( ! $has_kit_colors ) : ?>
-				<div class="wooce-wizard-colors-notice">
+				<div class="eccw-wizard-colors-notice">
 					<p>
-						<strong><?php echo esc_html__( 'One quick thing first:', 'woocommerce-elementor-colors' ); ?></strong>
-						<?php echo esc_html__( 'This plugin styles your store using your Elementor global colors. You haven\'t set any yet, so we\'ll use temporary defaults for now.', 'woocommerce-elementor-colors' ); ?>
+						<strong><?php echo esc_html__( 'One quick thing first:', 'color-changer-for-elementor' ); ?></strong>
+						<?php echo esc_html__( 'This plugin styles your store using your Elementor global colors. You haven\'t set any yet, so we\'ll use temporary defaults for now.', 'color-changer-for-elementor' ); ?>
 					</p>
 					<p>
 						<a href="<?php echo esc_url( $colors_url ); ?>" class="button button-secondary" target="_blank" rel="noopener noreferrer">
-							<?php echo esc_html__( 'Set my brand colors in Elementor', 'woocommerce-elementor-colors' ); ?>
+							<?php echo esc_html__( 'Set my brand colors in Elementor', 'color-changer-for-elementor' ); ?>
 						</a>
 						<span style="color:#50575e;font-size:12px;margin-left:8px;">
-							<?php echo esc_html__( 'You can do this anytime — your store keeps working either way.', 'woocommerce-elementor-colors' ); ?>
+							<?php echo esc_html__( 'You can do this anytime — your store keeps working either way.', 'color-changer-for-elementor' ); ?>
 						</span>
 					</p>
 				</div>
 			<?php endif; ?>
 
-			<div class="wooce-wizard-progress">
+			<div class="eccw-wizard-progress">
 				<?php for ( $i = 1; $i <= 4; $i++ ) : ?>
-					<span class="wooce-wizard-dot" data-step="<?php echo esc_attr( $i ); ?>"></span>
+					<span class="eccw-wizard-dot" data-step="<?php echo esc_attr( $i ); ?>"></span>
 				<?php endfor; ?>
 			</div>
 
 			<?php
-			include WOOEC_PATH . 'admin/templates/wizard-step1.php';
-			include WOOEC_PATH . 'admin/templates/wizard-step2.php';
-			include WOOEC_PATH . 'admin/templates/wizard-step3.php';
-			include WOOEC_PATH . 'admin/templates/wizard-step4.php';
+			include ECCw_PATH . 'admin/templates/wizard-step1.php';
+			include ECCw_PATH . 'admin/templates/wizard-step2.php';
+			include ECCw_PATH . 'admin/templates/wizard-step3.php';
+			include ECCw_PATH . 'admin/templates/wizard-step4.php';
 			?>
 
-			<div class="wooce-wizard-footer">
+			<div class="eccw-wizard-footer">
 				<div>
-					<button type="button" class="button wooce-wizard-prev" style="visibility:hidden;"><?php echo esc_html__( '← Back', 'woocommerce-elementor-colors' ); ?></button>
+					<button type="button" class="button eccw-wizard-prev" style="visibility:hidden;"><?php echo esc_html__( '← Back', 'color-changer-for-elementor' ); ?></button>
 				</div>
-				<div class="wooce-wizard-progress-text"><?php echo esc_html__( 'Step 1 of 4', 'woocommerce-elementor-colors' ); ?></div>
-				<div class="wooce-wizard-actions">
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wooce-settings' ) ); ?>" class="wooce-wizard-skip-link"><?php echo esc_html__( 'Skip for now', 'woocommerce-elementor-colors' ); ?></a>
-					<button type="button" class="button button-primary wooce-wizard-next"><?php echo esc_html__( 'Next →', 'woocommerce-elementor-colors' ); ?></button>
+				<div class="eccw-wizard-progress-text"><?php echo esc_html__( 'Step 1 of 4', 'color-changer-for-elementor' ); ?></div>
+				<div class="eccw-wizard-actions">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=eccw-settings' ) ); ?>" class="eccw-wizard-skip-link"><?php echo esc_html__( 'Skip for now', 'color-changer-for-elementor' ); ?></a>
+					<button type="button" class="button button-primary eccw-wizard-next"><?php echo esc_html__( 'Next →', 'color-changer-for-elementor' ); ?></button>
 				</div>
 			</div>
 		</div>
@@ -246,16 +246,16 @@ class Onboarding_Wizard {
 	}
 
 	public function ajax_ab_test() {
-		if ( ! check_ajax_referer( 'wooce_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'woocommerce-elementor-colors' ) ) );
+		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! function_exists( 'wc_get_products' ) ) {
-			wp_send_json_error( array( 'message' => __( 'WooCommerce not active.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'WooCommerce not active.', 'color-changer-for-elementor' ) ) );
 		}
 
 		$products = wc_get_products(
@@ -277,7 +277,7 @@ class Onboarding_Wizard {
 		}
 
 		if ( empty( $products ) ) {
-			wp_send_json_error( array( 'message' => __( 'No products found.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No products found.', 'color-changer-for-elementor' ) ) );
 		}
 
 		$product_id = (int) $products[0];
@@ -314,9 +314,9 @@ class Onboarding_Wizard {
 			// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 		}
 
-		$before_html = '<div id="wooce-before">' . $wc_css_links . $product_html . '</div>';
+		$before_html = '<div id="eccw-before">' . $wc_css_links . $product_html . '</div>';
 
-		$saved      = get_option( 'wooce_colors_mappings', array() );
+		$saved      = get_option( 'eccw_colors_mappings', array() );
 		$mappings   = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
 		$page_type  = 'is_product';
 		$kit_colors = CSS_Generator::get_kit_colors();
@@ -328,10 +328,10 @@ class Onboarding_Wizard {
 		}
 
 		if ( ! empty( $css ) ) {
-			$css = '<style id="wooce-ab-css">' . $css . '</style>';
+			$css = '<style id="eccw-ab-css">' . $css . '</style>';
 		}
 
-		$after_html = '<div id="wooce-after">' . $wc_css_links . $css . $product_html . '</div>';
+		$after_html = '<div id="eccw-after">' . $wc_css_links . $css . $product_html . '</div>';
 
 		wp_send_json_success(
 			array(
@@ -342,39 +342,41 @@ class Onboarding_Wizard {
 	}
 
 	public function ajax_complete_onboarding() {
-		if ( ! check_ajax_referer( 'wooce_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'woocommerce-elementor-colors' ) ) );
+		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) ) );
 		}
 
-		update_option( 'wooce_onboarding_completed', true );
+		update_option( 'eccw_onboarding_completed', true );
 
 		$dequeue_settings = array(
 			'dequeue_blocks' => isset( $_POST['dequeue_blocks'] ) && 'yes' === $_POST['dequeue_blocks'] ? 'yes' : 'no',
 		);
-		update_option( 'wooce_dequeue_settings', $dequeue_settings );
+		update_option( 'eccw_dequeue_settings', $dequeue_settings );
 
-		wp_send_json_success( array( 'message' => __( 'Onboarding completed.', 'woocommerce-elementor-colors' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Onboarding completed.', 'color-changer-for-elementor' ) ) );
 	}
 
 	public function ajax_save_email() {
-		if ( ! check_ajax_referer( 'wooce_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'woocommerce-elementor-colors' ) ) );
+		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) ) );
 		}
 
-		if ( ! isset( $_POST['email'] ) || ! is_email( $_POST['email'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid email address.', 'woocommerce-elementor-colors' ) ) );
+		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid email address.', 'color-changer-for-elementor' ) ) );
 		}
 
-		update_option( 'wooce_pro_optin_email', sanitize_email( $_POST['email'] ) );
+		update_option( 'eccw_pro_optin_email', $email );
 
-		wp_send_json_success( array( 'message' => __( 'Email saved.', 'woocommerce-elementor-colors' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Email saved.', 'color-changer-for-elementor' ) ) );
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -9,26 +9,26 @@ class Admin_Interface {
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_submenu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'admin_post_wooce_save_settings', array( $this, 'handle_form_save' ) );
+		add_action( 'admin_post_eccw_save_settings', array( $this, 'handle_form_save' ) );
 
-		$plugin_file = plugin_basename( WOOEC_PATH . 'woocommerce-elementor-colors.php' );
+		$plugin_file = plugin_basename( ECCw_PATH . 'color-changer-for-elementor.php' );
 		add_filter( 'plugin_action_links_' . $plugin_file, array( $this, 'add_settings_link' ) );
 	}
 
 	public function add_submenu() {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Advanced Settings', 'woocommerce-elementor-colors' ),
-			__( 'Advanced Settings', 'woocommerce-elementor-colors' ),
+			__( 'Elementor Colors', 'color-changer-for-elementor' ),
+			__( 'Elementor Colors', 'color-changer-for-elementor' ),
 			'manage_options',
-			'wooce-settings',
+			'eccw-settings',
 			array( $this, 'render_settings_page' )
 		);
 	}
 
 	public function add_settings_link( $links ) {
-		$settings_link = '<a href="' . admin_url( 'admin.php?page=wooce-settings' ) . '">' .
-			esc_html__( 'Settings', 'woocommerce-elementor-colors' ) . '</a>';
+		$settings_link = '<a href="' . admin_url( 'admin.php?page=eccw-settings' ) . '">' .
+			esc_html__( 'Settings', 'color-changer-for-elementor' ) . '</a>';
 
 		array_unshift( $links, $settings_link );
 
@@ -36,40 +36,40 @@ class Admin_Interface {
 	}
 
 	public function enqueue_assets( $hook_suffix ) {
-		if ( 'woocommerce_page_wooce-settings' !== $hook_suffix ) {
+		if ( 'woocommerce_page_eccw-settings' !== $hook_suffix ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'wooce-admin-base',
-			WOOEC_URL . 'admin/css/base.css',
+			'eccw-admin-base',
+			ECCw_URL . 'admin/css/base.css',
 			array(),
-			WOOEC_VERSION
+			ECCw_VERSION
 		);
 
 		foreach ( array( 'dequeue', 'elements', 'gallery' ) as $component ) {
 			wp_enqueue_style(
-				'wooce-admin-' . $component,
-				WOOEC_URL . 'admin/css/components/' . $component . '.css',
-				array( 'wooce-admin-base' ),
-				WOOEC_VERSION
+				'eccw-admin-' . $component,
+				ECCw_URL . 'admin/css/components/' . $component . '.css',
+				array( 'eccw-admin-base' ),
+				ECCw_VERSION
 			);
 		}
 
 		wp_enqueue_script(
-			'wooce-admin-settings',
-			WOOEC_URL . 'admin/js/admin-settings.js',
+			'eccw-admin-settings',
+			ECCw_URL . 'admin/js/admin-settings.js',
 			array( 'jquery' ),
-			WOOEC_VERSION,
+			ECCw_VERSION,
 			true
 		);
 
 		foreach ( array( 'element-row', 'gallery', 'dequeue-card', 'actions' ) as $component ) {
 			wp_enqueue_script(
-				'wooce-admin-' . $component,
-				WOOEC_URL . 'admin/js/components/' . $component . '.js',
-				array( 'wooce-admin-settings' ),
-				WOOEC_VERSION,
+				'eccw-admin-' . $component,
+				ECCw_URL . 'admin/js/components/' . $component . '.js',
+				array( 'eccw-admin-settings' ),
+				ECCw_VERSION,
 				true
 			);
 		}
@@ -86,19 +86,19 @@ class Admin_Interface {
 		}
 
 		$defaults  = $this->get_slot_defaults();
-		$saved     = get_option( 'wooce_colors_mappings', array() );
+		$saved     = get_option( 'eccw_colors_mappings', array() );
 		$mappings  = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
 		$new_count = $this->count_new_widgets( $mappings );
 
 		wp_localize_script(
-			'wooce-admin-settings',
-			'wooceData',
+			'eccw-admin-settings',
+			'eccwData',
 			array(
 				'kitColors' => $colors_js,
 				'defaults'  => $defaults,
 				'newCount'  => $new_count,
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'wooce_admin_nonce' ),
+				'nonce'     => wp_create_nonce( 'eccw_admin_nonce' ),
 				'siteUrl'   => home_url(),
 			)
 		);
@@ -145,9 +145,9 @@ class Admin_Interface {
 			return;
 		}
 
-		$saved            = get_option( 'wooce_colors_mappings', array() );
+		$saved            = get_option( 'eccw_colors_mappings', array() );
 		$mappings         = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
-		$dequeue_settings = get_option( 'wooce_dequeue_settings', array() );
+		$dequeue_settings = get_option( 'eccw_dequeue_settings', array() );
 		$kit_colors       = CSS_Generator::get_kit_colors();
 		$saved_version    = isset( $saved['version'] ) ? $saved['version'] : 1;
 		$defaults         = $this->get_slot_defaults();
@@ -156,84 +156,88 @@ class Admin_Interface {
 
 		$shop_page       = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : false;
 		$shop_url        = $shop_page ? $shop_page : home_url();
-		$live_editor_url = add_query_arg( 'wooce_editor', '1', $shop_url );
+		$live_editor_url = add_query_arg( 'eccw_editor', '1', $shop_url );
 
-		include WOOEC_PATH . 'admin/templates/settings-page.php';
+		include ECCw_PATH . 'admin/templates/settings-page.php';
 	}
 
 	public function handle_form_save() {
-		if ( ! isset( $_POST['wooce_save_nonce'] ) || ! wp_verify_nonce( $_POST['wooce_save_nonce'], 'wooce_save_settings' ) ) {
-			wp_die( esc_html__( 'Security check failed.', 'woocommerce-elementor-colors' ) );
+		if ( ! isset( $_POST['eccw_save_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['eccw_save_nonce'] ) ), 'eccw_save_settings' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'color-changer-for-elementor' ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) );
 		}
 
 		$dequeue_settings = array(
-			'dequeue_blocks' => isset( $_POST['wooce_dequeue_blocks'] ) && 'yes' === $_POST['wooce_dequeue_blocks'] ? 'yes' : 'no',
+			'dequeue_blocks' => isset( $_POST['eccw_dequeue_blocks'] ) && 'yes' === $_POST['eccw_dequeue_blocks'] ? 'yes' : 'no',
 		);
 
-		update_option( 'wooce_dequeue_settings', $dequeue_settings );
+		update_option( 'eccw_dequeue_settings', $dequeue_settings );
 
-		$saved = get_option( 'wooce_colors_mappings', array() );
+		$saved = get_option( 'eccw_colors_mappings', array() );
 
 		if ( Mapping_Service::normalize_all( $saved ) ) {
-			update_option( 'wooce_colors_mappings', $saved );
+			update_option( 'eccw_colors_mappings', $saved );
 		}
 
-		if ( isset( $_POST['wooce_colors'] ) && is_array( $_POST['wooce_colors'] ) ) {
-			$kit_colors = CSS_Generator::get_kit_colors();
-			$valid_ids  = array_keys( $kit_colors );
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- values validated against kit color IDs below.
+		$posted_colors = isset( $_POST['eccw_colors'] ) && is_array( $_POST['eccw_colors'] )
+			? wp_unslash( $_POST['eccw_colors'] )
+			: array();
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-			foreach ( $_POST['wooce_colors'] as $widget_key => $slots ) {
-				$widget_key = \WooElementorColors\Element_Registry::normalize_key( sanitize_key( $widget_key ) );
+		$kit_colors = CSS_Generator::get_kit_colors();
+		$valid_ids  = array_keys( $kit_colors );
 
-				if ( ! isset( $saved['widgets'][ $widget_key ] ) ) {
-					continue;
-				}
+		foreach ( $posted_colors as $widget_key => $slots ) {
+			$widget_key = \ElementorColorChanger\Element_Registry::normalize_key( sanitize_key( $widget_key ) );
 
-				if ( ! is_array( $slots ) ) {
-					continue;
-				}
+			if ( ! isset( $saved['widgets'][ $widget_key ] ) ) {
+				continue;
+			}
 
-				$changed = false;
+			if ( ! is_array( $slots ) ) {
+				continue;
+			}
 
-				foreach ( $slots as $slot_id => $color_value ) {
-					$color_value = strtolower( (string) $color_value );
+			$changed = false;
 
-					// Accept either a kit color token or a raw hex value
-					// (custom colors chosen in the Live Editor).
-					if ( ! in_array( $color_value, $valid_ids, true ) ) {
-						$hex = ltrim( $color_value, '#' );
+			foreach ( $slots as $slot_id => $color_value ) {
+				$color_value = strtolower( (string) $color_value );
 
-						if ( ! preg_match( '/^[0-9a-f]{6}$/', $hex ) ) {
-							continue;
-						}
+				// Accept either a kit color token or a raw hex value
+				// (custom colors chosen in the Live Editor).
+				if ( ! in_array( $color_value, $valid_ids, true ) ) {
+					$hex = ltrim( $color_value, '#' );
 
-						$color_value = '#' . $hex;
-					}
-
-					if ( ! isset( $saved['widgets'][ $widget_key ]['slots'][ $slot_id ] ) ) {
+					if ( ! preg_match( '/^[0-9a-f]{6}$/', $hex ) ) {
 						continue;
 					}
 
-					$saved['widgets'][ $widget_key ]['slots'][ $slot_id ]['color'] = $color_value;
-					$changed = true;
+					$color_value = '#' . $hex;
 				}
 
-				if ( $changed && 'configured' !== $saved['widgets'][ $widget_key ]['status'] ) {
-					$saved['widgets'][ $widget_key ]['status'] = 'configured';
+				if ( ! isset( $saved['widgets'][ $widget_key ]['slots'][ $slot_id ] ) ) {
+					continue;
 				}
+
+				$saved['widgets'][ $widget_key ]['slots'][ $slot_id ]['color'] = $color_value;
+				$changed = true;
+			}
+
+			if ( $changed && 'configured' !== $saved['widgets'][ $widget_key ]['status'] ) {
+				$saved['widgets'][ $widget_key ]['status'] = 'configured';
 			}
 		}
 
-		update_option( 'wooce_colors_mappings', $saved );
+		update_option( 'eccw_colors_mappings', $saved );
 
 		Cache_Manager::clear_css();
 
 		wp_safe_redirect(
-			add_query_arg( 'saved', '1', admin_url( 'admin.php?page=wooce-settings' ) )
+			add_query_arg( 'saved', '1', admin_url( 'admin.php?page=eccw-settings' ) )
 		);
 
 		exit;

@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use WooElementorColors\Mapping_Service;
-use WooElementorColors\Element_Registry;
-use WooElementorColors\CSS_Generator;
+use ElementorColorChanger\Mapping_Service;
+use ElementorColorChanger\Element_Registry;
+use ElementorColorChanger\CSS_Generator;
 
 /**
  * Tests for Mapping_Service.

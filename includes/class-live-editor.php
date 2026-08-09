@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,7 +21,7 @@ class Live_Editor {
 
 		// Read-only URL flag; capability checked above.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$show = isset( $_GET['wooce_editor'] ) && '1' === $_GET['wooce_editor'];
+		$show = isset( $_GET['eccw_editor'] ) && '1' === $_GET['eccw_editor'];
 
 		if ( ! $show ) {
 			return;
@@ -33,17 +33,17 @@ class Live_Editor {
 
 	public function enqueue_assets() {
 		wp_enqueue_style(
-			'wooce-editor',
-			WOOEC_URL . 'admin/css/wooce-editor.css',
+			'eccw-editor',
+			ECCw_URL . 'admin/css/eccw-editor.css',
 			array(),
-			WOOEC_VERSION
+			ECCw_VERSION
 		);
 
 		wp_enqueue_script(
-			'wooce-editor',
-			WOOEC_URL . 'admin/js/wooce-editor.js',
+			'eccw-editor',
+			ECCw_URL . 'admin/js/eccw-editor.js',
 			array(),
-			WOOEC_VERSION,
+			ECCw_VERSION,
 			true
 		);
 
@@ -58,7 +58,7 @@ class Live_Editor {
 			);
 		}
 
-		$settings_url = admin_url( 'admin.php?page=wooce-settings' );
+		$settings_url = admin_url( 'admin.php?page=eccw-settings' );
 
 		$registry     = Element_Registry::get_registry();
 		$widget_slots = array();
@@ -81,12 +81,12 @@ class Live_Editor {
 			);
 		}
 
-		$live_draft = get_transient( 'wooce_live_draft' );
+		$live_draft = get_transient( 'eccw_live_draft' );
 
 		// Coverage counter: how many of the registry widgets are currently
 		// configured (have at least one explicitly set color), combining the
 		// saved mappings and any in-progress live draft.
-		$saved      = get_option( 'wooce_colors_mappings', array() );
+		$saved      = get_option( 'eccw_colors_mappings', array() );
 		$configured = 0;
 		$registry   = Element_Registry::get_registry();
 
@@ -117,12 +117,12 @@ class Live_Editor {
 		}
 
 		wp_localize_script(
-			'wooce-editor',
-			'wooceData',
+			'eccw-editor',
+			'eccwData',
 			array(
 				'kitColors'         => $colors_js,
 				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
-				'nonce'             => wp_create_nonce( 'wooce_admin_nonce' ),
+				'nonce'             => wp_create_nonce( 'eccw_admin_nonce' ),
 				'siteUrl'           => home_url(),
 				'registrySelectors' => CSS_Generator::get_registry_selectors(),
 				'widgetSlots'       => $widget_slots,
@@ -138,45 +138,45 @@ class Live_Editor {
 
 	public function render_toolbar() {
 		?>
-		<div id="wooce-editor-toolbar">
-			<div class="wooce-toolbar-inner">
-				<div class="wooce-toolbar-idle-state">
-					<span class="wooce-toolbar-text"><?php echo esc_html__( 'Click any button, price, or badge on this page to change its color.', 'woocommerce-elementor-colors' ); ?></span>
-					<span class="wooce-coverage-badge" title="<?php echo esc_attr__( 'How many of the detected WooCommerce element types are styled with your brand colors', 'woocommerce-elementor-colors' ); ?>"></span>
-					<span class="wooce-unsaved-badge" style="display:none;">● Unsaved changes</span>
+		<div id="eccw-editor-toolbar">
+			<div class="eccw-toolbar-inner">
+				<div class="eccw-toolbar-idle-state">
+					<span class="eccw-toolbar-text"><?php echo esc_html__( 'Click any button, price, or badge on this page to change its color.', 'color-changer-for-elementor' ); ?></span>
+					<span class="eccw-coverage-badge" title="<?php echo esc_attr__( 'How many of the detected WooCommerce element types are styled with your brand colors', 'color-changer-for-elementor' ); ?>"></span>
+					<span class="eccw-unsaved-badge" style="display:none;">● Unsaved changes</span>
 				</div>
-				<div class="wooce-toolbar-actions-global">
-					<button type="button" class="button wooce-share-btn" title="<?php echo esc_attr__( 'Generate a temporary preview link to share with a client', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( 'Share', 'woocommerce-elementor-colors' ); ?></button>
-					<button type="button" class="button wooce-undo-btn" title="<?php echo esc_attr__( 'Undo last save (Ctrl+Z)', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( 'Undo', 'woocommerce-elementor-colors' ); ?></button>
-					<button type="button" class="button button-hero wooce-save-btn" disabled><?php echo esc_html__( 'Save Changes', 'woocommerce-elementor-colors' ); ?></button>
-					<button type="button" class="button wooce-reset-btn" title="<?php echo esc_attr__( 'Reset all elements to defaults', 'woocommerce-elementor-colors' ); ?>"><?php echo esc_html__( 'Reset', 'woocommerce-elementor-colors' ); ?></button>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wooce-settings' ) ); ?>" class="wooce-advanced-link"><?php echo esc_html__( 'Settings table view', 'woocommerce-elementor-colors' ); ?></a>
-					<button type="button" class="button wooce-exit-btn"><?php echo esc_html__( 'Exit Editor', 'woocommerce-elementor-colors' ); ?></button>
+				<div class="eccw-toolbar-actions-global">
+					<button type="button" class="button eccw-share-btn" title="<?php echo esc_attr__( 'Generate a temporary preview link to share with a client', 'color-changer-for-elementor' ); ?>"><?php echo esc_html__( 'Share', 'color-changer-for-elementor' ); ?></button>
+					<button type="button" class="button eccw-undo-btn" title="<?php echo esc_attr__( 'Undo last save (Ctrl+Z)', 'color-changer-for-elementor' ); ?>"><?php echo esc_html__( 'Undo', 'color-changer-for-elementor' ); ?></button>
+					<button type="button" class="button button-hero eccw-save-btn" disabled><?php echo esc_html__( 'Save Changes', 'color-changer-for-elementor' ); ?></button>
+					<button type="button" class="button eccw-reset-btn" title="<?php echo esc_attr__( 'Reset all elements to defaults', 'color-changer-for-elementor' ); ?>"><?php echo esc_html__( 'Reset', 'color-changer-for-elementor' ); ?></button>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=eccw-settings' ) ); ?>" class="eccw-advanced-link"><?php echo esc_html__( 'Settings table view', 'color-changer-for-elementor' ); ?></a>
+					<button type="button" class="button eccw-exit-btn"><?php echo esc_html__( 'Exit Editor', 'color-changer-for-elementor' ); ?></button>
 				</div>
 			</div>
 		</div>
 
-		<div id="wooce-editor-panel" class="wooce-editor-panel" aria-hidden="true">
-			<div class="wooce-panel-header">
-				<div class="wooce-panel-title">
-					<span class="wooce-panel-kicker"><?php echo esc_html__( 'Customize', 'woocommerce-elementor-colors' ); ?></span>
-					<span class="wooce-panel-element-name"></span>
+		<div id="eccw-editor-panel" class="eccw-editor-panel" aria-hidden="true">
+			<div class="eccw-panel-header">
+				<div class="eccw-panel-title">
+					<span class="eccw-panel-kicker"><?php echo esc_html__( 'Customize', 'color-changer-for-elementor' ); ?></span>
+					<span class="eccw-panel-element-name"></span>
 				</div>
-				<button type="button" class="wooce-panel-close" title="<?php echo esc_attr__( 'Close panel', 'woocommerce-elementor-colors' ); ?>" aria-label="<?php echo esc_attr__( 'Close panel', 'woocommerce-elementor-colors' ); ?>">&times;</button>
+				<button type="button" class="eccw-panel-close" title="<?php echo esc_attr__( 'Close panel', 'color-changer-for-elementor' ); ?>" aria-label="<?php echo esc_attr__( 'Close panel', 'color-changer-for-elementor' ); ?>">&times;</button>
 			</div>
-			<div class="wooce-panel-body">
-				<div class="wooce-panel-tabs"></div>
-				<div class="wooce-panel-palette"></div>
-				<div class="wooce-panel-color-row">
-					<label class="wooce-panel-field-label" for="wooce-panel-picker"><?php echo esc_html__( 'Custom color', 'woocommerce-elementor-colors' ); ?></label>
-					<div class="wooce-panel-color-controls">
-						<input type="color" id="wooce-panel-picker" class="wooce-panel-picker" value="#000000">
-						<input type="text" class="wooce-panel-hex-input" value="#000000" aria-label="<?php echo esc_attr__( 'Hex color code', 'woocommerce-elementor-colors' ); ?>">
+			<div class="eccw-panel-body">
+				<div class="eccw-panel-tabs"></div>
+				<div class="eccw-panel-palette"></div>
+				<div class="eccw-panel-color-row">
+					<label class="eccw-panel-field-label" for="eccw-panel-picker"><?php echo esc_html__( 'Custom color', 'color-changer-for-elementor' ); ?></label>
+					<div class="eccw-panel-color-controls">
+						<input type="color" id="eccw-panel-picker" class="eccw-panel-picker" value="#000000">
+						<input type="text" class="eccw-panel-hex-input" value="#000000" aria-label="<?php echo esc_attr__( 'Hex color code', 'color-changer-for-elementor' ); ?>">
 					</div>
 				</div>
-				<div class="wooce-panel-contrast"></div>
-				<div class="wooce-panel-actions">
-					<button type="button" class="wooce-revert-btn"><?php echo esc_html__( 'Reset this element', 'woocommerce-elementor-colors' ); ?></button>
+				<div class="eccw-panel-contrast"></div>
+				<div class="eccw-panel-actions">
+					<button type="button" class="eccw-revert-btn"><?php echo esc_html__( 'Reset this element', 'color-changer-for-elementor' ); ?></button>
 				</div>
 			</div>
 		</div>

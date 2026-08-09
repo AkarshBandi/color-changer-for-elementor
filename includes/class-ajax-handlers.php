@@ -1,31 +1,31 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
 class AJAX_Handlers {
 
 	public function init() {
-		add_action( 'wp_ajax_wooce_save_preview', array( $this, 'save_preview' ) );
-		add_action( 'wp_ajax_wooce_dismiss_new', array( $this, 'dismiss_new' ) );
-		add_action( 'wp_ajax_wooce_rescan', array( $this, 'rescan' ) );
+		add_action( 'wp_ajax_eccw_save_preview', array( $this, 'save_preview' ) );
+		add_action( 'wp_ajax_eccw_dismiss_new', array( $this, 'dismiss_new' ) );
+		add_action( 'wp_ajax_eccw_rescan', array( $this, 'rescan' ) );
 
-		add_action( 'wp_ajax_wooce_scan_progress', array( $this, 'scan_progress' ) );
-		add_action( 'wp_ajax_wooce_live_update', array( $this, 'live_update' ) );
-		add_action( 'wp_ajax_wooce_commit_live', array( $this, 'commit_live' ) );
-		add_action( 'wp_ajax_wooce_undo_action', array( $this, 'undo_action' ) );
-		add_action( 'wp_ajax_wooce_generate_share', array( $this, 'generate_share' ) );
-		add_action( 'wp_ajax_wooce_reset_defaults', array( $this, 'reset_defaults' ) );
+		add_action( 'wp_ajax_eccw_scan_progress', array( $this, 'scan_progress' ) );
+		add_action( 'wp_ajax_eccw_live_update', array( $this, 'live_update' ) );
+		add_action( 'wp_ajax_eccw_commit_live', array( $this, 'commit_live' ) );
+		add_action( 'wp_ajax_eccw_undo_action', array( $this, 'undo_action' ) );
+		add_action( 'wp_ajax_eccw_generate_share', array( $this, 'generate_share' ) );
+		add_action( 'wp_ajax_eccw_reset_defaults', array( $this, 'reset_defaults' ) );
 	}
 
 	private function verify_request() {
-		if ( ! check_ajax_referer( 'wooce_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'woocommerce-elementor-colors' ) ) );
+		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) ) );
 		}
 	}
 
@@ -35,20 +35,23 @@ class AJAX_Handlers {
 		// Nonce and capability are verified in verify_request() above.
 		// phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['mappings'] ) || ! is_array( $_POST['mappings'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No mappings provided.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No mappings provided.', 'color-changer-for-elementor' ) ) );
 		}
 
-		$mappings = $this->sanitize_mappings( $_POST['mappings'] );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by sanitize_mappings() below.
+		$mappings = isset( $_POST['mappings'] ) ? wp_unslash( $_POST['mappings'] ) : array();
+		$mappings = is_array( $mappings ) ? $mappings : array();
+		$mappings = $this->sanitize_mappings( $mappings );
 
-		set_transient( 'wooce_preview_draft', $mappings, HOUR_IN_SECONDS );
+		set_transient( 'eccw_preview_draft', $mappings, HOUR_IN_SECONDS );
 
-		$preview_url = home_url( '/?wooce_preview=1' );
+		$preview_url = home_url( '/?eccw_preview=1' );
 
 		if ( function_exists( 'wc_get_page_permalink' ) ) {
 			$shop_url = wc_get_page_permalink( 'shop' );
 
 			if ( $shop_url ) {
-				$preview_url = add_query_arg( 'wooce_preview', '1', $shop_url );
+				$preview_url = add_query_arg( 'eccw_preview', '1', $shop_url );
 			}
 		}
 
@@ -62,16 +65,20 @@ class AJAX_Handlers {
 		// Nonce and capability are verified in verify_request() above.
 		// phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['widgets'] ) || ! is_array( $_POST['widgets'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No widgets specified.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No widgets specified.', 'color-changer-for-elementor' ) ) );
 		}
 
-		$saved = get_option( 'wooce_colors_mappings', array() );
+		$saved = get_option( 'eccw_colors_mappings', array() );
 
 		$this->migrate_widget_keys( $saved );
 
 		$dismissed = isset( $saved['dismissed_new'] ) ? $saved['dismissed_new'] : array();
 
-		foreach ( $_POST['widgets'] as $widget_key ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each key sanitized via sanitize_key() below.
+		$widgets = isset( $_POST['widgets'] ) ? wp_unslash( $_POST['widgets'] ) : array();
+		$widgets = is_array( $widgets ) ? $widgets : array();
+
+		foreach ( $widgets as $widget_key ) {
 			$widget_key = Element_Registry::normalize_key( sanitize_key( $widget_key ) );
 
 			if ( ! in_array( $widget_key, $dismissed, true ) ) {
@@ -85,9 +92,9 @@ class AJAX_Handlers {
 
 		$saved['dismissed_new'] = $dismissed;
 
-		update_option( 'wooce_colors_mappings', $saved );
+		update_option( 'eccw_colors_mappings', $saved );
 
-		wp_send_json_success( array( 'message' => __( 'Dismissed.', 'woocommerce-elementor-colors' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Dismissed.', 'color-changer-for-elementor' ) ) );
 		// phpcs:enable WordPress.Security.NonceVerification
 	}
 
@@ -97,7 +104,7 @@ class AJAX_Handlers {
 		$discovery    = new Discovery_Engine();
 		$widget_types = $discovery->scan_all_pages();
 
-		$saved = get_option( 'wooce_colors_mappings', array() );
+		$saved = get_option( 'eccw_colors_mappings', array() );
 
 		$needs_update = Mapping_Service::normalize_all( $saved );
 
@@ -112,7 +119,7 @@ class AJAX_Handlers {
 		}
 
 		if ( $needs_update ) {
-			update_option( 'wooce_colors_mappings', $saved );
+			update_option( 'eccw_colors_mappings', $saved );
 		}
 
 		Cache_Manager::clear_css();
@@ -122,7 +129,7 @@ class AJAX_Handlers {
 				'new_count' => count( $new_widgets ),
 				'message'   => sprintf(
 				/* translators: %d: number of new widgets found */
-					__( 'Scan complete. Found %d new widget(s).', 'woocommerce-elementor-colors' ),
+					__( 'Scan complete. Found %d new widget(s).', 'color-changer-for-elementor' ),
 					count( $new_widgets )
 				),
 			)
@@ -138,13 +145,15 @@ class AJAX_Handlers {
 		$batch  = 5;
 		// phpcs:enable WordPress.Security.NonceVerification
 
-		$post_types = apply_filters( 'wooce_scan_post_types', array( 'page', 'product' ) );
+		$post_types = apply_filters( 'eccw_scan_post_types', array( 'page', 'product' ) );
 		$post_types = array_map( 'sanitize_key', (array) $post_types );
 
 		$posts = get_posts(
 			array(
 				'post_type'      => $post_types,
 				'post_status'    => 'publish',
+				// Intentional: scans Elementor's stored data for widget discovery.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'       => '_elementor_data',
 				'posts_per_page' => $batch,
 				'offset'         => $offset,
@@ -212,14 +221,14 @@ class AJAX_Handlers {
 		// Nonce and capability are verified in verify_request() above.
 		// phpcs:disable WordPress.Security.NonceVerification
 		if ( ! isset( $_POST['widget_key'] ) || ! isset( $_POST['slot_id'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Missing parameters.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Missing parameters.', 'color-changer-for-elementor' ) ) );
 		}
 
 		$widget_key = sanitize_key( $_POST['widget_key'] );
 		$slot_id    = sanitize_key( $_POST['slot_id'] );
 		$remove     = isset( $_POST['remove'] ) && '1' === $_POST['remove'];
 
-		$draft = get_transient( 'wooce_live_draft' );
+		$draft = get_transient( 'eccw_live_draft' );
 
 		if ( ! is_array( $draft ) ) {
 			$draft = array();
@@ -234,7 +243,7 @@ class AJAX_Handlers {
 				}
 			}
 
-			set_transient( 'wooce_live_draft', $draft, DAY_IN_SECONDS );
+			set_transient( 'eccw_live_draft', $draft, DAY_IN_SECONDS );
 
 			wp_send_json_success(
 				array(
@@ -245,13 +254,13 @@ class AJAX_Handlers {
 		}
 
 		if ( ! isset( $_POST['hex'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Missing color.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Missing color.', 'color-changer-for-elementor' ) ) );
 		}
 
-		$hex = sanitize_hex_color( $_POST['hex'] );
+		$hex = isset( $_POST['hex'] ) ? sanitize_hex_color( wp_unslash( $_POST['hex'] ) ) : '';
 
 		if ( ! $hex ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid color.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid color.', 'color-changer-for-elementor' ) ) );
 		}
 
 		if ( ! isset( $draft[ $widget_key ] ) ) {
@@ -260,7 +269,7 @@ class AJAX_Handlers {
 
 		$draft[ $widget_key ]['slots'][ $slot_id ] = array( 'color' => $hex );
 
-		set_transient( 'wooce_live_draft', $draft, DAY_IN_SECONDS );
+		set_transient( 'eccw_live_draft', $draft, DAY_IN_SECONDS );
 
 		$css = CSS_Generator::build_single_css( $widget_key, $slot_id, $hex );
 
@@ -284,23 +293,25 @@ class AJAX_Handlers {
 		$draft = array();
 
 		if ( isset( $_POST['draft'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by sanitize_mappings() below.
 			$draft = json_decode( wp_unslash( $_POST['draft'] ), true );
 			$draft = is_array( $draft ) ? $draft : array();
+			$draft = Mapping_Service::sanitize_mappings( $draft );
 		}
 
 		if ( empty( $draft ) ) {
-			$draft = get_transient( 'wooce_live_draft' );
+			$draft = get_transient( 'eccw_live_draft' );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification
 
 		if ( empty( $draft ) ) {
-			wp_send_json_error( array( 'message' => __( 'No draft changes to save.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No draft changes to save.', 'color-changer-for-elementor' ) ) );
 		}
 
-		$saved = get_option( 'wooce_colors_mappings', array() );
+		$saved = get_option( 'eccw_colors_mappings', array() );
 
 		$user_id = get_current_user_id();
-		$history = get_user_meta( $user_id, 'wooce_history_' . $user_id, true );
+		$history = get_user_meta( $user_id, 'eccw_history_' . $user_id, true );
 		if ( ! is_array( $history ) ) {
 			$history = array();
 		}
@@ -308,7 +319,7 @@ class AJAX_Handlers {
 		array_unshift( $history, $saved );
 		$history = array_slice( $history, 0, 10 );
 
-		update_user_meta( $user_id, 'wooce_history_' . $user_id, $history );
+		update_user_meta( $user_id, 'eccw_history_' . $user_id, $history );
 
 		$this->migrate_widget_keys( $saved );
 
@@ -373,15 +384,15 @@ class AJAX_Handlers {
 		$saved['version']   = isset( $saved['version'] ) ? $saved['version'] + 1 : 2;
 		$saved['last_scan'] = current_time( 'mysql' );
 
-		update_option( 'wooce_colors_mappings', $saved );
+		update_option( 'eccw_colors_mappings', $saved );
 
-		delete_transient( 'wooce_live_draft' );
+		delete_transient( 'eccw_live_draft' );
 
 		Cache_Manager::clear_css();
 
 		wp_send_json_success(
 			array(
-				'message'     => __( 'Changes saved successfully.', 'woocommerce-elementor-colors' ),
+				'message'     => __( 'Changes saved successfully.', 'color-changer-for-elementor' ),
 				'new_version' => $saved['version'],
 			)
 		);
@@ -391,46 +402,46 @@ class AJAX_Handlers {
 		$this->verify_request();
 
 		$user_id = get_current_user_id();
-		$history = get_user_meta( $user_id, 'wooce_history_' . $user_id, true );
+		$history = get_user_meta( $user_id, 'eccw_history_' . $user_id, true );
 
 		if ( ! is_array( $history ) || empty( $history ) ) {
-			wp_send_json_error( array( 'message' => __( 'No history to undo.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No history to undo.', 'color-changer-for-elementor' ) ) );
 		}
 
 		$previous_state = array_shift( $history );
 
-		update_option( 'wooce_colors_mappings', $previous_state );
-		update_user_meta( $user_id, 'wooce_history_' . $user_id, $history );
+		update_option( 'eccw_colors_mappings', $previous_state );
+		update_user_meta( $user_id, 'eccw_history_' . $user_id, $history );
 
-		delete_transient( 'wooce_live_draft' );
+		delete_transient( 'eccw_live_draft' );
 
 		Cache_Manager::clear_css();
 
-		wp_send_json_success( array( 'message' => __( 'Undo successful.', 'woocommerce-elementor-colors' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Undo successful.', 'color-changer-for-elementor' ) ) );
 	}
 
 	public function generate_share() {
 		$this->verify_request();
 
-		$saved    = get_option( 'wooce_colors_mappings', array() );
+		$saved    = get_option( 'eccw_colors_mappings', array() );
 		$mappings = isset( $saved['widgets'] ) ? $saved['widgets'] : array();
 
 		if ( empty( $mappings ) ) {
-			$draft = get_transient( 'wooce_live_draft' );
+			$draft = get_transient( 'eccw_live_draft' );
 			if ( ! empty( $draft ) ) {
 				$mappings = $draft;
 			}
 		}
 
 		if ( empty( $mappings ) ) {
-			wp_send_json_error( array( 'message' => __( 'No mappings to share.', 'woocommerce-elementor-colors' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No mappings to share.', 'color-changer-for-elementor' ) ) );
 		}
 
 		$nonce = wp_generate_password( 32, false );
 
-		set_transient( 'wooce_share_' . $nonce, $mappings, HOUR_IN_SECONDS );
+		set_transient( 'eccw_share_' . $nonce, $mappings, HOUR_IN_SECONDS );
 
-		$share_url = add_query_arg( 'wooce_share', $nonce, home_url( '/' ) );
+		$share_url = add_query_arg( 'eccw_share', $nonce, home_url( '/' ) );
 
 		wp_send_json_success(
 			array(
@@ -443,7 +454,7 @@ class AJAX_Handlers {
 	public function reset_defaults() {
 		$this->verify_request();
 
-		$saved = get_option( 'wooce_colors_mappings', array() );
+		$saved = get_option( 'eccw_colors_mappings', array() );
 
 		$widget_types = array_keys( isset( $saved['widgets'] ) ? $saved['widgets'] : array() );
 
@@ -452,18 +463,18 @@ class AJAX_Handlers {
 
 		$saved['widgets'] = $mappings;
 
-		update_option( 'wooce_colors_mappings', $saved );
+		update_option( 'eccw_colors_mappings', $saved );
 
-		delete_transient( 'wooce_live_draft' );
+		delete_transient( 'eccw_live_draft' );
 
 		Cache_Manager::clear_css();
 
-		wp_send_json_success( array( 'message' => __( 'All elements reset to defaults.', 'woocommerce-elementor-colors' ) ) );
+		wp_send_json_success( array( 'message' => __( 'All elements reset to defaults.', 'color-changer-for-elementor' ) ) );
 	}
 
 	private function migrate_widget_keys( &$saved ) {
 		if ( Mapping_Service::normalize_all( $saved ) ) {
-			update_option( 'wooce_colors_mappings', $saved );
+			update_option( 'eccw_colors_mappings', $saved );
 		}
 	}
 

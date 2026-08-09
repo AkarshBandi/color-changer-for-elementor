@@ -1,5 +1,5 @@
 /**
- * Advanced Settings - bootstrap + shared helpers.
+ * Elementor Colors - bootstrap + shared helpers.
  *
  * Exposes a global WooceSettings namespace with the color map, WCAG
  * contrast helper, and a page-wide dirty/unsaved-changes guard.
@@ -9,7 +9,7 @@
 (function ($) {
 	'use strict';
 
-	if (typeof wooceData === 'undefined' || !wooceData.kitColors) {
+	if (typeof eccwData === 'undefined' || !eccwData.kitColors) {
 		return;
 	}
 
@@ -28,12 +28,12 @@
 
 		buildColorMap: function () {
 			var i;
-			for (i = 0; i < wooceData.kitColors.length; i++) {
-				this.colorMap[wooceData.kitColors[i].id] = wooceData.kitColors[i].hex;
+			for (i = 0; i < eccwData.kitColors.length; i++) {
+				this.colorMap[eccwData.kitColors[i].id] = eccwData.kitColors[i].hex;
 			}
 
-			this.defaults = wooceData.defaults || {};
-			this.newCount = wooceData.newCount || 0;
+			this.defaults = eccwData.defaults || {};
+			this.newCount = eccwData.newCount || 0;
 		},
 
 		hexToToken: function (hex) {
@@ -101,12 +101,12 @@
 		storeOriginalValues: function () {
 			var self = this;
 
-			$('.wooce-color-select').each(function () {
+			$('.eccw-color-select').each(function () {
 				var key = $(this).data('widget-key') + '_' + $(this).data('state');
 				self.originalValues[key] = $(this).val();
 			});
 
-			$('#wooce-settings-form input[type="checkbox"]').each(function () {
+			$('#eccw-settings-form input[type="checkbox"]').each(function () {
 				self.originalValues[$(this).attr('name')] = $(this).prop('checked');
 			});
 		},
@@ -119,7 +119,7 @@
 			var self = this;
 			var changed = false;
 
-			$('.wooce-color-select').each(function () {
+			$('.eccw-color-select').each(function () {
 				var key = $(this).data('widget-key') + '_' + $(this).data('state');
 				if (self.originalValues[key] !== $(this).val()) {
 					changed = true;
@@ -131,7 +131,7 @@
 				return true;
 			}
 
-			$('#wooce-settings-form input[type="checkbox"]').each(function () {
+			$('#eccw-settings-form input[type="checkbox"]').each(function () {
 				var key = $(this).attr('name');
 				if (self.originalValues[key] !== $(this).prop('checked')) {
 					changed = true;
@@ -157,7 +157,7 @@
 				self.dirty = false;
 			});
 
-			$('#wooce-settings-form').on('submit', function () {
+			$('#eccw-settings-form').on('submit', function () {
 				self.dirty = false;
 			});
 		}

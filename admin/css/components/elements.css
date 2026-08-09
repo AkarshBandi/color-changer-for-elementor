@@ -1,49 +1,49 @@
-/* Advanced Settings - Elements table card. */
+/* Elementor Colors - Elements table card. */
 
-.wooce-table {
+.eccw-table {
 	width: 100%;
 	border-collapse: collapse;
 }
 
-.wooce-table th,
-.wooce-table td {
+.eccw-table th,
+.eccw-table td {
 	padding: 12px 16px;
 	text-align: left;
 	border-bottom: 1px solid #f0f0f1;
 	vertical-align: middle;
 }
 
-.wooce-table th {
+.eccw-table th {
 	background: #fff;
 	font-weight: 600;
 	font-size: 13px;
 	color: #2c3338;
 }
 
-.wooce-table tr:last-child td {
+.eccw-table tr:last-child td {
 	border-bottom: none;
 }
 
-.wooce-widget-label {
+.eccw-widget-label {
 	font-weight: 600;
 }
 
-.wooce-color-row {
+.eccw-color-row {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	flex-wrap: wrap;
 }
 
-.wooce-color-row .wooce-color-select {
+.eccw-color-row .eccw-color-select {
 	min-width: 160px;
 }
 
-.wooce-color-row select[data-widget-key] {
+.eccw-color-row select[data-widget-key] {
 	margin: 0;
 }
 
-.wooce-swatch {
+.eccw-swatch {
 	display: inline-block;
 	width: 22px;
 	height: 22px;
@@ -52,14 +52,14 @@
 	flex-shrink: 0;
 }
 
-.wooce-reset-link {
+.eccw-reset-link {
 	cursor: pointer;
 	color: #b32d2e;
 	text-decoration: underline;
 	font-size: 12px;
 }
 
-.wooce-badge {
+.eccw-badge {
 	display: inline-block;
 	padding: 2px 8px;
 	border-radius: 10px;
@@ -68,18 +68,18 @@
 	text-transform: uppercase;
 }
 
-.wooce-badge-new {
+.eccw-badge-new {
 	background: #dcf2ff;
 	color: #2271b1;
 }
 
-.wooce-badge-default {
+.eccw-badge-default {
 	background: #f0f0f1;
 	color: #646970;
 }
 
 /* Preview chips (shown next to a row). */
-.wooce-preview-chip {
+.eccw-preview-chip {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -95,7 +95,7 @@
 	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.wooce-preview-chip.is-button {
+.eccw-preview-chip.is-button {
 	min-height: 32px;
 	padding: 6px 16px;
 	border-radius: 4px;
@@ -103,8 +103,8 @@
 }
 
 @media (max-width: 782px) {
-	.wooce-table th:nth-child(3),
-	.wooce-table td:nth-child(3) {
+	.eccw-table th:nth-child(3),
+	.eccw-table td:nth-child(3) {
 		display: none;
 	}
 }

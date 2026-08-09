@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use WooElementorColors\Heuristic_Engine;
+use ElementorColorChanger\Heuristic_Engine;
 
 /**
  * Tests for Heuristic_Engine.

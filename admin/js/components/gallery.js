@@ -1,5 +1,5 @@
 /**
- * Advanced Settings - Gallery component.
+ * Elementor Colors - Gallery component.
  *
  * Handles gallery preview hover states showing the hover/focus colors.
  *
@@ -17,7 +17,7 @@
 	function applyHover(preview) {
 		var widgetKey = preview.data('widget-key');
 		var state = preview.data('state');
-		var hoverSelect = $('.wooce-color-select[data-widget-key="' + widgetKey + '"][data-state="' + state.replace(/_normal$/, '_hover') + '"]');
+		var hoverSelect = $('.eccw-color-select[data-widget-key="' + widgetKey + '"][data-state="' + state.replace(/_normal$/, '_hover') + '"]');
 
 		if (!hoverSelect.length) {
 			return;
@@ -44,7 +44,7 @@
 
 		var widgetKey = preview.data('widget-key');
 		var state = preview.data('state');
-		var select = $('.wooce-color-select[data-widget-key="' + widgetKey + '"][data-state="' + state + '"]');
+		var select = $('.eccw-color-select[data-widget-key="' + widgetKey + '"][data-state="' + state + '"]');
 		var baseHex = settings.colorMap[select.val()] || '#000000';
 
 		if (preview.data('is-button') === 1) {
@@ -58,7 +58,7 @@
 	}
 
 	function bindEvents() {
-		$(document).on('mouseenter', '.wooce-gallery-preview', function () {
+		$(document).on('mouseenter', '.eccw-gallery-preview', function () {
 			var preview = $(this);
 
 			if (preview.data('state').indexOf('hover') !== -1 || preview.data('state').indexOf('focus') !== -1) {
@@ -68,7 +68,7 @@
 			applyHover(preview);
 		});
 
-		$(document).on('mouseleave', '.wooce-gallery-preview', function () {
+		$(document).on('mouseleave', '.eccw-gallery-preview', function () {
 			restoreHover($(this));
 		});
 	}

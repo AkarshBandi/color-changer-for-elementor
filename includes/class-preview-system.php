@@ -1,6 +1,6 @@
 <?php
 
-namespace WooElementorColors;
+namespace ElementorColorChanger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -8,12 +8,12 @@ class Preview_System {
 
 	public function init() {
 		add_action( 'template_redirect', array( $this, 'maybe_start_preview' ), 1 );
-		add_action( 'wp_ajax_wooce_apply_preview', array( $this, 'apply_preview' ) );
+		add_action( 'wp_ajax_eccw_apply_preview', array( $this, 'apply_preview' ) );
 	}
 
 	public static function is_preview_mode() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only URL flag; capability checked below.
-		if ( ! isset( $_GET['wooce_preview'] ) || '1' !== $_GET['wooce_preview'] ) {
+		if ( ! isset( $_GET['eccw_preview'] ) || '1' !== $_GET['eccw_preview'] ) {
 			return false;
 		}
 
@@ -21,7 +21,7 @@ class Preview_System {
 			return false;
 		}
 
-		$draft = get_transient( 'wooce_preview_draft' );
+		$draft = get_transient( 'eccw_preview_draft' );
 
 		if ( empty( $draft ) ) {
 			return false;
@@ -35,8 +35,8 @@ class Preview_System {
 			return;
 		}
 
-		if ( ! isset( $_COOKIE['wooce_preview_active'] ) || '1' !== $_COOKIE['wooce_preview_active'] ) {
-			setcookie( 'wooce_preview_active', '1', time() + HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		if ( ! isset( $_COOKIE['eccw_preview_active'] ) || '1' !== $_COOKIE['eccw_preview_active'] ) {
+			setcookie( 'eccw_preview_active', '1', time() + HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
 		}
 
 		ob_start();
@@ -54,15 +54,15 @@ class Preview_System {
 			return;
 		}
 
-		$apply_url    = admin_url( 'admin-ajax.php?action=wooce_apply_preview&nonce=' . wp_create_nonce( 'wooce_admin_nonce' ) );
-		$settings_url = admin_url( 'admin.php?page=wooce-settings' );
+		$apply_url    = admin_url( 'admin-ajax.php?action=eccw_apply_preview&nonce=' . wp_create_nonce( 'eccw_admin_nonce' ) );
+		$settings_url = admin_url( 'admin.php?page=eccw-settings' );
 
 		$adminbar_offset = is_admin_bar_showing() ? '32px' : '0';
 
-		echo '<div id="wooce-preview-banner" style="position:fixed;top:' . esc_attr( $adminbar_offset ) . ';left:0;right:0;z-index:999999;background:#2271b1;color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">';
-		echo '<span>' . esc_html__( 'You are previewing unsaved color changes.', 'woocommerce-elementor-colors' ) . '</span>';
-		echo '<a href="' . esc_url( $apply_url ) . '" style="background:#fff;color:#2271b1;padding:6px 16px;border-radius:3px;text-decoration:none;font-weight:600;">' . esc_html__( 'Apply These Changes', 'woocommerce-elementor-colors' ) . '</a>';
-		echo '<a href="' . esc_url( $settings_url ) . '" style="color:#fff;text-decoration:underline;">' . esc_html__( 'Go Back to Settings', 'woocommerce-elementor-colors' ) . '</a>';
+		echo '<div id="eccw-preview-banner" style="position:fixed;top:' . esc_attr( $adminbar_offset ) . ';left:0;right:0;z-index:999999;background:#2271b1;color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">';
+		echo '<span>' . esc_html__( 'You are previewing unsaved color changes.', 'color-changer-for-elementor' ) . '</span>';
+		echo '<a href="' . esc_url( $apply_url ) . '" style="background:#fff;color:#2271b1;padding:6px 16px;border-radius:3px;text-decoration:none;font-weight:600;">' . esc_html__( 'Apply These Changes', 'color-changer-for-elementor' ) . '</a>';
+		echo '<a href="' . esc_url( $settings_url ) . '" style="color:#fff;text-decoration:underline;">' . esc_html__( 'Go Back to Settings', 'color-changer-for-elementor' ) . '</a>';
 		echo '</div>';
 		$spacer_height = is_admin_bar_showing() ? '84px' : '52px';
 		echo '<div style="margin-top:' . esc_attr( $spacer_height ) . ';"></div>';
@@ -73,25 +73,25 @@ class Preview_System {
 	}
 
 	public function apply_preview() {
-		if ( ! check_ajax_referer( 'wooce_admin_nonce', 'nonce', false ) ) {
-			wp_die( esc_html__( 'Security check failed.', 'woocommerce-elementor-colors' ) );
+		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'color-changer-for-elementor' ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions.', 'woocommerce-elementor-colors' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) );
 		}
 
-		$draft = get_transient( 'wooce_preview_draft' );
+		$draft = get_transient( 'eccw_preview_draft' );
 
 		if ( empty( $draft ) ) {
 			wp_safe_redirect( home_url() );
 			exit;
 		}
 
-		$saved = get_option( 'wooce_colors_mappings', array() );
+		$saved = get_option( 'eccw_colors_mappings', array() );
 
 		if ( Mapping_Service::normalize_all( $saved ) ) {
-			update_option( 'wooce_colors_mappings', $saved );
+			update_option( 'eccw_colors_mappings', $saved );
 		}
 
 		foreach ( $draft as $widget_key => $widget_data ) {
@@ -113,12 +113,12 @@ class Preview_System {
 		$saved['version']   = isset( $saved['version'] ) ? $saved['version'] + 1 : 2;
 		$saved['last_scan'] = current_time( 'mysql' );
 
-		update_option( 'wooce_colors_mappings', $saved );
+		update_option( 'eccw_colors_mappings', $saved );
 
-		delete_transient( 'wooce_preview_draft' );
+		delete_transient( 'eccw_preview_draft' );
 
-		if ( isset( $_COOKIE['wooce_preview_active'] ) ) {
-			setcookie( 'wooce_preview_active', '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+		if ( isset( $_COOKIE['eccw_preview_active'] ) ) {
+			setcookie( 'eccw_preview_active', '', time() - HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
 		}
 
 		Cache_Manager::clear_css();

@@ -1,5 +1,5 @@
 /**
- * Advanced Settings - Dequeue Card component.
+ * Elementor Colors - Dequeue Card component.
  *
  * Keeps the dequeue toggles' disabled state in sync with the presence of
  * element mappings and marks the form dirty when toggled.
@@ -16,7 +16,7 @@
 	var settings = window.WooceSettings;
 
 	function bindEvents() {
-		$('#wooce-settings-form input[name="wooce_dequeue_blocks"]').on('change', function () {
+		$('#eccw-settings-form input[name="eccw_dequeue_blocks"]').on('change', function () {
 			settings.markDirty();
 		});
 	}

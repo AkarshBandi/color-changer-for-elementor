@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use WooElementorColors\CSS_Generator;
-use WooElementorColors\Heuristic_Engine;
+use ElementorColorChanger\CSS_Generator;
+use ElementorColorChanger\Heuristic_Engine;
 
 /**
  * Tests for CSS_Generator (logic core, no WP/Elementor dependency).

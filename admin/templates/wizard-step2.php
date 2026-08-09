@@ -1,19 +1,19 @@
 <?php defined( 'ABSPATH' ) || exit; ?>
-<div class="wooce-wizard-step" data-step="2">
-	<h2 style="text-align:center;margin-bottom:8px;"><?php echo esc_html__( 'See the Difference', 'woocommerce-elementor-colors' ); ?></h2>
-	<p style="text-align:center;color:#50575e;margin-bottom:20px;"><?php echo esc_html__( 'Compare your store before and after applying your brand colors.', 'woocommerce-elementor-colors' ); ?></p>
-	<div class="wooce-split">
-		<div class="wooce-split-column">
-			<div class="wooce-split-header before"><?php echo esc_html__( 'Before (Default)', 'woocommerce-elementor-colors' ); ?></div>
-			<div class="wooce-split-body before"></div>
+<div class="eccw-wizard-step" data-step="2">
+	<h2 style="text-align:center;margin-bottom:8px;"><?php echo esc_html__( 'See the Difference', 'color-changer-for-elementor' ); ?></h2>
+	<p style="text-align:center;color:#50575e;margin-bottom:20px;"><?php echo esc_html__( 'Compare your store before and after applying your brand colors.', 'color-changer-for-elementor' ); ?></p>
+	<div class="eccw-split">
+		<div class="eccw-split-column">
+			<div class="eccw-split-header before"><?php echo esc_html__( 'Before (Default)', 'color-changer-for-elementor' ); ?></div>
+			<div class="eccw-split-body before"></div>
 		</div>
-		<div class="wooce-toggle-wrap">
-			<button type="button" class="wooce-toggle-btn" title="<?php echo esc_attr__( 'Toggle colors', 'woocommerce-elementor-colors' ); ?>">↔</button>
-			<div class="wooce-toggle-label"><?php echo esc_html__( 'Toggle', 'woocommerce-elementor-colors' ); ?></div>
+		<div class="eccw-toggle-wrap">
+			<button type="button" class="eccw-toggle-btn" title="<?php echo esc_attr__( 'Toggle colors', 'color-changer-for-elementor' ); ?>">↔</button>
+			<div class="eccw-toggle-label"><?php echo esc_html__( 'Toggle', 'color-changer-for-elementor' ); ?></div>
 		</div>
-		<div class="wooce-split-column after">
-			<div class="wooce-split-header after"><?php echo esc_html__( 'After (Your Brand Colors)', 'woocommerce-elementor-colors' ); ?></div>
-			<div class="wooce-split-body after"></div>
+		<div class="eccw-split-column after">
+			<div class="eccw-split-header after"><?php echo esc_html__( 'After (Your Brand Colors)', 'color-changer-for-elementor' ); ?></div>
+			<div class="eccw-split-body after"></div>
 		</div>
 	</div>
 </div>

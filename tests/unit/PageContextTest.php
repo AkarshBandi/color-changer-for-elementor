@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use WooElementorColors\Page_Context;
+use ElementorColorChanger\Page_Context;
 
 /**
  * Tests for Page_Context.

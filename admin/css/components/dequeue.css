@@ -1,6 +1,6 @@
-/* Advanced Settings - Dequeue card. */
+/* Elementor Colors - Dequeue card. */
 
-.wooce-card {
+.eccw-card {
 	margin-bottom: 24px;
 	background: #fff;
 	border: 1px solid #dcdcde;
@@ -8,7 +8,7 @@
 	overflow: hidden;
 }
 
-.wooce-card-header {
+.eccw-card-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -19,31 +19,31 @@
 	flex-wrap: wrap;
 }
 
-.wooce-card-header h2 {
+.eccw-card-header h2 {
 	margin: 0;
 	font-size: 14px;
 	font-weight: 600;
 }
 
-.wooce-card-header .description {
+.eccw-card-header .description {
 	margin: 0;
 }
 
-.wooce-card-body {
+.eccw-card-body {
 	padding: 20px;
 }
 
-.wooce-dequeue-toggle {
+.eccw-dequeue-toggle {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	margin-bottom: 8px;
 }
 
-.wooce-dequeue-toggle:last-child {
+.eccw-dequeue-toggle:last-child {
 	margin-bottom: 0;
 }
 
-.wooce-dequeue-toggle input[type="checkbox"]:disabled + span {
+.eccw-dequeue-toggle input[type="checkbox"]:disabled + span {
 	color: #a7aaad;
 }

@@ -11,7 +11,7 @@
 		liveTimer: null,
 
 		init: function () {
-			if (typeof wooceData === 'undefined') {
+			if (typeof eccwData === 'undefined') {
 				return;
 			}
 
@@ -27,17 +27,17 @@
 		},
 
 		syncToolbarHeight: function () {
-			var toolbar = document.querySelector('#wooce-editor-toolbar');
-			var panel = document.querySelector('#wooce-editor-panel');
+			var toolbar = document.querySelector('#eccw-editor-toolbar');
+			var panel = document.querySelector('#eccw-editor-panel');
 			if (!toolbar || !panel) return;
-			panel.style.setProperty('--wooce-toolbar-height', toolbar.offsetHeight + 'px');
+			panel.style.setProperty('--eccw-toolbar-height', toolbar.offsetHeight + 'px');
 		},
 
 		renderCoverageBadge: function () {
-			var badge = document.querySelector('.wooce-coverage-badge');
+			var badge = document.querySelector('.eccw-coverage-badge');
 			if (!badge) return;
 
-			var coverage = wooceData.coverage;
+			var coverage = eccwData.coverage;
 			if (!coverage || !coverage.total) {
 				badge.style.display = 'none';
 				return;
@@ -57,15 +57,15 @@
 		},
 
 		restoreLiveDraft: function () {
-			if (!wooceData.liveDraft || typeof wooceData.liveDraft !== 'object') {
+			if (!eccwData.liveDraft || typeof eccwData.liveDraft !== 'object') {
 				return;
 			}
 
 			var hasColors = false;
 			var self = this;
 
-			Object.keys(wooceData.liveDraft).forEach(function (wk) {
-				var wd = wooceData.liveDraft[wk];
+			Object.keys(eccwData.liveDraft).forEach(function (wk) {
+				var wd = eccwData.liveDraft[wk];
 				if (!wd || !wd.slots) return;
 
 				Object.keys(wd.slots).forEach(function (sid) {
@@ -85,14 +85,14 @@
 		},
 
 		buildColorMap: function () {
-			for (var i = 0; i < wooceData.kitColors.length; i++) {
-				var c = wooceData.kitColors[i];
+			for (var i = 0; i < eccwData.kitColors.length; i++) {
+				var c = eccwData.kitColors[i];
 				this.colorMap[c.id] = c.hex;
 			}
 		},
 
 		injectWidgetAttributes: function () {
-			var selectors = wooceData.registrySelectors;
+			var selectors = eccwData.registrySelectors;
 			if (!selectors) return;
 
 			for (var widgetKey in selectors) {
@@ -102,7 +102,7 @@
 					try {
 						var elements = document.querySelectorAll(selectorList[s]);
 						for (var e = 0; e < elements.length; e++) {
-							elements[e].setAttribute('data-wooce-widget', widgetKey);
+							elements[e].setAttribute('data-eccw-widget', widgetKey);
 						}
 					} catch (err) {
 						// Skip invalid selectors
@@ -112,9 +112,9 @@
 		},
 
 		injectLiveStyle: function () {
-			if (!document.getElementById('wooce-live-style')) {
+			if (!document.getElementById('eccw-live-style')) {
 				var style = document.createElement('style');
-				style.id = 'wooce-live-style';
+				style.id = 'eccw-live-style';
 				document.head.appendChild(style);
 			}
 		},
@@ -124,18 +124,18 @@
 
 			document.addEventListener('click', function (e) {
 				var target = e.target;
-				var widgetKey = target.getAttribute('data-wooce-widget');
+				var widgetKey = target.getAttribute('data-eccw-widget');
 
 				if (!widgetKey) {
-					var parent = target.closest('[data-wooce-widget]');
+					var parent = target.closest('[data-eccw-widget]');
 					if (parent) {
-						widgetKey = parent.getAttribute('data-wooce-widget');
+						widgetKey = parent.getAttribute('data-eccw-widget');
 						target = parent;
 					}
 				}
 
 				if (widgetKey) {
-					if (target.closest('#wooce-editor-toolbar') || target.closest('#wooce-editor-panel')) {
+					if (target.closest('#eccw-editor-toolbar') || target.closest('#eccw-editor-panel')) {
 						return;
 					}
 					e.preventDefault();
@@ -144,24 +144,24 @@
 					return;
 				}
 
-				if (!target.closest('#wooce-editor-toolbar') && !target.closest('#wooce-editor-panel')) {
+				if (!target.closest('#eccw-editor-toolbar') && !target.closest('#eccw-editor-panel')) {
 					self.dismissPanel();
 				}
 			}, true);
 
-			document.querySelector('.wooce-save-btn') && document.querySelector('.wooce-save-btn').addEventListener('click', function () {
+			document.querySelector('.eccw-save-btn') && document.querySelector('.eccw-save-btn').addEventListener('click', function () {
 				self.saveAll();
 			});
 
-			document.querySelector('.wooce-reset-btn') && document.querySelector('.wooce-reset-btn').addEventListener('click', function () {
+			document.querySelector('.eccw-reset-btn') && document.querySelector('.eccw-reset-btn').addEventListener('click', function () {
 				self.resetDefaults();
 			});
 
-			document.querySelector('.wooce-share-btn') && document.querySelector('.wooce-share-btn').addEventListener('click', function () {
+			document.querySelector('.eccw-share-btn') && document.querySelector('.eccw-share-btn').addEventListener('click', function () {
 				self.generateShare();
 			});
 
-			document.querySelector('.wooce-undo-btn') && document.querySelector('.wooce-undo-btn').addEventListener('click', function () {
+			document.querySelector('.eccw-undo-btn') && document.querySelector('.eccw-undo-btn').addEventListener('click', function () {
 				self.undoLastSave();
 			});
 
@@ -172,33 +172,33 @@
 				}
 			});
 
-			document.querySelector('.wooce-exit-btn') && document.querySelector('.wooce-exit-btn').addEventListener('click', function () {
-				window.location.href = wooceData.settingsUrl || '/wp-admin/admin.php?page=wooce-settings';
+			document.querySelector('.eccw-exit-btn') && document.querySelector('.eccw-exit-btn').addEventListener('click', function () {
+				window.location.href = eccwData.settingsUrl || '/wp-admin/admin.php?page=eccw-settings';
 			});
 
-			document.querySelector('.wooce-panel-picker') && document.querySelector('.wooce-panel-picker').addEventListener('input', function () {
+			document.querySelector('.eccw-panel-picker') && document.querySelector('.eccw-panel-picker').addEventListener('input', function () {
 				var hex = this.value;
-				document.querySelector('.wooce-panel-hex-input').value = hex;
+				document.querySelector('.eccw-panel-hex-input').value = hex;
 				self.updateContrast(hex);
 				self.setActiveSwatch(hex);
 				self.applyColor(hex);
 			});
 
-			document.querySelector('.wooce-panel-hex-input') && document.querySelector('.wooce-panel-hex-input').addEventListener('input', function () {
+			document.querySelector('.eccw-panel-hex-input') && document.querySelector('.eccw-panel-hex-input').addEventListener('input', function () {
 				var hex = this.value;
 				if (/^#[0-9a-f]{6}$/i.test(hex)) {
-					document.querySelector('.wooce-panel-picker').value = hex;
+					document.querySelector('.eccw-panel-picker').value = hex;
 					self.updateContrast(hex);
 					self.setActiveSwatch(hex);
 					self.applyColor(hex);
 				}
 			});
 
-			document.querySelector('.wooce-revert-btn') && document.querySelector('.wooce-revert-btn').addEventListener('click', function () {
+			document.querySelector('.eccw-revert-btn') && document.querySelector('.eccw-revert-btn').addEventListener('click', function () {
 				self.revertColor();
 			});
 
-			document.querySelector('.wooce-panel-close') && document.querySelector('.wooce-panel-close').addEventListener('click', function () {
+			document.querySelector('.eccw-panel-close') && document.querySelector('.eccw-panel-close').addEventListener('click', function () {
 				self.dismissPanel();
 			});
 
@@ -226,12 +226,12 @@
 			this.currentTarget = target;
 			this.currentWidget = widgetKey;
 
-			var widgetData = wooceData.widgetSlots[widgetKey];
+			var widgetData = eccwData.widgetSlots[widgetKey];
 			if (!widgetData) return;
 
 			this.highlightElement(target);
 
-			var tabsEl = document.querySelector('.wooce-panel-tabs');
+			var tabsEl = document.querySelector('.eccw-panel-tabs');
 			tabsEl.innerHTML = '';
 			this.renderPalette();
 
@@ -240,12 +240,12 @@
 			widgetData.slots.forEach(function (slot, idx) {
 				var tab = document.createElement('button');
 				tab.type = 'button';
-				tab.className = 'wooce-panel-tab' + (idx === 0 ? ' active' : '');
+				tab.className = 'eccw-panel-tab' + (idx === 0 ? ' active' : '');
 				tab.textContent = slot.label;
 				tab.dataset.slotId = slot.slot_id;
 
 				tab.addEventListener('click', function () {
-					tabsEl.querySelectorAll('.wooce-panel-tab').forEach(function (t) {
+					tabsEl.querySelectorAll('.eccw-panel-tab').forEach(function (t) {
 						t.classList.remove('active');
 					});
 					this.classList.add('active');
@@ -261,7 +261,7 @@
 
 			this.currentSlotId = firstSlot;
 
-			document.querySelector('.wooce-panel-element-name').textContent = widgetData.label;
+			document.querySelector('.eccw-panel-element-name').textContent = widgetData.label;
 			this.showPanel();
 
 			if (firstSlot) {
@@ -271,12 +271,12 @@
 
 		renderPalette: function () {
 			var self = this;
-			var palette = document.querySelector('.wooce-panel-palette');
+			var palette = document.querySelector('.eccw-panel-palette');
 			if (!palette) return;
 			palette.innerHTML = '';
 
-			var colors = wooceData.kitColors || [];
-			var currentHex = (document.querySelector('.wooce-panel-picker') || {}).value || '';
+			var colors = eccwData.kitColors || [];
+			var currentHex = (document.querySelector('.eccw-panel-picker') || {}).value || '';
 
 			if (!colors.length) {
 				palette.style.display = 'none';
@@ -288,7 +288,7 @@
 			colors.forEach(function (c) {
 				var swatch = document.createElement('button');
 				swatch.type = 'button';
-				swatch.className = 'wooce-panel-swatch';
+				swatch.className = 'eccw-panel-swatch';
 				swatch.title = (c.label || c.id) + ' · ' + c.hex;
 				swatch.dataset.hex = c.hex;
 				swatch.dataset.label = c.label || c.id;
@@ -300,9 +300,9 @@
 
 				swatch.addEventListener('click', function () {
 					var hex = this.dataset.hex;
-					document.querySelector('.wooce-panel-picker').value = hex;
-					document.querySelector('.wooce-panel-hex-input').value = hex;
-					palette.querySelectorAll('.wooce-panel-swatch').forEach(function (s) {
+					document.querySelector('.eccw-panel-picker').value = hex;
+					document.querySelector('.eccw-panel-hex-input').value = hex;
+					palette.querySelectorAll('.eccw-panel-swatch').forEach(function (s) {
 						s.classList.remove('active');
 					});
 					this.classList.add('active');
@@ -324,7 +324,7 @@
 			if (!target) return;
 
 			var ring = document.createElement('div');
-			ring.className = 'wooce-element-highlight';
+			ring.className = 'eccw-element-highlight';
 			var rect = target.getBoundingClientRect();
 			var scrollY = window.scrollY || window.pageYOffset;
 			var scrollX = window.scrollX || window.pageXOffset;
@@ -353,7 +353,7 @@
 				var bg = computed.backgroundColor;
 				var color = computed.color;
 
-				var widgetData = wooceData.widgetSlots[widgetKey];
+				var widgetData = eccwData.widgetSlots[widgetKey];
 				var slotDef = null;
 				if (widgetData) {
 					widgetData.slots.forEach(function (s) {
@@ -375,13 +375,13 @@
 			if (hex === '#000000' || hex === '#000') {
 				var saved = this.draft[widgetKey];
 				if (!saved || !saved.slots[slotId]) {
-					var widgetIndex = wooceData.widgetSlots[widgetKey];
+					var widgetIndex = eccwData.widgetSlots[widgetKey];
 					if (widgetIndex) {
 						widgetIndex.slots.forEach(function (s) {
 							if (s.slot_id === slotId && s.states.indexOf('normal') !== -1) {
 								var defaultColorId = 'primary';
-								if (wooceData.kitColors.length > 0) {
-									defaultColorId = wooceData.kitColors[0].id;
+								if (eccwData.kitColors.length > 0) {
+									defaultColorId = eccwData.kitColors[0].id;
 								}
 								if (self.colorMap && self.colorMap[defaultColorId]) {
 									hex = self.colorMap[defaultColorId];
@@ -392,17 +392,17 @@
 				}
 			}
 
-			document.querySelector('.wooce-panel-picker').value = hex;
-			document.querySelector('.wooce-panel-hex-input').value = hex;
+			document.querySelector('.eccw-panel-picker').value = hex;
+			document.querySelector('.eccw-panel-hex-input').value = hex;
 			this.updateContrast(hex);
 			this.setActiveSwatch(hex);
 		},
 
 		setActiveSwatch: function (hex) {
-			var palette = document.querySelector('.wooce-panel-palette');
+			var palette = document.querySelector('.eccw-panel-palette');
 			if (!palette) return;
 
-			palette.querySelectorAll('.wooce-panel-swatch').forEach(function (s) {
+			palette.querySelectorAll('.eccw-panel-swatch').forEach(function (s) {
 				var isMatch = s.dataset.hex && s.dataset.hex.toLowerCase() === hex.toLowerCase();
 				s.classList.toggle('active', isMatch);
 			});
@@ -446,13 +446,13 @@
 			this.pendingUpdate = null;
 			this.liveTimer = null;
 
-			var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(update.widgetKey) +
+			var params = 'action=eccw_live_update&widget_key=' + encodeURIComponent(update.widgetKey) +
 				'&slot_id=' + encodeURIComponent(update.slotId) +
 				'&hex=' + encodeURIComponent(update.hex) +
-				'&nonce=' + encodeURIComponent(wooceData.nonce);
+				'&nonce=' + encodeURIComponent(eccwData.nonce);
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.open('POST', eccwData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				if (xhr.status === 200) {
@@ -480,7 +480,7 @@
 			this.updateUnsavedIndicator();
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.open('POST', eccwData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				if (xhr.status === 200) {
@@ -494,9 +494,9 @@
 				}
 			};
 
-			var params = 'action=wooce_live_update&widget_key=' + encodeURIComponent(this.currentWidget) +
+			var params = 'action=eccw_live_update&widget_key=' + encodeURIComponent(this.currentWidget) +
 				'&slot_id=' + encodeURIComponent(this.currentSlotId) +
-				'&remove=1&nonce=' + encodeURIComponent(wooceData.nonce);
+				'&remove=1&nonce=' + encodeURIComponent(eccwData.nonce);
 
 			xhr.send(params);
 		},
@@ -511,14 +511,14 @@
 				this.flushLiveUpdate();
 			}
 
-			var btn = document.querySelector('.wooce-save-btn');
+			var btn = document.querySelector('.eccw-save-btn');
 			if (btn) {
 				btn.textContent = 'Saving...';
 				btn.disabled = true;
 			}
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.open('POST', eccwData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				if (btn) {
@@ -547,8 +547,8 @@
 				}
 			};
 
-			var params = 'action=wooce_commit_live&draft=' + encodeURIComponent(JSON.stringify(self.draft)) +
-				'&nonce=' + encodeURIComponent(wooceData.nonce);
+			var params = 'action=eccw_commit_live&draft=' + encodeURIComponent(JSON.stringify(self.draft)) +
+				'&nonce=' + encodeURIComponent(eccwData.nonce);
 			xhr.send(params);
 		},
 
@@ -559,7 +559,7 @@
 			}
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.open('POST', eccwData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				if (xhr.status === 200) {
@@ -581,7 +581,7 @@
 				}
 			};
 
-			var params = 'action=wooce_reset_defaults&nonce=' + encodeURIComponent(wooceData.nonce);
+			var params = 'action=eccw_reset_defaults&nonce=' + encodeURIComponent(eccwData.nonce);
 			xhr.send(params);
 		},
 
@@ -593,14 +593,14 @@
 				this.flushLiveUpdate();
 			}
 
-			var btn = document.querySelector('.wooce-share-btn');
+			var btn = document.querySelector('.eccw-share-btn');
 			if (btn) {
 				btn.textContent = 'Generating...';
 				btn.disabled = true;
 			}
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.open('POST', eccwData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				btn && (btn.textContent = 'Share');
@@ -622,16 +622,16 @@
 				}
 			};
 
-			var params = 'action=wooce_generate_share&nonce=' + encodeURIComponent(wooceData.nonce);
+			var params = 'action=eccw_generate_share&nonce=' + encodeURIComponent(eccwData.nonce);
 			xhr.send(params);
 		},
 
 		showShareDialog: function (url) {
-			var existing = document.querySelector('.wooce-share-dialog');
+			var existing = document.querySelector('.eccw-share-dialog');
 			if (existing) existing.remove();
 
 			var overlay = document.createElement('div');
-			overlay.className = 'wooce-share-dialog';
+			overlay.className = 'eccw-share-dialog';
 			overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999999;display:flex;align-items:center;justify-content:center;';
 
 			var box = document.createElement('div');
@@ -695,7 +695,7 @@
 			var self = this;
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', wooceData.ajaxUrl, true);
+			xhr.open('POST', eccwData.ajaxUrl, true);
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			xhr.onload = function () {
 				if (xhr.status === 200) {
@@ -718,24 +718,24 @@
 				}
 			};
 
-			var params = 'action=wooce_undo_action&nonce=' + encodeURIComponent(wooceData.nonce);
+			var params = 'action=eccw_undo_action&nonce=' + encodeURIComponent(eccwData.nonce);
 			xhr.send(params);
 		},
 
 		showPanel: function () {
-			var panel = document.getElementById('wooce-editor-panel');
+			var panel = document.getElementById('eccw-editor-panel');
 			if (!panel) return;
 
 			this.syncToolbarHeight();
-			panel.classList.add('wooce-open');
+			panel.classList.add('eccw-open');
 			panel.setAttribute('aria-hidden', 'false');
 		},
 
 		dismissPanel: function () {
-			var panel = document.getElementById('wooce-editor-panel');
+			var panel = document.getElementById('eccw-editor-panel');
 			if (!panel) return;
 
-			panel.classList.remove('wooce-open');
+			panel.classList.remove('eccw-open');
 			panel.setAttribute('aria-hidden', 'true');
 			this.removeHighlight();
 			this.currentTarget = null;
@@ -744,18 +744,18 @@
 		},
 
 		applyCss: function (css) {
-			var style = document.getElementById('wooce-live-style');
+			var style = document.getElementById('eccw-live-style');
 			if (style) {
 				style.textContent += '\n' + css;
 			}
 		},
 
 		applyLocalCss: function (widgetKey, slotId, hex) {
-			var selectors = wooceData.registrySelectors[widgetKey];
+			var selectors = eccwData.registrySelectors[widgetKey];
 			if (!selectors) return;
 
 			var slotDef = null;
-			var widgetData = wooceData.widgetSlots[widgetKey];
+			var widgetData = eccwData.widgetSlots[widgetKey];
 			if (widgetData) {
 				widgetData.slots.forEach(function (s) {
 					if (s.slot_id === slotId) slotDef = s;
@@ -808,7 +808,7 @@
 		},
 
 		clearAllLocalCss: function () {
-			var style = document.getElementById('wooce-live-style');
+			var style = document.getElementById('eccw-live-style');
 			if (style) {
 				style.textContent = '';
 			}
@@ -841,7 +841,7 @@
 			}
 
 			var ratio = this.getContrastRatio(hex, bgColor);
-			var badge = document.querySelector('.wooce-panel-contrast');
+			var badge = document.querySelector('.eccw-panel-contrast');
 
 			if (badge) {
 				if (ratio >= 4.5) {
@@ -922,13 +922,13 @@
 		},
 
 		updateUnsavedIndicator: function () {
-			var badge = document.querySelector('.wooce-unsaved-badge');
+			var badge = document.querySelector('.eccw-unsaved-badge');
 			if (badge) {
 				var hasDraft = Object.keys(this.draft).length > 0;
 				badge.style.display = hasDraft ? 'inline' : 'none';
 			}
 
-			var saveBtn = document.querySelector('.wooce-save-btn');
+			var saveBtn = document.querySelector('.eccw-save-btn');
 			if (saveBtn) {
 				var hasDrafts = Object.keys(this.draft).length > 0;
 				saveBtn.disabled = !hasDrafts;
@@ -936,11 +936,11 @@
 		},
 
 		showToast: function (message, type) {
-			var existing = document.querySelector('.wooce-toast');
+			var existing = document.querySelector('.eccw-toast');
 			if (existing) existing.remove();
 
 			var toast = document.createElement('div');
-			toast.className = 'wooce-toast wooce-toast-' + (type || 'info');
+			toast.className = 'eccw-toast eccw-toast-' + (type || 'info');
 			toast.textContent = message;
 			toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:999999;padding:12px 24px;border-radius:6px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;';
 

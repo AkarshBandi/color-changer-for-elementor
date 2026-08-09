@@ -18,40 +18,40 @@
 		bindEvents: function () {
 			var self = this;
 
-			$(document).on('click', '.wooce-wizard-next', function () {
+			$(document).on('click', '.eccw-wizard-next', function () {
 				self.nextStep();
 			});
 
-			$(document).on('click', '.wooce-wizard-prev', function () {
+			$(document).on('click', '.eccw-wizard-prev', function () {
 				self.prevStep();
 			});
 
-			$(document).on('click', '.wooce-toggle-btn', function () {
+			$(document).on('click', '.eccw-toggle-btn', function () {
 				$(this).toggleClass('toggled');
-				$('.wooce-split-column.after').toggleClass('wooce-after-toggled');
+				$('.eccw-split-column.after').toggleClass('eccw-after-toggled');
 			});
 
-			$(document).on('change', '#wooce_dequeue_all', function () {
+			$(document).on('change', '#eccw_dequeue_all', function () {
 				if (!$(this).is(':checked')) {
-					$('.wooce-diagram-overlay.core').addClass('visible');
+					$('.eccw-diagram-overlay.core').addClass('visible');
 				} else {
-					$('.wooce-diagram-overlay.core').removeClass('visible');
+					$('.eccw-diagram-overlay.core').removeClass('visible');
 				}
 			});
 
-			$(document).on('click', '.wooce-launch-editor', function () {
+			$(document).on('click', '.eccw-launch-editor', function () {
 				self.completeOnboarding(function () {
 					window.location.href = $(this).data('editor-url');
 				}.bind(this));
 			});
 
-			$(document).on('click', '.wooce-launch-settings', function () {
+			$(document).on('click', '.eccw-launch-settings', function () {
 				self.completeOnboarding(function () {
 					window.location.href = $(this).data('settings-url');
 				}.bind(this));
 			});
 
-			$(document).on('submit', '.wooce-email-form', function (e) {
+			$(document).on('submit', '.eccw-email-form', function (e) {
 				e.preventDefault();
 				var email = $(this).find('input[type="email"]').val();
 				if (email) {
@@ -59,27 +59,27 @@
 						url: ajaxurl,
 						type: 'POST',
 						data: {
-							action: 'wooce_save_email',
+							action: 'eccw_save_email',
 							email: email,
-							nonce: wooceData ? wooceData.nonce : ''
+							nonce: eccwData ? eccwData.nonce : ''
 						},
 						success: function () {
-							$('.wooce-email-thanks').show();
-							$('.wooce-email-form').hide();
+							$('.eccw-email-thanks').show();
+							$('.eccw-email-form').hide();
 						}
 					});
 				}
 			});
 
-			$(document).on('click', '.wooce-wizard-skip-link', function (e) {
+			$(document).on('click', '.eccw-wizard-skip-link', function (e) {
 				e.preventDefault();
 				var link = this;
 				$.ajax({
 					url: ajaxurl,
 					type: 'POST',
 					data: {
-						action: 'wooce_dismiss_onboarding',
-						nonce: wooceData ? wooceData.nonce : ''
+						action: 'eccw_dismiss_onboarding',
+						nonce: eccwData ? eccwData.nonce : ''
 					},
 					complete: function () {
 						window.location.href = $(link).attr('href');
@@ -90,10 +90,10 @@
 
 		showStep: function (n) {
 			this.currentStep = n;
-			$('.wooce-wizard-step').removeClass('active');
-			$('.wooce-wizard-step[data-step="' + n + '"]').addClass('active');
+			$('.eccw-wizard-step').removeClass('active');
+			$('.eccw-wizard-step[data-step="' + n + '"]').addClass('active');
 
-			$('.wooce-wizard-dot').each(function () {
+			$('.eccw-wizard-dot').each(function () {
 				var idx = parseInt($(this).data('step'), 10);
 				if (idx === n) {
 					$(this).addClass('active').removeClass('completed');
@@ -104,10 +104,10 @@
 				}
 			});
 
-			$('.wooce-wizard-progress-text').text('Step ' + n + ' of ' + this.totalSteps);
+			$('.eccw-wizard-progress-text').text('Step ' + n + ' of ' + this.totalSteps);
 
-			$('.wooce-wizard-prev').css('visibility', n > 1 ? 'visible' : 'hidden');
-			$('.wooce-wizard-next').text(n < this.totalSteps ? 'Next →' : 'Finish');
+			$('.eccw-wizard-prev').css('visibility', n > 1 ? 'visible' : 'hidden');
+			$('.eccw-wizard-next').text(n < this.totalSteps ? 'Next →' : 'Finish');
 
 			if (n === 2 && !this.productHtml) {
 				this.loadABTest();
@@ -121,7 +121,7 @@
 		nextStep: function () {
 			if (this.currentStep === this.totalSteps) {
 				this.completeOnboarding(function () {
-					window.location.href = wooceData ? wooceData.siteUrl : '/';
+					window.location.href = eccwData ? eccwData.siteUrl : '/';
 				});
 				return;
 			}
@@ -147,13 +147,13 @@
 					url: ajaxurl,
 					type: 'POST',
 					data: {
-						action: 'wooce_scan_progress',
+						action: 'eccw_scan_progress',
 						offset: self.scanOffset,
-						nonce: wooceData ? wooceData.nonce : ''
+						nonce: eccwData ? eccwData.nonce : ''
 					},
 					success: function (resp) {
 						if (!resp.success) {
-							$('.wooce-scan-status').text('Scan failed. Please try again.');
+							$('.eccw-scan-status').text('Scan failed. Please try again.');
 							return;
 						}
 
@@ -163,15 +163,15 @@
 							$.each(data.found, function (i, item) {
 								if (!self.scanFound[item.widget_type]) {
 									self.scanFound[item.widget_type] = item;
-									var html = '<div class="wooce-scan-item"><span class="dashicons dashicons-yes-alt"></span> ' + item.label + ' <span style="color:#50575e;">found on ' + item.count + ' page(s)</span></div>';
-									$('.wooce-scan-results').append(html);
+									var html = '<div class="eccw-scan-item"><span class="dashicons dashicons-yes-alt"></span> ' + item.label + ' <span style="color:#50575e;">found on ' + item.count + ' page(s)</span></div>';
+									$('.eccw-scan-results').append(html);
 								}
 							});
 						}
 
 						if (data.done) {
 							self.scanDone = true;
-							$('.wooce-scan-status').text('Scan complete! Found ' + Object.keys(self.scanFound).length + ' element type(s).');
+							$('.eccw-scan-status').text('Scan complete! Found ' + Object.keys(self.scanFound).length + ' element type(s).');
 							setTimeout(function () {
 								self.nextStep();
 							}, 800);
@@ -181,7 +181,7 @@
 						}
 					},
 					error: function () {
-						$('.wooce-scan-status').text('Connection error. Retrying...');
+						$('.eccw-scan-status').text('Connection error. Retrying...');
 						setTimeout(doBatch, 1500);
 					}
 				});
@@ -193,44 +193,44 @@
 		loadABTest: function () {
 			var self = this;
 
-			$('.wooce-split-body.before').html('<div style="padding:40px;text-align:center;color:#50575e;">Loading...</div>');
-			$('.wooce-split-body.after').html('<div style="padding:40px;text-align:center;color:#50575e;">Loading...</div>');
+			$('.eccw-split-body.before').html('<div style="padding:40px;text-align:center;color:#50575e;">Loading...</div>');
+			$('.eccw-split-body.after').html('<div style="padding:40px;text-align:center;color:#50575e;">Loading...</div>');
 
 			$.ajax({
 				url: ajaxurl,
 				type: 'POST',
 				data: {
-					action: 'wooce_wizard_ab_test',
-					nonce: wooceData ? wooceData.nonce : ''
+					action: 'eccw_wizard_ab_test',
+					nonce: eccwData ? eccwData.nonce : ''
 				},
 				success: function (resp) {
 					if (resp.success && resp.data) {
-						$('.wooce-split-body.before').html(resp.data.before);
-						$('.wooce-split-body.after').html(resp.data.after);
+						$('.eccw-split-body.before').html(resp.data.before);
+						$('.eccw-split-body.after').html(resp.data.after);
 						self.productHtml = true;
 					} else {
-						$('.wooce-split-body.before').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Could not load product preview.</div>');
-						$('.wooce-split-body.after').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Could not load product preview.</div>');
+						$('.eccw-split-body.before').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Could not load product preview.</div>');
+						$('.eccw-split-body.after').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Could not load product preview.</div>');
 					}
 				},
 				error: function () {
-					$('.wooce-split-body.before').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Connection error.</div>');
-					$('.wooce-split-body.after').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Connection error.</div>');
+					$('.eccw-split-body.before').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Connection error.</div>');
+					$('.eccw-split-body.after').html('<div style="padding:40px;text-align:center;color:#b32d2e;">Connection error.</div>');
 				}
 			});
 		},
 
 		startConfetti: function () {
-			if ($('.wooce-confetti-container').length) {
+			if ($('.eccw-confetti-container').length) {
 				return;
 			}
 
 			var colors = ['#2271b1', '#46b450', '#f0ad4e', '#b32d2e', '#826eb4', '#00b9eb'];
-			var container = $('<div class="wooce-confetti-container"></div>');
+			var container = $('<div class="eccw-confetti-container"></div>');
 			$('body').append(container);
 
 			for (var i = 0; i < 60; i++) {
-				var piece = $('<div class="wooce-confetti-piece"></div>');
+				var piece = $('<div class="eccw-confetti-piece"></div>');
 				var color = colors[Math.floor(Math.random() * colors.length)];
 				var left = Math.random() * 100;
 				var size = 6 + Math.random() * 8;
@@ -262,15 +262,15 @@
 				url: ajaxurl,
 				type: 'POST',
 				data: {
-					action: 'wooce_complete_onboarding',
-					nonce: wooceData ? wooceData.nonce : '',
-					dequeue_blocks: $('#wooce_dequeue_all').is(':checked') ? 'yes' : 'no'
+					action: 'eccw_complete_onboarding',
+					nonce: eccwData ? eccwData.nonce : '',
+					dequeue_blocks: $('#eccw_dequeue_all').is(':checked') ? 'yes' : 'no'
 				},
 				complete: function () {
 					if (typeof callback === 'function') {
 						callback();
 					} else {
-						window.location.href = wooceData ? wooceData.siteUrl : '/';
+						window.location.href = eccwData ? eccwData.siteUrl : '/';
 					}
 				}
 			});
@@ -278,7 +278,7 @@
 	};
 
 	$(document).ready(function () {
-		if ($('.wooce-wizard-wrap').length) {
+		if ($('.eccw-wizard-wrap').length) {
 			wizard.init();
 		}
 	});

@@ -1,11 +1,11 @@
-# Copyright (C) 2024 WooCommerce Elementor Colors Team
+# Copyright (C) 2024 Color Changer for Elementor and WooCommerce Team
 # This file is distributed under the GPL-2.0+ license.
-# Message template for WooCommerce Elementor Colors.
+# Message template for Color Changer for Elementor and WooCommerce.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Elementor Colors 1.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/anomalyco/woocommerce-elementor-colors/issues\n"
+"Project-Id-Version: Color Changer for Elementor and WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/anomalyco/color-changer-for-elementor/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: en\n"
@@ -14,20 +14,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: woocommerce-elementor-colors.php:59
-msgid "WooCommerce Elementor Colors requires <strong>Elementor</strong> (free version) to be installed and active."
+#: color-changer-for-elementor.php:59
+msgid "Color Changer for Elementor and WooCommerce requires <strong>Elementor</strong> (free version) to be installed and active."
 msgstr ""
 
-#: woocommerce-elementor-colors.php:67
-msgid "WooCommerce Elementor Colors requires <strong>WooCommerce</strong> to be installed and active."
+#: color-changer-for-elementor.php:67
+msgid "Color Changer for Elementor and WooCommerce requires <strong>WooCommerce</strong> to be installed and active."
 msgstr ""
 
 #: includes/class-admin.php:27 includes/class-admin.php:28
-msgid "WooCommerce Elementor Colors"
+msgid "Color Changer for Elementor and WooCommerce"
 msgstr ""
 
 #: includes/class-admin.php:69
-msgid "WooCommerce Elementor Colors"
+msgid "Color Changer for Elementor and WooCommerce"
 msgstr ""
 
 #: includes/class-admin.php:70
