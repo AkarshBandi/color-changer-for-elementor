@@ -18,6 +18,10 @@ $definition = WooElementorColors\Element_Registry::lookup( $widget_key );
 $row_status = isset( $widget_data['status'] ) ? $widget_data['status'] : 'default';
 $slots      = isset( $widget_data['slots'] ) ? $widget_data['slots'] : array();
 
+// Prefer the friendly registry label so renames propagate to the table
+// without requiring users to re-save their mappings.
+$widget_label = ( $definition && isset( $definition['label'] ) ) ? $definition['label'] : ( isset( $widget_data['label'] ) ? $widget_data['label'] : $widget_key );
+
 $rendered_slots = array();
 
 foreach ( $slots as $slot_id => $slot_config ) {
@@ -56,7 +60,7 @@ foreach ( $slots as $slot_id => $slot_config ) {
 ?>
 <tr data-widget-key="<?php echo esc_attr( $widget_key ); ?>">
 	<td>
-		<span class="wooce-widget-label"><?php echo esc_html( $widget_data['label'] ); ?></span>
+		<span class="wooce-widget-label"><?php echo esc_html( $widget_label ); ?></span>
 	</td>
 	<td>
 		<span class="wooce-badge wooce-badge-<?php echo esc_attr( $row_status ); ?>">

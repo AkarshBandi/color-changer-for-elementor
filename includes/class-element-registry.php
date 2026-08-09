@@ -168,7 +168,7 @@ class Element_Registry {
 			'slots' => array(
 				array(
 					'slot_id'    => 'button_normal',
-					'label'      => __( 'Button', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Normal', 'woocommerce-elementor-colors' ),
 					'selectors'  => $s,
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color', 'fill' ),
@@ -176,7 +176,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'button_hover',
-					'label'      => __( 'Button Hover', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Hover', 'woocommerce-elementor-colors' ),
 					'selectors'  => $s,
 					'states'     => array( 'hover' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -184,7 +184,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'button_focus',
-					'label'      => __( 'Button Focus', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Focus', 'woocommerce-elementor-colors' ),
 					'selectors'  => $s,
 					'states'     => array( 'focus' ),
 					'properties' => array( 'background-color', 'color', 'border-color' ),
@@ -192,7 +192,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'button_disabled',
-					'label'      => __( 'Button Disabled', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Disabled', 'woocommerce-elementor-colors' ),
 					'selectors'  => $s,
 					'states'     => array( 'disabled' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -232,7 +232,7 @@ class Element_Registry {
 			'slots' => array(
 				array(
 					'slot_id'    => 'badge_normal',
-					'label'      => __( 'Badge', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Sale Badge', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce span.onsale', '.wc-block-components-product-sale-badge' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -272,7 +272,7 @@ class Element_Registry {
 			'slots' => array(
 				array(
 					'slot_id'    => 'tab_normal',
-					'label'      => __( 'Tab Link', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Tab', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce div.product .woocommerce-tabs ul.tabs li a' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -296,7 +296,7 @@ class Element_Registry {
 			'slots' => array(
 				array(
 					'slot_id'    => 'table_header',
-					'label'      => __( 'Table Header', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Column Headings', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce table.shop_table th', '.woocommerce table.cart th' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -304,7 +304,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'table_cell',
-					'label'      => __( 'Table Cell / Border', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Table Rows', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce table.shop_table td', '.woocommerce table.shop_table' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color', 'border-color' ),
@@ -312,7 +312,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'proceed_button',
-					'label'      => __( 'Proceed to Checkout', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Checkout Button', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce .wc-proceed-to-checkout a.checkout-button' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -320,7 +320,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'proceed_hover',
-					'label'      => __( 'Proceed Hover', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Checkout Button (Hover)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce .wc-proceed-to-checkout a.checkout-button' ),
 					'states'     => array( 'hover' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -328,7 +328,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'coupon_input',
-					'label'      => __( 'Coupon Input', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Coupon Field', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce .cart-collaterals .coupon .input-text', '.woocommerce form.checkout_coupon .input-text' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color', 'border-color' ),
@@ -336,7 +336,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'update_cart',
-					'label'      => __( 'Update Cart Button', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Update Cart', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce button[name="update_cart"]' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -344,7 +344,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'update_cart_hover',
-					'label'      => __( 'Update Cart Hover', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Update Cart (Hover)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce button[name="update_cart"]' ),
 					'states'     => array( 'hover' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -368,7 +368,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'place_order_hover',
-					'label'      => __( 'Place Order Hover', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Place Order (Hover)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '#place_order', '.woocommerce .checkout .button' ),
 					'states'     => array( 'hover' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -384,7 +384,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'input_focus',
-					'label'      => __( 'Input Focus', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Input Fields (Focus)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce .input-text', '.woocommerce select', '.select2-selection--single', '.woocommerce .select2-container--default .select2-selection--single' ),
 					'states'     => array( 'focus' ),
 					'properties' => array( 'border-color' ),
@@ -456,7 +456,7 @@ class Element_Registry {
 			'slots' => array(
 				array(
 					'slot_id'    => 'qty_input',
-					'label'      => __( 'Input', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Quantity Box', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.quantity .qty', 'input.qty' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color', 'border-color' ),
@@ -464,7 +464,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'qty_focus',
-					'label'      => __( 'Input Focus', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Quantity Box (Focus)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.quantity .qty', 'input.qty' ),
 					'states'     => array( 'focus' ),
 					'properties' => array( 'border-color' ),
@@ -480,7 +480,7 @@ class Element_Registry {
 			'slots' => array(
 				array(
 					'slot_id'    => 'nav_link',
-					'label'      => __( 'Navigation Link', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Menu Link', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce-MyAccount-navigation-link a' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -488,7 +488,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'nav_active',
-					'label'      => __( 'Active Navigation', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Active Menu Link', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce-MyAccount-navigation-link.is-active a' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -512,7 +512,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'link_hover',
-					'label'      => __( 'Link Hover', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Link (Hover)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce a:not(.elementor-button)' ),
 					'states'     => array( 'hover' ),
 					'properties' => array( 'color' ),
@@ -524,11 +524,11 @@ class Element_Registry {
 
 	private static function widget_loop_buttons() {
 		return array(
-			'label' => __( 'Shop Loop Buttons', 'woocommerce-elementor-colors' ),
+			'label' => __( 'Shop Page Buttons', 'woocommerce-elementor-colors' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'loop_button',
-					'label'      => __( 'Loop Button', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Add to Cart', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce ul.products li.product .button', 'a.add_to_cart_button', '.woocommerce .products .button' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -536,7 +536,7 @@ class Element_Registry {
 				),
 				array(
 					'slot_id'    => 'loop_hover',
-					'label'      => __( 'Loop Button Hover', 'woocommerce-elementor-colors' ),
+					'label'      => __( 'Add to Cart (Hover)', 'woocommerce-elementor-colors' ),
 					'selectors'  => array( '.woocommerce ul.products li.product .button', 'a.add_to_cart_button', '.woocommerce .products .button' ),
 					'states'     => array( 'hover' ),
 					'properties' => array( 'background-color', 'color' ),

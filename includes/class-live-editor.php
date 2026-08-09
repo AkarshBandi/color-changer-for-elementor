@@ -156,22 +156,27 @@ class Live_Editor {
 			</div>
 		</div>
 
-		<div id="wooce-editor-card" class="wooce-editor-card" style="display:none;">
-			<div class="wooce-card-arrow"></div>
-			<div class="wooce-card-header">
-				<span class="wooce-card-element-name"></span>
-				<button type="button" class="wooce-card-close">&times;</button>
-			</div>
-			<div class="wooce-card-body">
-				<div class="wooce-card-tabs"></div>
-				<div class="wooce-card-palette"></div>
-				<div class="wooce-card-color-row">
-					<input type="color" class="wooce-card-picker" value="#000000">
-					<input type="text" class="wooce-card-hex-input" value="#000000">
+		<div id="wooce-editor-panel" class="wooce-editor-panel" aria-hidden="true">
+			<div class="wooce-panel-header">
+				<div class="wooce-panel-title">
+					<span class="wooce-panel-kicker"><?php echo esc_html__( 'Customize', 'woocommerce-elementor-colors' ); ?></span>
+					<span class="wooce-panel-element-name"></span>
 				</div>
-				<div class="wooce-card-contrast"></div>
-				<div class="wooce-card-actions">
-					<button type="button" class="button wooce-revert-btn"><?php echo esc_html__( '↺ Reset this element', 'woocommerce-elementor-colors' ); ?></button>
+				<button type="button" class="wooce-panel-close" title="<?php echo esc_attr__( 'Close panel', 'woocommerce-elementor-colors' ); ?>" aria-label="<?php echo esc_attr__( 'Close panel', 'woocommerce-elementor-colors' ); ?>">&times;</button>
+			</div>
+			<div class="wooce-panel-body">
+				<div class="wooce-panel-tabs"></div>
+				<div class="wooce-panel-palette"></div>
+				<div class="wooce-panel-color-row">
+					<label class="wooce-panel-field-label" for="wooce-panel-picker"><?php echo esc_html__( 'Custom color', 'woocommerce-elementor-colors' ); ?></label>
+					<div class="wooce-panel-color-controls">
+						<input type="color" id="wooce-panel-picker" class="wooce-panel-picker" value="#000000">
+						<input type="text" class="wooce-panel-hex-input" value="#000000" aria-label="<?php echo esc_attr__( 'Hex color code', 'woocommerce-elementor-colors' ); ?>">
+					</div>
+				</div>
+				<div class="wooce-panel-contrast"></div>
+				<div class="wooce-panel-actions">
+					<button type="button" class="wooce-revert-btn"><?php echo esc_html__( 'Reset this element', 'woocommerce-elementor-colors' ); ?></button>
 				</div>
 			</div>
 		</div>
