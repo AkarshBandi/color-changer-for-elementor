@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: Color Changer for Elementor and WooCommerce
+ * Plugin Name: Color and Font Sync for Elementor and WooCommerce
  * Plugin URI:  https://github.com/AkarshBandi/color-changer-for-elementor
- * Description: Replaces WooCommerce default CSS with dynamic CSS that maps Elementor global colors to WooCommerce elements.
- * Version:     1.0.0
- * Author:      Akarsh Bandi
+ * Description: Your Elementor colors and fonts, applied automatically to every WooCommerce button, price, badge and form. No page-by-page setup.
+ * Version:     2.1.6
+ * Author:      admin
  * Author URI:  https://github.com/AkarshBandi
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -20,11 +20,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ECCw_VERSION', '1.0.0' );
-define( 'ECCw_PATH', plugin_dir_path( __FILE__ ) );
-define( 'ECCw_URL', plugin_dir_url( __FILE__ ) );
+define( 'ECCW_VERSION', '2.1.6' );
+define( 'ECCW_PATH', plugin_dir_path( __FILE__ ) );
+define( 'ECCW_URL', plugin_dir_url( __FILE__ ) );
 
-require ECCw_PATH . 'includes/class-autoloader.php';
+// A partial copy (missing the autoloader) must fail quietly, not fatal.
+if ( ! file_exists( ECCW_PATH . 'includes/class-autoloader.php' ) ) {
+	return;
+}
+
+require ECCW_PATH . 'includes/class-autoloader.php';
 
 register_activation_hook( __FILE__, array( 'ElementorColorChanger\\Activator', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'ElementorColorChanger\\Plugin', 'deactivate' ) );

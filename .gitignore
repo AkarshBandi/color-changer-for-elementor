@@ -6,3 +6,6 @@
 
 # PHPCS cache
 .phpcs-cache
+
+# Pre-release backup files (e.g. class-x.php.bak-2.1.6) kept locally only
+*.bak-*

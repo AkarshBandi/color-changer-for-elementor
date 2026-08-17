@@ -1,8 +1,18 @@
 <?php
 /**
- * Elementor Colors - Page shell.
+ * Store Design — page shell.
  *
- * Orchestrates all settings-page components inside a single settings form.
+ * Four areas, in the order a shop owner actually thinks about them:
+ *
+ *   1. Is it on, and what does my store look like now?
+ *   2. Which colours am I using?
+ *   3. Which part of my store uses which colour?
+ *   4. Everything else, folded away.
+ *
+ * The screen this replaced opened on a 4-column table of thirty-seven
+ * dropdowns whose options read "2666acb8 - #FAFAFA", above a Status column
+ * printing the words "default" and "configured". Every fact on it was true and
+ * almost none of it was answerable by the person it was for.
  *
  * @package WooCommerce_Elementor_Colors
  */
@@ -10,47 +20,50 @@
 defined( 'ABSPATH' ) || exit;
 
 /** @var array $kit_colors Elementor kit colors keyed by token id. */
+/** @var array $kit_labels Token id => human label. */
 /** @var array $mappings All widget mappings. */
-/** @var array $dequeue_settings Saved dequeue settings. */
-/** @var int $saved_version Current mapping version. */
-/** @var bool $dequeue_disabled True when no mappings exist (dequeue is inert). */
+/** @var array $settings Resolved plugin settings. */
+/** @var array $descriptions Widget key => plain description. */
 /** @var array $defaults Per-slot default color tokens. */
+/** @var bool $dequeue_disabled True when no mappings exist. */
+/** @var bool $has_own_kit Whether the kit defines its own colours. */
+/** @var bool $global_chrome Whether the site header/footer carries WooCommerce. */
+/** @var string $kit_edit_url Deep link into the Elementor kit editor. */
+/** @var string $shop_url Front-end shop URL. */
 /** @var int $new_count Number of widgets with status "new". */
-/** @var string $live_editor_url URL to open the Live Editor. */
-
-$eccw_kit_color_count = count( $kit_colors );
-$eccw_mapping_count   = count( $mappings );
 ?>
-<div class="wrap eccw-wrap">
+<div class="wrap eccw">
 
-	<?php require ECCw_PATH . 'admin/templates/components/header.php'; ?>
-	<?php require ECCw_PATH . 'admin/templates/components/notices.php'; ?>
-	<?php require ECCw_PATH . 'admin/templates/components/status-bar.php'; ?>
+	<?php require ECCW_PATH . 'admin/templates/components/header.php'; ?>
+	<?php require ECCW_PATH . 'admin/templates/components/notices.php'; ?>
 
-	<form id="eccw-settings-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+	<form id="eccw-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 		<input type="hidden" name="action" value="eccw_save_settings">
 		<?php wp_nonce_field( 'eccw_save_settings', 'eccw_save_nonce' ); ?>
 
-		<?php if ( ! empty( $mappings ) ) : ?>
-			<div class="eccw-card-grid">
-				<div class="eccw-card-grid-wide">
-					<?php include ECCw_PATH . 'admin/templates/components/elements-card.php'; ?>
+		<?php require ECCW_PATH . 'admin/templates/components/status-bar.php'; ?>
+
+		<?php require ECCW_PATH . 'admin/templates/components/gallery-card.php'; ?>
+
+		<section class="eccw-section">
+			<h2 class="eccw-section-title"><?php esc_html_e( 'What each part of your store uses', 'color-changer-for-elementor' ); ?></h2>
+			<p class="eccw-section-intro">
+				<?php esc_html_e( 'Each part already has a sensible colour picked from your palette. Change any of them if you want something different.', 'color-changer-for-elementor' ); ?>
+			</p>
+
+			<?php if ( ! empty( $mappings ) ) : ?>
+				<?php require ECCW_PATH . 'admin/templates/components/elements-card.php'; ?>
+			<?php else : ?>
+				<div class="eccw-note">
+					<?php esc_html_e( 'Nothing found to style yet. Once your store has WooCommerce content, it will be listed here.', 'color-changer-for-elementor' ); ?>
 				</div>
+			<?php endif; ?>
+		</section>
 
-				<?php require ECCw_PATH . 'admin/templates/components/dequeue-card.php'; ?>
+		<?php require ECCW_PATH . 'admin/templates/components/controls-card.php'; ?>
 
-				<?php include ECCw_PATH . 'admin/templates/components/gallery-card.php'; ?>
-			</div>
-		<?php else : ?>
-			<div class="eccw-card-grid">
-				<?php require ECCw_PATH . 'admin/templates/components/dequeue-card.php'; ?>
+		<?php require ECCW_PATH . 'admin/templates/components/advanced-card.php'; ?>
 
-				<div class="eccw-notice eccw-notice-info">
-					<?php echo esc_html__( 'No WooCommerce Elementor widgets found. Add WooCommerce widgets to your Elementor pages and click Rescan.', 'color-changer-for-elementor' ); ?>
-				</div>
-			</div>
-		<?php endif; ?>
-
-		<?php require ECCw_PATH . 'admin/templates/components/save-bar.php'; ?>
+		<?php require ECCW_PATH . 'admin/templates/components/save-bar.php'; ?>
 	</form>
 </div>

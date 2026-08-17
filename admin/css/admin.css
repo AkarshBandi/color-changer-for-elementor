@@ -1,0 +1,683 @@
+/**
+ * Store Design — admin screen.
+ *
+ * One stylesheet. This replaced base.css plus five per-card files, where the
+ * cascade order depended on the order of an enqueue loop.
+ *
+ * Everything is scoped under .eccw so nothing here can reach the rest of
+ * wp-admin, and the palette is defined once as custom properties.
+ */
+
+.eccw {
+	--eccw-ink: #1d2327;
+	--eccw-ink-soft: #50575e;
+	--eccw-ink-faint: #787c82;
+	--eccw-line: #dcdcde;
+	--eccw-line-soft: #f0f0f1;
+	--eccw-surface: #fff;
+	--eccw-surface-sunk: #f6f7f7;
+	--eccw-accent: #2271b1;
+	--eccw-accent-ink: #fff;
+	--eccw-good: #007017;
+	--eccw-good-bg: #edfaef;
+	--eccw-danger: #b32d2e;
+	--eccw-radius: 10px;
+	--eccw-radius-sm: 6px;
+	--eccw-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+
+	max-width: 1120px;
+	margin-right: 20px;
+	padding-bottom: 96px;
+	color: var(--eccw-ink);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* -- Header --------------------------------------------------------------- */
+
+.eccw-header {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	align-items: flex-start;
+	justify-content: space-between;
+	margin: 8px 0 24px;
+}
+
+.eccw-header-text h1 {
+	margin: 0 0 4px;
+	padding: 0;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--eccw-ink);
+}
+
+.eccw-header-text p {
+	margin: 0;
+	max-width: 62ch;
+	color: var(--eccw-ink-soft);
+	font-size: 14px;
+}
+
+.eccw-header-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* -- Buttons -------------------------------------------------------------- */
+
+.eccw-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 14px;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius-sm);
+	background: var(--eccw-surface);
+	color: var(--eccw-ink);
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.eccw-btn:hover {
+	border-color: #c3c4c7;
+	background: var(--eccw-surface-sunk);
+	color: var(--eccw-ink);
+}
+
+.eccw-btn:focus-visible {
+	outline: 2px solid var(--eccw-accent);
+	outline-offset: 1px;
+}
+
+.eccw-btn-primary {
+	border-color: var(--eccw-accent);
+	background: var(--eccw-accent);
+	color: var(--eccw-accent-ink);
+	padding: 9px 20px;
+	font-size: 14px;
+}
+
+.eccw-btn-primary:hover {
+	border-color: #135e96;
+	background: #135e96;
+	color: var(--eccw-accent-ink);
+}
+
+.eccw-btn-danger {
+	color: var(--eccw-danger);
+}
+
+.eccw-btn-danger:hover {
+	border-color: var(--eccw-danger);
+	color: var(--eccw-danger);
+}
+
+.eccw-btn[disabled] {
+	opacity: .5;
+	cursor: default;
+}
+
+/* -- Sections and cards --------------------------------------------------- */
+
+.eccw-section {
+	margin: 0 0 32px;
+}
+
+.eccw-section-title {
+	margin: 0 0 4px;
+	padding: 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--eccw-ink);
+}
+
+.eccw-section-intro {
+	margin: 0 0 14px;
+	max-width: 72ch;
+	color: var(--eccw-ink-soft);
+}
+
+.eccw-card {
+	padding: 20px;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius);
+	background: var(--eccw-surface);
+	box-shadow: var(--eccw-shadow);
+}
+
+.eccw-note {
+	margin: 12px 0 0;
+	padding: 10px 14px;
+	border-left: 3px solid var(--eccw-accent);
+	border-radius: var(--eccw-radius-sm);
+	background: var(--eccw-surface-sunk);
+	color: var(--eccw-ink-soft);
+}
+
+.eccw-note-good {
+	border-left-color: var(--eccw-good);
+	background: var(--eccw-good-bg);
+	color: var(--eccw-good);
+	margin: 0 0 20px;
+	font-weight: 500;
+}
+
+.eccw-rule {
+	margin: 20px 0;
+	border: 0;
+	border-top: 1px solid var(--eccw-line-soft);
+}
+
+/* -- Hero ----------------------------------------------------------------- */
+
+.eccw-hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 260px;
+	gap: 28px;
+	align-items: start;
+	margin: 0 0 32px;
+	padding: 24px;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius);
+	background: var(--eccw-surface);
+	box-shadow: var(--eccw-shadow);
+}
+
+.eccw-hero.is-off {
+	background: var(--eccw-surface-sunk);
+}
+
+.eccw-facts {
+	margin: 18px 0 0;
+	padding: 0;
+	list-style: none;
+	color: var(--eccw-ink-soft);
+}
+
+.eccw-facts li {
+	display: flex;
+	gap: 8px;
+	align-items: baseline;
+	margin: 0 0 7px;
+}
+
+.eccw-facts-mark {
+	flex: 0 0 auto;
+	width: 16px;
+	text-align: center;
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--eccw-good);
+}
+
+.eccw-facts li.is-todo .eccw-facts-mark {
+	color: #b32d2e;
+}
+
+.eccw-facts li.is-todo {
+	color: var(--eccw-ink);
+}
+
+.eccw-hero.is-off .eccw-facts {
+	opacity: .6;
+}
+
+/* -- Switches ------------------------------------------------------------- */
+
+.eccw-switch-row {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+	cursor: pointer;
+}
+
+.eccw-card-switches .eccw-switch-row + .eccw-switch-row {
+	margin-top: 18px;
+	padding-top: 18px;
+	border-top: 1px solid var(--eccw-line-soft);
+}
+
+.eccw-switch {
+	position: relative;
+	flex: 0 0 auto;
+	margin-top: 2px;
+}
+
+.eccw-switch input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.eccw-switch-track {
+	display: block;
+	width: 40px;
+	height: 22px;
+	border-radius: 11px;
+	background: #c3c4c7;
+	transition: background .15s ease-in-out;
+}
+
+.eccw-switch-knob {
+	display: block;
+	width: 16px;
+	height: 16px;
+	margin: 3px 0 0 3px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+	transition: transform .15s ease-in-out;
+}
+
+/* WordPress's own control blue, not green. Green reads as a status light
+   ("healthy") rather than a control, it collides with the success notice
+   directly above it, and it is the one hue a store owner is most likely to
+   have in their own palette — which made the switch look like a swatch. Blue
+   matches the Save button, so the page has one interactive colour. */
+.eccw-switch input:checked + .eccw-switch-track {
+	background: var(--eccw-accent);
+}
+
+.eccw-switch input:checked + .eccw-switch-track .eccw-switch-knob {
+	transform: translateX(18px);
+}
+
+.eccw-switch input:focus-visible + .eccw-switch-track {
+	outline: 2px solid var(--eccw-accent);
+	outline-offset: 2px;
+}
+
+.eccw-switch input[disabled] + .eccw-switch-track {
+	opacity: .5;
+}
+
+.eccw-switch-text {
+	display: block;
+}
+
+.eccw-switch-text strong {
+	display: block;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.eccw-hero-sub {
+	display: block;
+	margin-top: 3px;
+	max-width: 68ch;
+	color: var(--eccw-ink-soft);
+	font-size: 13px;
+	font-weight: 400;
+}
+
+/* -- Preview mock --------------------------------------------------------- */
+
+.eccw-preview-caption {
+	display: block;
+	margin-bottom: 8px;
+	color: var(--eccw-ink-faint);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+}
+
+.eccw-mock {
+	overflow: hidden;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius);
+	background: #fff;
+}
+
+.eccw-hero.is-off .eccw-mock {
+	filter: grayscale(1);
+	opacity: .5;
+}
+
+.eccw-mock-image {
+	position: relative;
+	height: 84px;
+	background: repeating-linear-gradient(45deg, #f0f0f1, #f0f0f1 8px, #e8e8e9 8px, #e8e8e9 16px);
+}
+
+.eccw-mock-badge {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: 10px;
+	font-weight: 700;
+}
+
+.eccw-mock-body {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding: 12px;
+}
+
+.eccw-mock-title {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.eccw-mock-stars {
+	font-size: 12px;
+	letter-spacing: 1px;
+}
+
+.eccw-mock-price {
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.eccw-mock-was {
+	margin-right: 4px;
+	opacity: .55;
+	font-weight: 400;
+}
+
+.eccw-mock-desc {
+	font-size: 12px;
+}
+
+.eccw-mock-button {
+	margin-top: 6px;
+	padding: 8px 12px;
+	border-radius: var(--eccw-radius-sm);
+	font-size: 12px;
+	font-weight: 600;
+	text-align: center;
+}
+
+.eccw-mock-link {
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+/* -- Palette swatches ----------------------------------------------------- */
+
+.eccw-swatches {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* Name above hex rather than beside it. Side by side, a colour the owner
+   called "Transparent" or "Light Grey" was ellipsised to "Trans..." and
+   "Light ..." — which defeats the point of reading the kit's titles at all. */
+.eccw-swatch {
+	display: grid;
+	grid-template-areas:
+		"chip name"
+		"chip hex";
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 10px;
+	align-content: center;
+	margin: 0;
+	padding: 8px 10px;
+	border: 1px solid var(--eccw-line-soft);
+	border-radius: var(--eccw-radius-sm);
+	background: var(--eccw-surface-sunk);
+}
+
+.eccw-swatch-chip {
+	grid-area: chip;
+	align-self: center;
+	width: 30px;
+	height: 30px;
+	border: 1px solid rgba(0, 0, 0, .12);
+	border-radius: var(--eccw-radius-sm);
+}
+
+.eccw-swatch-name {
+	grid-area: name;
+	overflow-wrap: anywhere;
+	font-weight: 500;
+	line-height: 1.3;
+}
+
+.eccw-swatch-hex {
+	grid-area: hex;
+	color: var(--eccw-ink-faint);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 11px;
+	line-height: 1.3;
+}
+
+.eccw-swatches-compact .eccw-swatch-chip {
+	width: 22px;
+	height: 22px;
+}
+
+/* -- Disclosures ---------------------------------------------------------- */
+
+.eccw-details > summary {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 0;
+	color: var(--eccw-accent);
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.eccw-details > summary:hover {
+	color: #135e96;
+}
+
+.eccw-details[open] > summary {
+	margin-bottom: 10px;
+}
+
+.eccw-details-advanced {
+	padding: 4px 0;
+}
+
+.eccw-details-advanced > summary {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.eccw-details-inline {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid var(--eccw-line-soft);
+}
+
+/* -- Element grid --------------------------------------------------------- */
+
+.eccw-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: 16px;
+}
+
+.eccw-element {
+	display: flex;
+	flex-direction: column;
+	padding: 16px;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius);
+	background: var(--eccw-surface);
+	box-shadow: var(--eccw-shadow);
+}
+
+.eccw-element-head {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 2px;
+}
+
+.eccw-element-head h3 {
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--eccw-ink);
+}
+
+.eccw-element-desc {
+	margin: 0 0 12px;
+	color: var(--eccw-ink-soft);
+	font-size: 13px;
+}
+
+/* -- Colour chooser ------------------------------------------------------- */
+
+.eccw-choice + .eccw-choice {
+	margin-top: 10px;
+}
+
+.eccw-hint {
+	margin: 0 0 12px;
+	color: var(--eccw-ink-soft);
+	font-size: 12.5px;
+	line-height: 1.45;
+}
+
+.eccw-choice-label {
+	display: block;
+	margin-bottom: 4px;
+	color: var(--eccw-ink-soft);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.eccw-choice.is-main .eccw-choice-label {
+	color: var(--eccw-ink);
+}
+
+.eccw-choice-control {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.eccw-choice-chip {
+	flex: 0 0 auto;
+	width: 30px;
+	height: 30px;
+	border: 1px solid rgba(0, 0, 0, .14);
+	border-radius: var(--eccw-radius-sm);
+}
+
+.eccw-choice-select {
+	flex: 1 1 auto;
+	min-width: 0;
+	max-width: none;
+	height: 32px;
+	margin: 0;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius-sm);
+	font-size: 13px;
+}
+
+.eccw-choice-picker {
+	flex: 0 0 auto;
+	width: 34px;
+	height: 32px;
+	padding: 2px;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius-sm);
+	background: var(--eccw-surface);
+	cursor: pointer;
+}
+
+.eccw-choice-picker[hidden] {
+	display: none;
+}
+
+.eccw-choice-picker:focus-visible {
+	outline: 2px solid var(--eccw-accent);
+	outline-offset: 1px;
+}
+
+.eccw-reset {
+	flex: 0 0 auto;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--eccw-ink-faint);
+	font-size: 12px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.eccw-reset:hover {
+	color: var(--eccw-accent);
+}
+
+.eccw-reset:focus-visible {
+	outline: 2px solid var(--eccw-accent);
+	outline-offset: 2px;
+}
+
+/* -- Actions -------------------------------------------------------------- */
+
+.eccw-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* -- Save bar ------------------------------------------------------------- */
+
+.eccw-savebar {
+	position: sticky;
+	bottom: 0;
+	z-index: 10;
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	justify-content: flex-end;
+	margin-top: 24px;
+	padding: 12px 20px;
+	border: 1px solid var(--eccw-line);
+	border-radius: var(--eccw-radius);
+	background: rgba(255, 255, 255, .94);
+	backdrop-filter: blur(6px);
+	box-shadow: 0 -1px 12px rgba(0, 0, 0, .07);
+}
+
+.eccw-savebar-hint {
+	color: var(--eccw-ink-soft);
+	font-size: 13px;
+}
+
+/* -- Narrow screens ------------------------------------------------------- */
+
+@media screen and (max-width: 782px) {
+	.eccw {
+		margin-right: 12px;
+	}
+
+	.eccw-hero {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.eccw-hero-preview {
+		max-width: 300px;
+	}
+
+	.eccw-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}

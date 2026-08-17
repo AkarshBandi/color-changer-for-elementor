@@ -1,115 +1,701 @@
-# Copyright (C) 2024 Color Changer for Elementor and WooCommerce Team
-# This file is distributed under the GPL-2.0+ license.
-# Message template for Color Changer for Elementor and WooCommerce.
-#
+# Copyright (C) 2026 admin
+# This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: Color Changer for Elementor and WooCommerce 1.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/anomalyco/color-changer-for-elementor/issues\n"
+"Project-Id-Version: Color and Font Sync for Elementor and WooCommerce 2.1.5\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/color-changer-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"POT-Creation-Date: 2026-08-17T13:19:34+02:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: color-changer-for-elementor\n"
 
-#: color-changer-for-elementor.php:59
-msgid "Color Changer for Elementor and WooCommerce requires <strong>Elementor</strong> (free version) to be installed and active."
+#. Plugin Name of the plugin
+#: color-changer-for-elementor.php
+msgid "Color and Font Sync for Elementor and WooCommerce"
 msgstr ""
 
-#: color-changer-for-elementor.php:67
-msgid "Color Changer for Elementor and WooCommerce requires <strong>WooCommerce</strong> to be installed and active."
+#. Plugin URI of the plugin
+#: color-changer-for-elementor.php
+msgid "https://github.com/AkarshBandi/color-changer-for-elementor"
 msgstr ""
 
-#: includes/class-admin.php:27 includes/class-admin.php:28
-msgid "Color Changer for Elementor and WooCommerce"
+#. Description of the plugin
+#: color-changer-for-elementor.php
+msgid "Your Elementor colors and fonts, applied automatically to every WooCommerce button, price, badge and form. No page-by-page setup."
 msgstr ""
 
-#: includes/class-admin.php:69
-msgid "Color Changer for Elementor and WooCommerce"
+#. Author of the plugin
+#: color-changer-for-elementor.php
+msgid "admin"
 msgstr ""
 
-#: includes/class-admin.php:70
-msgid "This plugin removes all WooCommerce default CSS and maps Elementor global colors to WooCommerce elements. Your WooCommerce pages will fully inherit your Elementor design system."
+#. Author URI of the plugin
+#: color-changer-for-elementor.php
+msgid "https://github.com/AkarshBandi"
 msgstr ""
 
-#: includes/class-admin.php:77
-msgid "Dequeue WooCommerce CSS"
+#: admin/templates/components/advanced-card.php:19
+msgid "Advanced"
 msgstr ""
 
-#: includes/class-admin.php:82
-msgid "Remove all WooCommerce default stylesheets (core CSS + block CSS)"
+#: admin/templates/components/advanced-card.php:23
+msgid "You should not need anything here. It is kept for the cases where you do."
 msgstr ""
 
-#: includes/class-admin.php:84
-msgid "When enabled, WooCommerce will use zero default CSS. All styling comes from your theme and Elementor."
+#: admin/templates/components/advanced-card.php:37
+msgid "Remove the WooCommerce Blocks stylesheet"
 msgstr ""
 
-#: includes/class-admin.php:93
-msgid "Detected Elementor Global Colors"
+#: admin/templates/components/advanced-card.php:39
+msgid "Only affects stores whose Cart or Checkout is built with WooCommerce blocks. That stylesheet carries spacing and layout as well as colour, so removing it can rearrange those two pages. Check them afterwards."
 msgstr ""
 
-#: includes/class-admin.php:94
-msgid "These colors from your active Elementor kit are automatically applied to WooCommerce elements:"
+#: admin/templates/components/advanced-card.php:46
+msgid "Unavailable: no colours are set yet, so there would be nothing to replace the removed stylesheet with."
 msgstr ""
 
-#: includes/class-admin.php:99
-msgid "Color"
+#: admin/templates/components/advanced-card.php:53
+msgid "Your store is checked for new parts automatically, on activation and once a day. These buttons only make it happen now."
 msgstr ""
 
-#: includes/class-admin.php:100
-msgid "Preview"
+#: admin/templates/components/advanced-card.php:58
+#: includes/class-admin-interface.php:126
+msgid "Check for new elements"
 msgstr ""
 
-#: includes/class-admin.php:101
-msgid "Value"
+#: admin/templates/components/advanced-card.php:72
+msgid "Put every part of your store back to its suggested colour? Your own choices will be replaced, and this cannot be undone."
 msgstr ""
 
-#: includes/class-admin.php:102
-msgid "Applied To"
+#: admin/templates/components/advanced-card.php:73
+msgid "Start over with suggested colours"
 msgstr ""
 
-#: includes/class-admin.php:119
-msgid "How It Works"
+#: admin/templates/components/controls-card.php:21
+msgid "Use my fonts as well as my colours"
 msgstr ""
 
-#: includes/class-admin.php:121
-msgid "WooCommerce default CSS is <strong>fully dequeued</strong> — both core CSS and block CSS."
+#: admin/templates/components/controls-card.php:22
+msgid "Product titles, prices and buttons pick up the fonts you chose in Elementor. Only the font and its weight — sizes and spacing are left alone, so nothing on your pages moves."
 msgstr ""
 
-#: includes/class-admin.php:122
-msgid "Elementor global colors (<strong>Primary, Secondary, Text, Accent</strong>) are read from your active kit."
+#: admin/templates/components/controls-card.php:28
+msgid "Keep text readable for me"
 msgstr ""
 
-#: includes/class-admin.php:123
-msgid "A dynamic override stylesheet is injected <strong>after</strong> Elementor frontend CSS using the <code>elementor/frontend/after_enqueue_styles</code> hook."
+#: admin/templates/components/controls-card.php:29
+msgid "Button labels switch between black and white so they can always be read, and any text colour too faint against the page is darkened just enough. Turn this off to use your colours exactly as picked."
 msgstr ""
 
-#: includes/class-admin.php:124
-msgid "All WooCommerce elements (buttons, prices, sale badges, notices, star ratings, tabs, pagination) inherit your Elementor design system."
+#: admin/templates/components/controls-card.php:35
+msgid "Work out hover colours for me"
 msgstr ""
 
-#: includes/class-admin.php:125
-msgid "No template overrides, no JavaScript, no bloat — pure PHP + CSS."
+#: admin/templates/components/controls-card.php:36
+msgid "Shades for hovering, clicking and unavailable buttons are worked out from each element’s main colour, so the whole store reacts the same way. Turn this off to pick every one yourself under “More options”."
 msgstr ""
 
-#: includes/class-admin.php:127
-msgid "Requires Elementor (free) and WooCommerce. Elementor Pro is recommended for dedicated WooCommerce widgets."
+#: admin/templates/components/controls-card.php:42
+msgid "Win against my theme"
 msgstr ""
 
-#: includes/class-admin.php:135
-msgid "Buttons, Prices, Links, Tabs, Info notices"
+#: admin/templates/components/controls-card.php:43
+msgid "Leave this on if your colours are not showing up. Turn it off only if you write your own CSS and want yours to take priority."
 msgstr ""
 
-#: includes/class-admin.php:136
-msgid "Button hover states"
+#: admin/templates/components/controls-card.php:48
+msgid "How it behaves"
 msgstr ""
 
-#: includes/class-admin.php:137
-msgid "Quantity inputs, Select fields"
+#: admin/templates/components/controls-card.php:50
+msgid "Sensible for most stores as they are. Change them if something does not look right."
 msgstr ""
 
-#: includes/class-admin.php:138
-msgid "Sale badges, Star ratings, Success notices"
+#: admin/templates/components/element-row.php:155
+#: includes/class-admin-interface.php:132
+msgid "Custom colour"
+msgstr ""
+
+#: admin/templates/components/element-row.php:156
+msgid "Custom colour…"
+msgstr ""
+
+#. translators: %s: name of the colour being set.
+#: admin/templates/components/element-row.php:173
+#, php-format
+msgid "Pick a custom colour for %s"
+msgstr ""
+
+#: admin/templates/components/element-row.php:181
+msgid "Reset"
+msgstr ""
+
+#: admin/templates/components/element-row.php:205
+msgid "This part is styled automatically — there is nothing to choose."
+msgstr ""
+
+#: admin/templates/components/element-row.php:212
+msgid "More options"
+msgstr ""
+
+#: admin/templates/components/element-row.php:220
+msgid "These only show when a shopper triggers them — by hovering, tabbing with a keyboard, or reaching an unavailable button. Your store will not look different until then."
+msgstr ""
+
+#: admin/templates/components/gallery-card.php:63
+msgid "Your colours"
+msgstr ""
+
+#: admin/templates/components/gallery-card.php:65
+msgid "These come from Elementor. Change them there and your store follows — you do not need to come back here."
+msgstr ""
+
+#: admin/templates/components/gallery-card.php:71
+msgid "No colours found yet."
+msgstr ""
+
+#: admin/templates/components/gallery-card.php:73
+msgid "Set your brand colours in Elementor"
+msgstr ""
+
+#: admin/templates/components/gallery-card.php:87
+msgid "Colours taken from your Elementor buttons, links and text"
+msgstr ""
+
+#: admin/templates/components/header.php:18
+#: includes/class-admin-interface.php:33
+#: includes/class-admin-interface.php:34
+#: includes/class-admin-interface.php:42
+#: includes/class-admin-interface.php:43
+msgid "Store Design"
+msgstr ""
+
+#: admin/templates/components/header.php:19
+msgid "Your shop pages use the colours and fonts you set in Elementor. No page-by-page setup."
+msgstr ""
+
+#: admin/templates/components/header.php:23
+msgid "Edit colours in Elementor"
+msgstr ""
+
+#: admin/templates/components/header.php:27
+msgid "View my store"
+msgstr ""
+
+#: admin/templates/components/notices.php:15
+msgid "Saved. Your store is showing the new design."
+msgstr ""
+
+#: admin/templates/components/save-bar.php:16
+#: includes/class-admin-interface.php:129
+msgid "You have unsaved changes."
+msgstr ""
+
+#: admin/templates/components/save-bar.php:26
+msgid "Save changes"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:118
+#: admin/templates/components/status-bar.php:121
+msgid "Your store is using your design"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:118
+#: admin/templates/components/status-bar.php:122
+msgid "Your store is using default WooCommerce colours"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:126
+msgid "Turn this off to put the store back to normal at once. Nothing you have chosen is deleted."
+msgstr ""
+
+#. translators: %s: name of the Elementor kit, e.g. "Default Kit".
+#: admin/templates/components/status-bar.php:140
+#, php-format
+msgid "Connected to your Elementor kit, “%s”."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:141
+msgid "Connected to your Elementor kit."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:142
+msgid "No Elementor kit found yet."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:147
+msgid "Your brand colours were found."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:148
+msgid "No brand colours set — stand-in colours are being used."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:154
+msgid "Your fonts were found, but are not being applied."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:155
+msgid "Your fonts were found and are being applied."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:156
+msgid "No fonts set in Elementor, so only colours are applied."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:162
+msgid "Styling is active. Your header shows a cart, so it applies across the whole site."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:163
+msgid "Styling is active on your shop pages. The rest of your site is left alone."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:164
+msgid "Styling is switched off. Your store is showing default WooCommerce colours."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:174
+msgid "Done:"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:174
+msgid "Needs attention:"
+msgstr ""
+
+#. translators: %s: number of store elements.
+#: admin/templates/components/status-bar.php:190
+#, php-format
+msgid "%s part of your store is covered."
+msgid_plural "%s parts of your store are covered."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/templates/components/status-bar.php:199
+msgid "How your store looks"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:204
+msgid "Sale!"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:210
+msgid "Linen Shirt"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:220
+msgid "Soft, breathable and cut a little loose."
+msgstr ""
+
+#: admin/templates/components/status-bar.php:224
+msgid "Add to cart"
+msgstr ""
+
+#: admin/templates/components/status-bar.php:228
+msgid "More in Shirts"
+msgstr ""
+
+#: admin/templates/settings-page.php:49
+msgid "What each part of your store uses"
+msgstr ""
+
+#: admin/templates/settings-page.php:51
+msgid "Each part already has a sensible colour picked from your palette. Change any of them if you want something different."
+msgstr ""
+
+#: admin/templates/settings-page.php:58
+msgid "Nothing found to style yet. Once your store has WooCommerce content, it will be listed here."
+msgstr ""
+
+#: includes/class-activator.php:20
+msgid "Color and Font Sync for Elementor and WooCommerce requires both WooCommerce and Elementor to be installed and active."
+msgstr ""
+
+#. translators: %s: settings page URL
+#: includes/class-activator.php:98
+#, php-format
+msgid "Color and Font Sync for Elementor and WooCommerce is active. Your store elements are now styled with your Elementor brand colors. <a href=\"%s\">Go to settings</a>."
+msgstr ""
+
+#: includes/class-admin-interface.php:69
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin-interface.php:125
+msgid "Checking…"
+msgstr ""
+
+#: includes/class-admin-interface.php:127
+msgid "Resetting…"
+msgstr ""
+
+#: includes/class-admin-interface.php:128
+msgid "That did not work. Please try again."
+msgstr ""
+
+#: includes/class-admin-interface.php:130
+msgid "Nothing new to review."
+msgstr ""
+
+#: includes/class-admin-interface.php:131
+msgid "New parts of your store were found. Reload to see them?"
+msgstr ""
+
+#: includes/class-admin-interface.php:183
+msgid "Button colour"
+msgstr ""
+
+#: includes/class-admin-interface.php:184
+msgid "Button colour (mouse over)"
+msgstr ""
+
+#: includes/class-admin-interface.php:185
+msgid "Button text"
+msgstr ""
+
+#: includes/class-admin-interface.php:186
+msgid "Button text (mouse over)"
+msgstr ""
+
+#: includes/class-admin-interface.php:187
+msgid "Link colour"
+msgstr ""
+
+#: includes/class-admin-interface.php:188
+msgid "Link colour (mouse over)"
+msgstr ""
+
+#: includes/class-admin-interface.php:189
+msgid "Body text"
+msgstr ""
+
+#. translators: %d: heading level, 1 to 6.
+#: includes/class-admin-interface.php:194
+#, php-format
+msgid "Heading %d"
+msgstr ""
+
+#: includes/class-admin-interface.php:277
+msgid "The main button on a product page."
+msgstr ""
+
+#: includes/class-admin-interface.php:278
+msgid "Prices, wherever they appear."
+msgstr ""
+
+#: includes/class-admin-interface.php:279
+msgid "The “Sale!” flash on a discounted product."
+msgstr ""
+
+#: includes/class-admin-interface.php:280
+msgid "Review stars on products."
+msgstr ""
+
+#: includes/class-admin-interface.php:281
+msgid "The Description and Reviews tabs on a product."
+msgstr ""
+
+#: includes/class-admin-interface.php:282
+msgid "The cart contents, and the mini cart in your header."
+msgstr ""
+
+#: includes/class-admin-interface.php:283
+msgid "Checkout fields, totals and the place-order button."
+msgstr ""
+
+#: includes/class-admin-interface.php:284
+msgid "“Added to cart” confirmations, warnings and errors."
+msgstr ""
+
+#: includes/class-admin-interface.php:285
+msgid "The quantity box beside Add to cart."
+msgstr ""
+
+#: includes/class-admin-interface.php:286
+msgid "The My Account pages and their menu."
+msgstr ""
+
+#: includes/class-admin-interface.php:287
+msgid "Store links, such as category and product names."
+msgstr ""
+
+#: includes/class-admin-interface.php:288
+msgid "Add-to-cart buttons in product listings."
+msgstr ""
+
+#: includes/class-admin-interface.php:306
+msgid "when the mouse is over it"
+msgstr ""
+
+#: includes/class-admin-interface.php:307
+msgid "when reached by keyboard"
+msgstr ""
+
+#: includes/class-admin-interface.php:308
+msgid "when it is unavailable"
+msgstr ""
+
+#: includes/class-admin-interface.php:309
+msgid "when it is the current one"
+msgstr ""
+
+#: includes/class-admin-interface.php:310
+msgid "normally"
+msgstr ""
+
+#: includes/class-admin-interface.php:314
+msgid "When the mouse is over it"
+msgstr ""
+
+#: includes/class-admin-interface.php:315
+msgid "When reached by keyboard"
+msgstr ""
+
+#: includes/class-admin-interface.php:316
+msgid "When it is unavailable"
+msgstr ""
+
+#: includes/class-admin-interface.php:317
+msgid "When it is the current one"
+msgstr ""
+
+#: includes/class-admin-interface.php:318
+msgid "Normally"
+msgstr ""
+
+#. translators: 1: element name, e.g. "Input Fields". 2: state, e.g. "when reached by keyboard".
+#: includes/class-admin-interface.php:335
+#, php-format
+msgctxt "colour slot label"
+msgid "%1$s — %2$s"
+msgstr ""
+
+#: includes/class-admin-interface.php:430
+#: includes/class-ajax-handlers.php:25
+msgid "Security check failed."
+msgstr ""
+
+#: includes/class-admin-interface.php:434
+#: includes/class-ajax-handlers.php:29
+msgid "You do not have sufficient permissions."
+msgstr ""
+
+#: includes/class-ajax-handlers.php:39
+msgid "No widgets specified."
+msgstr ""
+
+#: includes/class-ajax-handlers.php:68
+msgid "Dismissed."
+msgstr ""
+
+#. translators: %d: number of new widgets found
+#: includes/class-ajax-handlers.php:108
+#, php-format
+msgid "Scan complete. Found %d new widget(s)."
+msgstr ""
+
+#: includes/class-ajax-handlers.php:133
+msgid "All elements reset to defaults."
+msgstr ""
+
+#: includes/class-element-registry.php:255
+msgid "Add to Cart Button"
+msgstr ""
+
+#: includes/class-element-registry.php:259
+msgid "Normal"
+msgstr ""
+
+#: includes/class-element-registry.php:267
+msgid "Hover"
+msgstr ""
+
+#: includes/class-element-registry.php:275
+msgid "Focus"
+msgstr ""
+
+#: includes/class-element-registry.php:283
+msgid "Disabled"
+msgstr ""
+
+#: includes/class-element-registry.php:294
+msgid "Product Price"
+msgstr ""
+
+#: includes/class-element-registry.php:298
+msgid "Regular Price"
+msgstr ""
+
+#: includes/class-element-registry.php:305
+msgid "Sale Price"
+msgstr ""
+
+#: includes/class-element-registry.php:316
+#: includes/class-element-registry.php:320
+msgid "Sale Badge"
+msgstr ""
+
+#: includes/class-element-registry.php:331
+msgid "Star Rating"
+msgstr ""
+
+#: includes/class-element-registry.php:335
+msgid "Filled Stars"
+msgstr ""
+
+#: includes/class-element-registry.php:342
+msgid "Empty Stars"
+msgstr ""
+
+#: includes/class-element-registry.php:353
+msgid "Product Tabs"
+msgstr ""
+
+#: includes/class-element-registry.php:357
+msgid "Tab"
+msgstr ""
+
+#: includes/class-element-registry.php:365
+msgid "Active Tab"
+msgstr ""
+
+#: includes/class-element-registry.php:376
+msgid "Cart Table"
+msgstr ""
+
+#: includes/class-element-registry.php:380
+msgid "Column Headings"
+msgstr ""
+
+#: includes/class-element-registry.php:399
+msgid "Table Rows"
+msgstr ""
+
+#: includes/class-element-registry.php:406
+msgid "Checkout Button"
+msgstr ""
+
+#: includes/class-element-registry.php:414
+msgid "Checkout Button (Hover)"
+msgstr ""
+
+#: includes/class-element-registry.php:421
+msgid "Coupon Field"
+msgstr ""
+
+#: includes/class-element-registry.php:428
+msgid "Update Cart"
+msgstr ""
+
+#: includes/class-element-registry.php:436
+msgid "Update Cart (Hover)"
+msgstr ""
+
+#: includes/class-element-registry.php:447
+msgid "Checkout"
+msgstr ""
+
+#: includes/class-element-registry.php:451
+msgid "Place Order Button"
+msgstr ""
+
+#: includes/class-element-registry.php:459
+msgid "Place Order (Hover)"
+msgstr ""
+
+#: includes/class-element-registry.php:466
+msgid "Input Fields"
+msgstr ""
+
+#: includes/class-element-registry.php:474
+msgid "Input Fields (Focus)"
+msgstr ""
+
+#: includes/class-element-registry.php:485
+msgid "Notices"
+msgstr ""
+
+#: includes/class-element-registry.php:489
+msgid "Success Border"
+msgstr ""
+
+#: includes/class-element-registry.php:496
+msgid "Success Icon"
+msgstr ""
+
+#: includes/class-element-registry.php:503
+msgid "Info Border"
+msgstr ""
+
+#: includes/class-element-registry.php:510
+msgid "Info Icon"
+msgstr ""
+
+#: includes/class-element-registry.php:517
+msgid "Error Border"
+msgstr ""
+
+#: includes/class-element-registry.php:524
+msgid "Error Icon"
+msgstr ""
+
+#: includes/class-element-registry.php:535
+msgid "Quantity Input"
+msgstr ""
+
+#: includes/class-element-registry.php:539
+msgid "Quantity Box"
+msgstr ""
+
+#: includes/class-element-registry.php:547
+msgid "Quantity Box (Focus)"
+msgstr ""
+
+#: includes/class-element-registry.php:558
+msgid "My Account"
+msgstr ""
+
+#: includes/class-element-registry.php:562
+msgid "Menu Link"
+msgstr ""
+
+#: includes/class-element-registry.php:570
+msgid "Active Menu Link"
+msgstr ""
+
+#: includes/class-element-registry.php:581
+msgid "General Links"
+msgstr ""
+
+#: includes/class-element-registry.php:585
+msgid "Link"
+msgstr ""
+
+#: includes/class-element-registry.php:593
+msgid "Link (Hover)"
+msgstr ""
+
+#: includes/class-element-registry.php:600
+msgid "Body Text"
+msgstr ""
+
+#: includes/class-element-registry.php:611
+msgid "Shop Page Buttons"
+msgstr ""
+
+#: includes/class-element-registry.php:615
+msgid "Add to Cart"
+msgstr ""
+
+#: includes/class-element-registry.php:623
+msgid "Add to Cart (Hover)"
+msgstr ""
+
+#: includes/class-plugin.php:88
+msgid "Color and Font Sync for Elementor and WooCommerce requires both <strong>WooCommerce</strong> and <strong>Elementor</strong> to be installed and active."
 msgstr ""

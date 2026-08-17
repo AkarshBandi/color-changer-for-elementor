@@ -1,30 +1,31 @@
 <?php
 /**
- * Elementor Colors - Header component.
+ * Store Design — page header.
+ *
+ * Title, one sentence saying what the screen does, and the two links people
+ * leave this page for: their own store, and the kit where the colours live.
  *
  * @package WooCommerce_Elementor_Colors
  */
 
 defined( 'ABSPATH' ) || exit;
 
-/** @var int $new_count Number of widgets with status "new". */
+/** @var string $shop_url Front-end shop URL. */
+/** @var string $kit_edit_url Deep link into the Elementor kit editor. */
 ?>
 <div class="eccw-header">
-	<h1><?php echo esc_html__( 'Color Changer for Elementor and WooCommerce', 'color-changer-for-elementor' ); ?></h1>
-	<div class="eccw-actions">
-		<button type="button" class="button eccw-rescan" data-eccw-action="rescan">
-			<?php echo esc_html__( 'Rescan', 'color-changer-for-elementor' ); ?>
-		</button>
-		<button
-			type="button"
-			class="button eccw-dismiss-new"
-			data-eccw-action="dismiss-new"
-			<?php echo 0 === $new_count ? ' disabled' : ''; ?>
-		>
-			<?php echo esc_html__( 'Dismiss All New', 'color-changer-for-elementor' ); ?>
-		</button>
-		<button type="button" class="button button-secondary eccw-preview-on-site" data-eccw-action="preview-on-site">
-			<?php echo esc_html__( 'Preview on Site', 'color-changer-for-elementor' ); ?>
-		</button>
+	<div class="eccw-header-text">
+		<h1><?php esc_html_e( 'Store Design', 'color-changer-for-elementor' ); ?></h1>
+		<p><?php esc_html_e( 'Your shop pages use the colours and fonts you set in Elementor. No page-by-page setup.', 'color-changer-for-elementor' ); ?></p>
+	</div>
+	<div class="eccw-header-actions">
+		<a class="eccw-btn eccw-btn-quiet" href="<?php echo esc_url( $kit_edit_url ); ?>" target="_blank" rel="noopener noreferrer">
+			<?php esc_html_e( 'Edit colours in Elementor', 'color-changer-for-elementor' ); ?>
+			<span aria-hidden="true">&#8599;</span>
+		</a>
+		<a class="eccw-btn eccw-btn-quiet" href="<?php echo esc_url( $shop_url ); ?>" target="_blank" rel="noopener noreferrer">
+			<?php esc_html_e( 'View my store', 'color-changer-for-elementor' ); ?>
+			<span aria-hidden="true">&#8599;</span>
+		</a>
 	</div>
 </div>

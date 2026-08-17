@@ -14,6 +14,29 @@ defined( 'ABSPATH' ) || exit;
 class Mapping_Service {
 
 	/**
+	 * Advance the mappings version in-place.
+	 *
+	 * The version is part of the generated CSS cache key, so every path that
+	 * changes what the stylesheet should contain has to move it. Owning the
+	 * counter in one place means the next path added does not have to know
+	 * that history.
+	 *
+	 * @param array $saved Mappings option, by reference.
+	 * @return int The new version.
+	 */
+	public static function bump_version( &$saved ) {
+		if ( ! is_array( $saved ) ) {
+			$saved = array();
+		}
+
+		$current = isset( $saved['version'] ) ? (int) $saved['version'] : 0;
+
+		$saved['version'] = max( 0, $current ) + 1;
+
+		return $saved['version'];
+	}
+
+	/**
 	 * Normalize legacy widget keys (and dismissed keys) in-place.
 	 *
 	 * @param array $saved Mappings option, by reference.
@@ -182,8 +205,9 @@ class Mapping_Service {
 
 				$color = strtolower( (string) $slot_config['color'] );
 
-				// Accept either a kit color token or a raw hex value
-				// (custom colors from the Live Editor may include the #).
+				// Accept either a kit color token or a raw hex value. Custom hex
+				// is free: a colour picker that cannot pick a colour reads as
+				// broken, not as limited.
 				$hex = ltrim( $color, '#' );
 
 				if ( ! in_array( $color, $valid_ids, true ) ) {
@@ -205,6 +229,14 @@ class Mapping_Service {
 			}
 		}
 
-		return $clean;
+		/**
+		 * Filters mappings after sanitization, before they are stored.
+		 *
+		 * Anything added here must already be safe to persist and render.
+		 *
+		 * @param array $clean Sanitized mappings.
+		 * @param array $raw   Unfiltered input.
+		 */
+		return (array) apply_filters( 'eccw_sanitized_mappings', $clean, $raw );
 	}
 }

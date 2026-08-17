@@ -1,108 +1,99 @@
 <?php
 /**
- * Elementor Colors - Preview Gallery card component.
+ * Store Design — your palette.
+ *
+ * The colours the store draws from, under the names their owner gave them in
+ * Elementor. Read-only on purpose: this is where the colours come from, and
+ * the one place to change them is Elementor itself. A second editor here would
+ * be a second source of truth.
  *
  * @package WooCommerce_Elementor_Colors
  */
 
 defined( 'ABSPATH' ) || exit;
 
-/** @var array $mappings All widget mappings. */
 /** @var array $kit_colors Elementor kit colors keyed by token id. */
+/** @var array $kit_labels Token id => human label. */
+/** @var string $kit_edit_url Deep link into the Elementor kit editor. */
+
+// The kit exposes its four brand colours plus whatever the owner added, and
+// then a second set derived from the Button/Link/Heading/Body tabs. Splitting
+// them matters: the first group is the palette people think they have, and the
+// second is thirteen entries deep, which buries it if shown as one grid.
+$eccw_derived_ids = array(
+	'button_normal',
+	'button_hover',
+	'button_text',
+	'button_hover_text',
+	'link_normal',
+	'link_hover',
+	'body',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+);
+
+$eccw_palette = array();
+$eccw_derived = array();
+
+foreach ( $kit_colors as $eccw_id => $eccw_hex ) {
+	if ( in_array( $eccw_id, $eccw_derived_ids, true ) ) {
+		$eccw_derived[ $eccw_id ] = $eccw_hex;
+		continue;
+	}
+
+	$eccw_palette[ $eccw_id ] = $eccw_hex;
+}
+
+$eccw_swatch = static function ( $id, $hex, $labels ) {
+	$label = isset( $labels[ $id ] ) ? $labels[ $id ] : ucfirst( str_replace( '_', ' ', $id ) );
+	?>
+	<li class="eccw-swatch">
+		<span class="eccw-swatch-chip" style="background-color:<?php echo esc_attr( $hex ); ?>;"></span>
+		<span class="eccw-swatch-name"><?php echo esc_html( $label ); ?></span>
+		<span class="eccw-swatch-hex"><?php echo esc_html( strtoupper( $hex ) ); ?></span>
+	</li>
+	<?php
+};
 ?>
-<div class="eccw-card eccw-card-gallery" data-eccw-component="gallery">
-	<div class="eccw-card-header">
-		<h2><?php echo esc_html__( 'Preview Gallery', 'color-changer-for-elementor' ); ?></h2>
-		<p class="description">
-			<?php echo esc_html__( 'Hover over preview elements to see hover state colors.', 'color-changer-for-elementor' ); ?>
-		</p>
-	</div>
-	<div class="eccw-card-body">
-		<div class="eccw-gallery">
-			<?php foreach ( $mappings as $eccw_widget_key => $eccw_widget_data ) : ?>
+<section class="eccw-section">
+	<h2 class="eccw-section-title"><?php esc_html_e( 'Your colours', 'color-changer-for-elementor' ); ?></h2>
+	<p class="eccw-section-intro">
+		<?php esc_html_e( 'These come from Elementor. Change them there and your store follows — you do not need to come back here.', 'color-changer-for-elementor' ); ?>
+	</p>
+
+	<div class="eccw-card">
+		<?php if ( empty( $kit_colors ) ) : ?>
+			<div class="eccw-note">
+				<?php esc_html_e( 'No colours found yet.', 'color-changer-for-elementor' ); ?>
+				<a href="<?php echo esc_url( $kit_edit_url ); ?>" target="_blank" rel="noopener noreferrer">
+					<?php esc_html_e( 'Set your brand colours in Elementor', 'color-changer-for-elementor' ); ?>
+				</a>
+			</div>
+		<?php else : ?>
+			<ul class="eccw-swatches">
 				<?php
-				$eccw_definition = ElementorColorChanger\Element_Registry::lookup( $eccw_widget_key );
-				$eccw_slots      = isset( $eccw_widget_data['slots'] ) ? $eccw_widget_data['slots'] : array();
-
-				$eccw_gallery_slots = array();
-
-				foreach ( $eccw_slots as $eccw_slot_id => $eccw_slot_config ) {
-					$eccw_slot_label = $eccw_slot_id;
-
-					if ( $eccw_definition && isset( $eccw_definition['slots'] ) ) {
-						foreach ( $eccw_definition['slots'] as $eccw_def_slot ) {
-							if ( $eccw_def_slot['slot_id'] === $eccw_slot_id ) {
-								$eccw_slot_label = $eccw_def_slot['label'];
-								break;
-							}
-						}
-					}
-
-					$eccw_current_color = isset( $eccw_slot_config['color'] ) ? $eccw_slot_config['color'] : 'text';
-					$eccw_color_hex     = ElementorColorChanger\CSS_Generator::resolve_color( $eccw_current_color );
-					$eccw_is_button     = false !== strpos( $eccw_slot_id, 'button' ) || false !== strpos( $eccw_slot_id, 'proceed' ) || false !== strpos( $eccw_slot_id, 'place_order' ) || false !== strpos( $eccw_slot_id, 'update_cart' ) || false !== strpos( $eccw_slot_id, 'loop' );
-					$eccw_text_hex      = $eccw_is_button ? ElementorColorChanger\CSS_Generator::contrast_text( $eccw_color_hex ) : $eccw_color_hex;
-
-					$eccw_gallery_slots[] = array(
-						'slot_id'    => $eccw_slot_id,
-						'slot_label' => $eccw_slot_label,
-						'color_hex'  => $eccw_color_hex,
-						'text_hex'   => $eccw_text_hex,
-						'is_button'  => $eccw_is_button,
-					);
+				foreach ( $eccw_palette as $eccw_id => $eccw_hex ) {
+					$eccw_swatch( $eccw_id, $eccw_hex, $kit_labels );
 				}
 				?>
-				<div class="eccw-gallery-item" data-widget-key="<?php echo esc_attr( $eccw_widget_key ); ?>">
-					<div class="eccw-gallery-item-header">
-						<?php echo esc_html( $eccw_widget_data['label'] ); ?>
-					</div>
-					<div class="eccw-gallery-item-body">
-						<?php foreach ( $eccw_gallery_slots as $eccw_gs ) : ?>
-							<div>
-								<div class="eccw-gallery-preview-label"><?php echo esc_html( $eccw_gs['slot_label'] ); ?></div>
-								<div class="eccw-gallery-preview"
-									data-widget-key="<?php echo esc_attr( $eccw_widget_key ); ?>"
-									data-state="<?php echo esc_attr( $eccw_gs['slot_id'] ); ?>"
-									data-is-button="<?php echo $eccw_gs['is_button'] ? '1' : '0'; ?>"
-									<?php
-									if ( $eccw_gs['is_button'] ) {
-										echo 'style="background-color:' . esc_attr( $eccw_gs['color_hex'] ) . ';color:' . esc_attr( $eccw_gs['text_hex'] ) . ';padding:8px 16px;border-radius:3px;display:inline-block;"';
-									}
-									?>
-								>
-									<?php if ( $eccw_gs['is_button'] ) : ?>
-										<?php echo esc_html__( 'Button', 'color-changer-for-elementor' ); ?>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'price' ) ) : ?>
-										$29.99
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'star' ) ) : ?>
-										&#9733;&#9733;&#9733;&#9733;
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'badge' ) ) : ?>
-										<span style="background-color:<?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;padding:2px 8px;border-radius:3px;"><?php echo esc_html__( 'SALE', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'link' ) ) : ?>
-										<a href="#" style="color:<?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;"><?php echo esc_html__( 'Sample Link', 'color-changer-for-elementor' ); ?></a>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'input' ) || false !== strpos( $eccw_gs['slot_id'], 'qty' ) || false !== strpos( $eccw_gs['slot_id'], 'coupon' ) ) : ?>
-										<span style="border:1px solid <?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;padding:4px 8px;border-radius:3px;"><?php echo esc_html__( 'Input', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'nav' ) ) : ?>
-										<span style="color:<?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;"><?php echo esc_html__( 'Navigation Link', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'tab' ) ) : ?>
-										<span style="color:<?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;border-bottom:2px solid <?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;"><?php echo esc_html__( 'Tab', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'success' ) ) : ?>
-										<span style="border-left:4px solid <?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;padding:4px 8px;"><?php echo esc_html__( 'Success notice', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'info' ) ) : ?>
-										<span style="border-left:4px solid <?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;padding:4px 8px;"><?php echo esc_html__( 'Info notice', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'error' ) ) : ?>
-										<span style="border-left:4px solid <?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;padding:4px 8px;"><?php echo esc_html__( 'Error notice', 'color-changer-for-elementor' ); ?></span>
-									<?php elseif ( false !== strpos( $eccw_gs['slot_id'], 'header' ) || false !== strpos( $eccw_gs['slot_id'], 'cell' ) || false !== strpos( $eccw_gs['slot_id'], 'table' ) ) : ?>
-										<span style="color:<?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;font-weight:bold;"><?php echo esc_html__( 'Table', 'color-changer-for-elementor' ); ?></span>
-									<?php else : ?>
-										<span style="color:<?php echo esc_attr( $eccw_gs['color_hex'] ); ?>;"><?php echo esc_html( $eccw_gs['slot_label'] ); ?></span>
-									<?php endif; ?>
-								</div>
-							</div>
-						<?php endforeach; ?>
-					</div>
-				</div>
-			<?php endforeach; ?>
-		</div>
+			</ul>
+
+			<?php if ( ! empty( $eccw_derived ) ) : ?>
+				<details class="eccw-details">
+					<summary><?php esc_html_e( 'Colours taken from your Elementor buttons, links and text', 'color-changer-for-elementor' ); ?></summary>
+					<ul class="eccw-swatches eccw-swatches-compact">
+						<?php
+						foreach ( $eccw_derived as $eccw_id => $eccw_hex ) {
+							$eccw_swatch( $eccw_id, $eccw_hex, $kit_labels );
+						}
+						?>
+					</ul>
+				</details>
+			<?php endif; ?>
+		<?php endif; ?>
 	</div>
-</div>
+</section>
