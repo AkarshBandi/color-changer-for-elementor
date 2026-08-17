@@ -38,18 +38,19 @@ No coding, no design skills, and no extra setup. Your WooCommerce pages simply i
 
 Everything below is in the free plugin. There is no locked panel, no upgrade prompt, and no feature that stops working after a trial.
 
-* **One-click off switch in the toolbar** — "Store Colors" sits in your admin bar on every page, front end and back. If a store ever looks wrong, you are one click from putting it back, without hunting for a settings screen. Nothing is deleted either way.
-* **Onboarding Wizard** — A friendly 4-step setup that scans your site, shows a before/after comparison, and launches you into the editor.
-* **Live Visual Editor** — Click any WooCommerce element on your site to change its color instantly. No page reload needed. Unrestricted — every element, every color.
-* **Color State Controls** — Customize Normal, Hover, Focus, and Disabled states for each element. Focus states are part of keyboard accessibility, so they are never held back.
-* **Any color you like** — Use your four Elementor globals, or pick any hex value.
-* **Undo Support** — Ctrl+Z or click Undo. The last 50 saves are kept, per user.
-* **Reset to defaults** — Put every element back to its suggested color in one action.
-* **Audit Mode** — See how many WooCommerce elements are being styled.
-* **WCAG Contrast Scoring** — Real-time contrast checks against accessibility standards.
-* **Works with add-on widgets** — Recognises WooCommerce widgets from Essential Addons and Premium Addons, not just Elementor Pro.
-* **Share Preview Links** — Send a temporary preview link to clients before committing changes.
-* **Elementor Colors** — For fine-tuning, under WooCommerce > Elementor Colors.
+* **Connected to your Elementor kit** — your brand colours and fonts follow your Elementor Site Settings automatically, and update the moment you change them there.
+* **Sensible defaults on activation** — every WooCommerce element gets a colour picked from your palette. Nothing to configure.
+* **Per-element colour control** — change any element's colour from WooCommerce → Store Design, or enter any custom hex value.
+* **Hover, focus and disabled states** — derived automatically from your colours, including accessible focus outlines.
+* **Keep text readable for me** — button labels and text colours are checked against the page background and darkened just enough to stay legible.
+* **Win against my theme** — optional setting that makes your brand colours take priority over theme styles.
+* **Use my fonts as well as my colours** — your Elementor typography follows into the store too.
+* **Reset to suggested colours** — put every element back to its kit-derived colour in one action.
+* **Check for new elements** — rescan your store for WooCommerce widgets added since activation.
+* **Works with add-on widgets** — recognises WooCommerce widgets from Essential Addons and Premium Addons, not just Elementor Pro.
+* **WooCommerce Blocks support** — block-based Cart and Checkout styled too, with an optional setting to remove the blocks stylesheet.
+* **One-click off switch** — untick "Apply my brand colours" on the Store Design page and your store returns to its normal appearance instantly; nothing is deleted.
+* **Store Design** — the whole thing lives under WooCommerce → Store Design.
 
 == Installation ==
 
@@ -57,9 +58,9 @@ Getting started takes about a minute:
 
 1. **Set your brand colors in Elementor** (optional but recommended). Go to Elementor → Site Settings → Global Colors and pick your Primary, Secondary, Text, and Accent colors. If you skip this, the plugin uses temporary defaults you can change later.
 2. **Install and activate the plugin** through the Plugins screen.
-3. **Follow the short setup wizard** that opens automatically. It scans your store, shows you a before/after preview, and layers your colors over WooCommerce's default styling so your brand shows through. Your product grid and button sizing stay intact.
+3. **Check the colours** — open WooCommerce → Store Design. Every element already has a sensible colour picked from your palette; change any of them if you like, then save.
 
-That's it — your store is now styled with your brand colors. You can fine-tune anything later from WooCommerce > Elementor Colors, or click any element on your store to edit it live.
+That's it — your store is now styled with your brand colors. You can fine-tune anything later from WooCommerce → Store Design.
 
 == Frequently Asked Questions ==
 
@@ -81,23 +82,23 @@ There is one exception, and it is off by default. Under Advanced you can remove 
 
 Click "Store Colors" in your admin toolbar and choose "Turn my colors off". It is there on every page, including the front end, so you do not have to go looking for it while someone is on the phone telling you the site looks broken.
 
-You can also untick "Apply my brand colors to WooCommerce" under WooCommerce > Elementor Colors. Either way your store returns to its normal appearance immediately and none of your color choices are deleted — switch it back on to bring them straight back.
+You can also untick "Apply my brand colors to WooCommerce" under WooCommerce → Store Design. Either way your store returns to its normal appearance immediately and none of your color choices are deleted — switch it back on to bring them straight back.
 
 = My colors are not showing up =
 
-Leave "Override theme styles" on. Some themes use very specific CSS rules, and this setting makes your brand colors take priority over them.
+Leave "Win against my theme" on. Some themes use very specific CSS rules, and this setting makes your brand colors take priority over them.
 
 = The plugin is overriding my own CSS =
 
-Turn off "Override theme styles" under Controls. Your stylesheet will then win where the two overlap.
+Turn off "Win against my theme" on the Store Design page. Your stylesheet will then win where the two overlap.
 
 = Can I choose my own button label colors? =
 
-Yes. Turn off "Keep text readable automatically" under Controls. By default, button labels are set to black or white so they stay readable on any background color.
+Yes. Turn off "Keep text readable for me" on the Store Design page. By default, button labels are set to black or white so they stay readable on any background color.
 
 = I picked a light color and the text vanished =
 
-That should no longer happen. "Keep text readable automatically" checks every text color against your page background and darkens it just enough to be legible, keeping the same hue so it still looks like your brand color. Colors that are already readable are used exactly as you chose them.
+That should no longer happen. "Keep text readable for me" checks every text color against your page background and darkens it just enough to be legible, keeping the same hue so it still looks like your brand color. Colors that are already readable are used exactly as you chose them.
 
 The check assumes your pages have a light background. If your store is dark-themed, tell the plugin so:
 
@@ -109,15 +110,11 @@ Fixed in 1.5.0. "Table Rows" used to recolor the cart table's borders as well as
 
 = How are colors assigned? =
 
-On activation, the plugin scans your Elementor pages for WooCommerce widgets and auto-assigns sensible defaults. You can override any assignment from the settings page or the Live Editor.
+On activation, the plugin scans your Elementor pages for WooCommerce widgets and auto-assigns sensible defaults. You can override any assignment from the Store Design page.
 
-= How do I use the Live Editor? =
+= How do I change a color? =
 
-Click "Open Live Editor" from the Elementor Colors page or add `?eccw_editor=1` to any WooCommerce page URL while logged in as admin. Click any element to customize.
-
-= Can I share a preview with my client? =
-
-Yes. Use the "Share Preview" button in the Live Editor toolbar. It generates a temporary, nonce-protected URL that anyone can view.
+Open WooCommerce → Store Design, find the element you want to change, pick a color from your palette or enter any hex value, and save. The store updates immediately.
 
 == Privacy Notices ==
 
