@@ -43,3 +43,7 @@ jobs:
         with:
           build-dir: './'
           ignore-warnings: true
+          # The default slug is derived from the repo directory name
+          # (color-changer-for-elementor); the plugin's real slug is
+          # commerce-colors-for-elementor, which the text-domain check needs.
+          slug: commerce-colors-for-elementor
