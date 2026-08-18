@@ -7,46 +7,75 @@
 <meta name="description" content="Your Elementor colors and fonts, applied automatically to every WooCommerce button, price, badge and form. No page-by-page setup.">
 <style>
   :root {
-    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8;
-    --accent: #6366f1; --accent-2: #22d3ee; --border: #334155;
+    --bg: #0b1020; --card: rgba(30,41,59,.72); --text: #e2e8f0; --muted: #94a3b8;
+    --indigo: #6366f1; --cyan: #22d3ee; --pink: #f472b6; --amber: #fbbf24;
+    --border: rgba(148,163,184,.18);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+
+  /* ── animated gradient blobs ─────────────────────────── */
+  .blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .45; will-change: transform; }
+  .blob-1 { width: 520px; height: 520px; background: var(--indigo); top: -140px; left: -120px; }
+  .blob-2 { width: 460px; height: 460px; background: var(--cyan); top: 20%; right: -160px; opacity: .3; }
+  .blob-3 { width: 420px; height: 420px; background: var(--pink); bottom: -120px; left: 30%; opacity: .28; }
+  .blob-4 { width: 300px; height: 300px; background: var(--amber); bottom: 10%; right: 12%; opacity: .18; }
+  .grain { position: fixed; inset: 0; z-index: -1; background: radial-gradient(ellipse at 50% -20%, rgba(99,102,241,.12), transparent 60%); }
+
   .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
-  header { text-align: center; padding: 72px 0 40px; }
+  header { text-align: center; padding: 88px 0 40px; }
   .badge { display: inline-block; background: rgba(99,102,241,.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,.4); border-radius: 999px; padding: 4px 14px; font-size: 13px; margin-bottom: 20px; }
   h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; }
-  h1 span { background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h1 .g1 { background: linear-gradient(90deg, var(--indigo), var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h1 .g2 { background: linear-gradient(90deg, var(--pink), var(--amber)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .tagline { font-size: 1.15rem; color: var(--muted); max-width: 620px; margin: 0 auto 32px; }
-  .cta { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; padding: 14px 28px; border-radius: 10px; transition: transform .15s, background .15s; }
-  .cta:hover { background: #4f46e5; transform: translateY(-2px); }
+  .cta { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(90deg, var(--indigo), #8b5cf6); color: #fff; text-decoration: none; font-weight: 600; padding: 14px 28px; border-radius: 10px; box-shadow: 0 8px 30px rgba(99,102,241,.35); transition: transform .15s, box-shadow .15s; }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,.5); }
   .cta small { font-weight: 400; opacity: .85; }
-  .demo { margin: 56px auto; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--card); }
+
+  .demo { margin: 56px auto; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--card); backdrop-filter: blur(8px); }
   .demo img, .demo video { display: block; width: 100%; }
-  .demo .ph { display: flex; align-items: center; justify-content: center; min-height: 320px; color: var(--muted); font-size: 14px; text-align: center; padding: 24px; }
+  .demo .ph { display: flex; align-items: center; justify-content: center; min-height: 320px; color: var(--muted); font-size: 14px; text-align: center; padding: 24px; background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(34,211,238,.06)); }
+
   section { padding: 32px 0; }
   h2 { font-size: 1.5rem; margin-bottom: 20px; }
+  h2 .dot { color: var(--cyan); }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; backdrop-filter: blur(8px); transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: rgba(99,102,241,.5); transform: translateY(-3px); }
+  .card .ico { font-size: 1.4rem; margin-bottom: 8px; display: inline-block; }
   .card h3 { font-size: 1rem; margin-bottom: 8px; color: #a5b4fc; }
   .card p { font-size: .92rem; color: var(--muted); }
-  .optin { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 40px 24px; text-align: center; margin: 40px 0; }
+
+  .optin { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 40px 24px; text-align: center; margin: 40px 0; backdrop-filter: blur(8px); }
   .optin h2 { margin-bottom: 8px; }
   .optin p { color: var(--muted); margin-bottom: 20px; }
   .optin form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .optin input[type=email] { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); min-width: 260px; }
-  .optin button { padding: 12px 22px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  .optin input[type=email] { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: rgba(11,16,32,.6); color: var(--text); min-width: 260px; }
+  .optin button { padding: 12px 22px; border-radius: 8px; border: 0; background: linear-gradient(90deg, var(--cyan), var(--indigo)); color: #fff; font-weight: 600; cursor: pointer; }
   .optin .ph { color: var(--muted); font-size: 14px; }
+
   footer { text-align: center; padding: 48px 0 64px; color: var(--muted); font-size: .9rem; }
   footer a { color: #a5b4fc; text-decoration: none; }
+  footer a:hover { color: var(--cyan); }
 </style>
 </head>
 <body>
+
+<div class="blobs" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
 <div class="wrap">
 
   <header>
     <div class="badge">Free · GPL-2.0 · WordPress plugin</div>
-    <h1>Commerce Colors <span>for Elementor</span></h1>
+    <h1>Commerce Colors <span class="g1">for Elementor</span></h1>
     <p class="tagline">Your Elementor colors and fonts, applied automatically to every WooCommerce button, price, badge and form. No page-by-page setup.</p>
     <a class="cta" href="https://github.com/AkarshBandi/color-changer-for-elementor/releases/latest">Download the plugin <small>· v1.0.0</small></a>
   </header>
@@ -58,20 +87,20 @@
   </div>
 
   <section>
-    <h2>What it does</h2>
+    <h2>What it <span class="dot">does</span></h2>
     <p style="color:var(--muted); margin-bottom:24px;">You already chose your brand colors and fonts in Elementor. WooCommerce ignores them — its buttons, prices, badges and checkout ship their own grey-and-purple palette. This plugin reads your Elementor kit and keeps WooCommerce in step with it, updating whenever you change the kit.</p>
     <div class="grid">
-      <div class="card"><h3>Connected to your kit</h3><p>Brand colors and fonts follow your Elementor Site Settings automatically.</p></div>
-      <div class="card"><h3>Zero configuration</h3><p>Sensible defaults on activation — every element gets a color from your palette.</p></div>
-      <div class="card"><h3>Per-element control</h3><p>Change any element's color from WooCommerce → Store Design, or enter a custom hex.</p></div>
-      <div class="card"><h3>States included</h3><p>Hover, focus and disabled states derived automatically, with accessible focus outlines.</p></div>
-      <div class="card"><h3>Blocks &amp; add-ons</h3><p>WooCommerce Blocks, Essential Addons and Premium Addons widgets supported.</p></div>
-      <div class="card"><h3>One-click off switch</h3><p>Untick "Apply my brand colours" and your store returns to normal instantly.</p></div>
+      <div class="card"><span class="ico">🎨</span><h3>Connected to your kit</h3><p>Brand colors and fonts follow your Elementor Site Settings automatically.</p></div>
+      <div class="card"><span class="ico">⚡</span><h3>Zero configuration</h3><p>Sensible defaults on activation — every element gets a color from your palette.</p></div>
+      <div class="card"><span class="ico">🎛️</span><h3>Per-element control</h3><p>Change any element's color from WooCommerce → Store Design, or enter a custom hex.</p></div>
+      <div class="card"><span class="ico">✨</span><h3>States included</h3><p>Hover, focus and disabled states derived automatically, with accessible focus outlines.</p></div>
+      <div class="card"><span class="ico">🧩</span><h3>Blocks &amp; add-ons</h3><p>WooCommerce Blocks, Essential Addons and Premium Addons widgets supported.</p></div>
+      <div class="card"><span class="ico">🔌</span><h3>One-click off switch</h3><p>Untick "Apply my brand colours" and your store returns to normal instantly.</p></div>
     </div>
   </section>
 
   <div class="optin">
-    <h2>Get the launch update</h2>
+    <h2>Get the launch <span class="dot">update</span></h2>
     <p>Be first to know when the plugin lands on WordPress.org, plus setup tips.</p>
     <!-- Replace with your MailerLite / ConvertKit embed code -->
     <div class="ph">Email signup form coming soon</div>
@@ -83,5 +112,49 @@
   </footer>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── ambient blob drift ─────────────────────────────── */
+gsap.to('.blob-1', { x: 220, y: 160, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+gsap.to('.blob-2', { x: -180, y: -120, duration: 16, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+gsap.to('.blob-3', { x: 160, y: -140, duration: 18, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+gsap.to('.blob-4', { x: -120, y: 100, duration: 12, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+
+/* ── hero entrance ──────────────────────────────────── */
+gsap.timeline({ defaults: { ease: 'power3.out' } })
+  .from('.badge',   { y: -24, opacity: 0, duration: .6 })
+  .from('h1',       { y: 40,  opacity: 0, duration: .8 }, '-=.3')
+  .from('.tagline', { y: 30,  opacity: 0, duration: .7 }, '-=.5')
+  .from('.cta',     { y: 20,  opacity: 0, scale: .95, duration: .6 }, '-=.4');
+
+/* ── demo box ───────────────────────────────────────── */
+gsap.from('.demo', {
+  scrollTrigger: { trigger: '.demo', start: 'top 85%' },
+  y: 60, opacity: 0, scale: .97, duration: .9, ease: 'power3.out'
+});
+
+/* ── feature cards: staggered reveal ────────────────── */
+gsap.from('.card', {
+  scrollTrigger: { trigger: '.grid', start: 'top 80%' },
+  y: 50, opacity: 0, duration: .7, ease: 'power3.out',
+  stagger: { each: .12, from: 'start' }
+});
+
+/* ── opt-in box ─────────────────────────────────────── */
+gsap.from('.optin', {
+  scrollTrigger: { trigger: '.optin', start: 'top 85%' },
+  y: 50, opacity: 0, duration: .8, ease: 'power3.out'
+});
+
+/* ── footer ─────────────────────────────────────────── */
+gsap.from('footer', {
+  scrollTrigger: { trigger: 'footer', start: 'top 95%' },
+  y: 30, opacity: 0, duration: .7, ease: 'power3.out'
+});
+</script>
 </body>
 </html>
