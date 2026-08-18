@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
 /** @var array $kit_labels Token id => human label. */
 /** @var array $descriptions Widget key => plain description. */
 /** @var array $defaults Per-slot default color tokens. */
+/** @var array $slot_choices Per-slot list of offered color tokens. */
 
 $eccw_definition = ElementorColorChanger\Element_Registry::lookup( $eccw_widget_key );
 $eccw_slots      = isset( $eccw_widget_data['slots'] ) ? $eccw_widget_data['slots'] : array();
@@ -75,6 +76,16 @@ foreach ( $eccw_slots as $eccw_slot_id => $eccw_slot_config ) {
 		? '#' . strtolower( ltrim( $eccw_current, '#' ) )
 		: ( isset( $kit_colors[ $eccw_current ] ) ? $kit_colors[ $eccw_current ] : '#cccccc' );
 
+	// The short list this slot offers. A stored token from outside it — an
+	// older mapping, or one an add-on wrote — is appended rather than dropped,
+	// because a chooser that cannot represent the saved value would rewrite it
+	// on the next save without anyone asking.
+	$eccw_choices = isset( $slot_choices[ $eccw_slot_id ] ) ? $slot_choices[ $eccw_slot_id ] : array();
+
+	if ( ! $eccw_is_hex && '' !== $eccw_current && ! in_array( $eccw_current, $eccw_choices, true ) && isset( $kit_colors[ $eccw_current ] ) ) {
+		$eccw_choices[] = $eccw_current;
+	}
+
 	$eccw_rows[] = array(
 		'slot_id' => $eccw_slot_id,
 		'label'   => ElementorColorChanger\Admin_Interface::state_label( $eccw_slot_id, $eccw_registry_label, $eccw_base_label ),
@@ -82,6 +93,7 @@ foreach ( $eccw_slots as $eccw_slot_id => $eccw_slot_config ) {
 		'hex'     => $eccw_hex,
 		'default' => isset( $defaults[ $eccw_slot_id ] ) ? $defaults[ $eccw_slot_id ] : 'text',
 		'is_hex'  => (bool) $eccw_is_hex,
+		'choices' => $eccw_choices,
 	);
 }
 
@@ -130,7 +142,8 @@ $eccw_chooser = static function ( $row, $widget_key, $kit_colors, $kit_labels, $
 				data-widget-key="<?php echo esc_attr( $widget_key ); ?>"
 				data-state="<?php echo esc_attr( $row['slot_id'] ); ?>"
 				data-default="<?php echo esc_attr( $row['default'] ); ?>">
-				<?php foreach ( $kit_colors as $eccw_color_id => $eccw_color_hex ) : ?>
+				<?php foreach ( $row['choices'] as $eccw_color_id ) : ?>
+					<?php $eccw_color_hex = isset( $kit_colors[ $eccw_color_id ] ) ? $kit_colors[ $eccw_color_id ] : ''; ?>
 					<option
 						value="<?php echo esc_attr( $eccw_color_id ); ?>"
 						data-hex="<?php echo esc_attr( $eccw_color_hex ); ?>"
@@ -152,8 +165,8 @@ $eccw_chooser = static function ( $row, $widget_key, $kit_colors, $kit_labels, $
 					<?php
 					echo esc_html(
 						$row['is_hex']
-							? __( 'Custom colour', 'color-changer-for-elementor' ) . ' — ' . strtoupper( $row['hex'] )
-							: __( 'Custom colour…', 'color-changer-for-elementor' )
+							? __( 'Custom colour', 'commerce-colors-for-elementor' ) . ' — ' . strtoupper( $row['hex'] )
+							: __( 'Custom colour…', 'commerce-colors-for-elementor' )
 					);
 					?>
 				</option>
@@ -170,7 +183,7 @@ $eccw_chooser = static function ( $row, $widget_key, $kit_colors, $kit_labels, $
 				class="eccw-choice-picker"
 				data-eccw-picker="<?php echo esc_attr( $id ); ?>"
 				value="<?php echo esc_attr( $row['is_hex'] ? $row['hex'] : $row['hex'] ); ?>"
-				aria-label="<?php echo esc_attr( sprintf( /* translators: %s: name of the colour being set. */ __( 'Pick a custom colour for %s', 'color-changer-for-elementor' ), $row['label'] ) ); ?>"
+				aria-label="<?php echo esc_attr( sprintf( /* translators: %s: name of the colour being set. */ __( 'Pick a custom colour for %s', 'commerce-colors-for-elementor' ), $row['label'] ) ); ?>"
 				<?php echo $row['is_hex'] ? '' : ' hidden'; ?>>
 
 			<button
@@ -178,7 +191,7 @@ $eccw_chooser = static function ( $row, $widget_key, $kit_colors, $kit_labels, $
 				class="eccw-reset"
 				data-eccw-reset="<?php echo esc_attr( $id ); ?>"
 				data-default="<?php echo esc_attr( $row['default'] ); ?>">
-				<?php esc_html_e( 'Reset', 'color-changer-for-elementor' ); ?>
+				<?php esc_html_e( 'Reset', 'commerce-colors-for-elementor' ); ?>
 			</button>
 		</div>
 	</div>
@@ -202,14 +215,14 @@ $eccw_chooser = static function ( $row, $widget_key, $kit_colors, $kit_labels, $
 
 	<?php if ( null === $eccw_main ) : ?>
 		<p class="eccw-element-desc">
-			<?php esc_html_e( 'This part is styled automatically — there is nothing to choose.', 'color-changer-for-elementor' ); ?>
+			<?php esc_html_e( 'This part is styled automatically — there is nothing to choose.', 'commerce-colors-for-elementor' ); ?>
 		</p>
 	<?php else : ?>
 		<?php $eccw_chooser( $eccw_main, $eccw_widget_key, $kit_colors, $kit_labels, true ); ?>
 
 		<?php if ( ! empty( $eccw_extra ) ) : ?>
 			<details class="eccw-details eccw-details-inline">
-				<summary><?php esc_html_e( 'More options', 'color-changer-for-elementor' ); ?></summary>
+				<summary><?php esc_html_e( 'More options', 'commerce-colors-for-elementor' ); ?></summary>
 				<?php
 				// Said once per card, because the alternative is a support
 				// question that reads "I changed it and nothing happened".
@@ -217,7 +230,7 @@ $eccw_chooser = static function ( $row, $widget_key, $kit_colors, $kit_labels, $
 				// until the shopper does the thing that triggers them.
 				?>
 				<p class="eccw-hint">
-					<?php esc_html_e( 'These only show when a shopper triggers them — by hovering, tabbing with a keyboard, or reaching an unavailable button. Your store will not look different until then.', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'These only show when a shopper triggers them — by hovering, tabbing with a keyboard, or reaching an unavailable button. Your store will not look different until then.', 'commerce-colors-for-elementor' ); ?>
 				</p>
 				<?php foreach ( $eccw_extra as $eccw_row ) : ?>
 					<?php $eccw_chooser( $eccw_row, $eccw_widget_key, $kit_colors, $kit_labels, false ); ?>

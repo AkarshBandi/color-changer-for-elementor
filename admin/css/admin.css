@@ -20,6 +20,8 @@
 	--eccw-accent-ink: #fff;
 	--eccw-good: #007017;
 	--eccw-good-bg: #edfaef;
+	--eccw-bad: #8a1f11;
+	--eccw-bad-bg: #fcf0ef;
 	--eccw-danger: #b32d2e;
 	--eccw-radius: 10px;
 	--eccw-radius-sm: 6px;
@@ -160,6 +162,20 @@
 	color: var(--eccw-ink-soft);
 }
 
+.eccw-note-bad {
+	border-left-color: var(--eccw-bad);
+	background: var(--eccw-bad-bg);
+	color: var(--eccw-bad);
+	margin: 0 0 20px;
+	font-weight: 500;
+}
+.eccw-live:empty {
+	display: none;
+}
+.eccw-live .eccw-note {
+	margin: 0 0 20px;
+	font-weight: 500;
+}
 .eccw-note-good {
 	border-left-color: var(--eccw-good);
 	background: var(--eccw-good-bg);

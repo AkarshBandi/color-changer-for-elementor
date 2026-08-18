@@ -46,16 +46,16 @@ defined( 'ABSPATH' ) || exit;
 		<?php require ECCW_PATH . 'admin/templates/components/gallery-card.php'; ?>
 
 		<section class="eccw-section">
-			<h2 class="eccw-section-title"><?php esc_html_e( 'What each part of your store uses', 'color-changer-for-elementor' ); ?></h2>
+			<h2 class="eccw-section-title"><?php esc_html_e( 'What each part of your store uses', 'commerce-colors-for-elementor' ); ?></h2>
 			<p class="eccw-section-intro">
-				<?php esc_html_e( 'Each part already has a sensible colour picked from your palette. Change any of them if you want something different.', 'color-changer-for-elementor' ); ?>
+				<?php esc_html_e( 'Each part already has a sensible colour picked from your palette. Change any of them if you want something different.', 'commerce-colors-for-elementor' ); ?>
 			</p>
 
 			<?php if ( ! empty( $mappings ) ) : ?>
 				<?php require ECCW_PATH . 'admin/templates/components/elements-card.php'; ?>
 			<?php else : ?>
 				<div class="eccw-note">
-					<?php esc_html_e( 'Nothing found to style yet. Once your store has WooCommerce content, it will be listed here.', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Nothing found to style yet. Once your store has WooCommerce content, it will be listed here.', 'commerce-colors-for-elementor' ); ?>
 				</div>
 			<?php endif; ?>
 		</section>

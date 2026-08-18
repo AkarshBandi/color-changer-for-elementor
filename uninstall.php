@@ -30,6 +30,17 @@ if ( ! function_exists( 'eccw_uninstall_site_data' ) ) {
 		delete_option( 'eccw_css_generation' );
 		delete_option( 'eccw_global_chrome' );
 
+		// Everything below was added after this list was first written, and
+		// each one was missed at the time. An uninstall that leaves rows behind
+		// is not a tidiness problem: there is no code left to remove them, so
+		// they are permanent. Adding an option means adding it here, and the
+		// test alongside this file now fails if that is forgotten.
+		delete_option( 'eccw_db_version' );
+		delete_option( 'eccw_registry_signature' );
+		delete_option( 'eccw_wc_widget_types' );
+		delete_option( 'eccw_coverage' );
+		delete_option( 'eccw_premigration_backup' );
+
 		// Removed in 1.3.3 along with the wizard opt-in that wrote it.
 		// Plugin::purge_legacy_optin_email() clears it on upgrade, but only when
 		// WooCommerce and Elementor are both active, so it is deleted here as

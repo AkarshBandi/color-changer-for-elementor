@@ -115,15 +115,15 @@ $eccw_font_style = static function ( $family ) {
 				<span class="eccw-switch-track" aria-hidden="true"><span class="eccw-switch-knob"></span></span>
 			</span>
 			<span class="eccw-switch-text">
-				<strong class="eccw-hero-state" data-eccw-on="<?php esc_attr_e( 'Your store is using your design', 'color-changer-for-elementor' ); ?>" data-eccw-off="<?php esc_attr_e( 'Your store is using default WooCommerce colours', 'color-changer-for-elementor' ); ?>">
+				<strong class="eccw-hero-state" data-eccw-on="<?php esc_attr_e( 'Your store is using your design', 'commerce-colors-for-elementor' ); ?>" data-eccw-off="<?php esc_attr_e( 'Your store is using default WooCommerce colours', 'commerce-colors-for-elementor' ); ?>">
 					<?php
 					echo $eccw_is_on
-						? esc_html__( 'Your store is using your design', 'color-changer-for-elementor' )
-						: esc_html__( 'Your store is using default WooCommerce colours', 'color-changer-for-elementor' );
+						? esc_html__( 'Your store is using your design', 'commerce-colors-for-elementor' )
+						: esc_html__( 'Your store is using default WooCommerce colours', 'commerce-colors-for-elementor' );
 					?>
 				</strong>
 				<span class="eccw-hero-sub">
-					<?php esc_html_e( 'Turn this off to put the store back to normal at once. Nothing you have chosen is deleted.', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Turn this off to put the store back to normal at once. Nothing you have chosen is deleted.', 'commerce-colors-for-elementor' ); ?>
 				</span>
 			</span>
 		</label>
@@ -137,31 +137,31 @@ $eccw_font_style = static function ( $family ) {
 				'ok'  => (bool) $eccw_kit_id,
 				'yes' => '' !== $kit_name
 					/* translators: %s: name of the Elementor kit, e.g. "Default Kit". */
-					? sprintf( __( 'Connected to your Elementor kit, “%s”.', 'color-changer-for-elementor' ), $kit_name )
-					: __( 'Connected to your Elementor kit.', 'color-changer-for-elementor' ),
-				'no'  => __( 'No Elementor kit found yet.', 'color-changer-for-elementor' ),
+					? sprintf( __( 'Using the colours and fonts from “%s” in Elementor.', 'commerce-colors-for-elementor' ), $kit_name )
+					: __( 'Using the colours and fonts from your Elementor settings.', 'commerce-colors-for-elementor' ),
+				'no'  => __( 'No Elementor design settings found yet.', 'commerce-colors-for-elementor' ),
 				'fix' => $kit_edit_url,
 			),
 			array(
 				'ok'  => $has_own_kit,
-				'yes' => __( 'Your brand colours were found.', 'color-changer-for-elementor' ),
-				'no'  => __( 'No brand colours set — stand-in colours are being used.', 'color-changer-for-elementor' ),
+				'yes' => __( 'Your brand colours were found.', 'commerce-colors-for-elementor' ),
+				'no'  => __( 'No brand colours set — stand-in colours are being used.', 'commerce-colors-for-elementor' ),
 				'fix' => $kit_edit_url,
 			),
 			array(
 				'ok'  => $has_own_fonts,
 				'yes' => empty( $eccw_settings['apply_typography'] )
-					? __( 'Your fonts were found, but are not being applied.', 'color-changer-for-elementor' )
-					: __( 'Your fonts were found and are being applied.', 'color-changer-for-elementor' ),
-				'no'  => __( 'No fonts set in Elementor, so only colours are applied.', 'color-changer-for-elementor' ),
+					? __( 'Your fonts were found, but are not being applied.', 'commerce-colors-for-elementor' )
+					: __( 'Your fonts were found and are being applied.', 'commerce-colors-for-elementor' ),
+				'no'  => __( 'No fonts set in Elementor, so only colours are applied.', 'commerce-colors-for-elementor' ),
 				'fix' => $kit_edit_url,
 			),
 			array(
 				'ok'  => $eccw_is_on && ! empty( $mappings ),
 				'yes' => $global_chrome
-					? __( 'Styling is active. Your header shows a cart, so it applies across the whole site.', 'color-changer-for-elementor' )
-					: __( 'Styling is active on your shop pages. The rest of your site is left alone.', 'color-changer-for-elementor' ),
-				'no'  => __( 'Styling is switched off. Your store is showing default WooCommerce colours.', 'color-changer-for-elementor' ),
+					? __( 'Styling is active. Your header shows a cart, so it applies across the whole site.', 'commerce-colors-for-elementor' )
+					: __( 'Styling is active on your shop pages. The rest of your site is left alone.', 'commerce-colors-for-elementor' ),
+				'no'  => __( 'Styling is switched off. Your store is showing default WooCommerce colours.', 'commerce-colors-for-elementor' ),
 				'fix' => '',
 			),
 		);
@@ -171,7 +171,7 @@ $eccw_font_style = static function ( $family ) {
 				<li class="<?php echo $eccw_check['ok'] ? 'is-ok' : 'is-todo'; ?>">
 					<span class="eccw-facts-mark" aria-hidden="true"><?php echo $eccw_check['ok'] ? '&#10003;' : '&#33;'; ?></span>
 					<span class="screen-reader-text">
-						<?php echo $eccw_check['ok'] ? esc_html__( 'Done:', 'color-changer-for-elementor' ) : esc_html__( 'Needs attention:', 'color-changer-for-elementor' ); ?>
+						<?php echo $eccw_check['ok'] ? esc_html__( 'Done:', 'commerce-colors-for-elementor' ) : esc_html__( 'Needs attention:', 'commerce-colors-for-elementor' ); ?>
 					</span>
 					<?php if ( ! $eccw_check['ok'] && '' !== $eccw_check['fix'] ) : ?>
 						<a href="<?php echo esc_url( $eccw_check['fix'] ); ?>" target="_blank" rel="noopener noreferrer">
@@ -187,7 +187,7 @@ $eccw_font_style = static function ( $family ) {
 				<?php
 				printf(
 					/* translators: %s: number of store elements. */
-					esc_html( _n( '%s part of your store is covered.', '%s parts of your store are covered.', count( $mappings ), 'color-changer-for-elementor' ) ),
+					esc_html( _n( '%s part of your store is covered.', '%s parts of your store are covered.', count( $mappings ), 'commerce-colors-for-elementor' ) ),
 					esc_html( number_format_i18n( count( $mappings ) ) )
 				);
 				?>
@@ -196,18 +196,18 @@ $eccw_font_style = static function ( $family ) {
 	</div>
 
 	<div class="eccw-hero-preview" aria-hidden="true">
-		<span class="eccw-preview-caption"><?php esc_html_e( 'How your store looks', 'color-changer-for-elementor' ); ?></span>
+		<span class="eccw-preview-caption"><?php esc_html_e( 'How your store looks', 'commerce-colors-for-elementor' ); ?></span>
 
 		<div class="eccw-mock" data-eccw-mock>
 			<div class="eccw-mock-image">
 				<span class="eccw-mock-badge" data-eccw-paint="badge" style="background-color:<?php echo esc_attr( $eccw_badge_bg ); ?>;color:<?php echo esc_attr( $eccw_badge_text ); ?>;">
-					<?php esc_html_e( 'Sale!', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Sale!', 'commerce-colors-for-elementor' ); ?>
 				</span>
 			</div>
 
 			<div class="eccw-mock-body">
 				<span class="eccw-mock-title" data-eccw-paint="heading" style="color:<?php echo esc_attr( $eccw_head_color ); ?>;<?php echo esc_attr( $eccw_font_style( $eccw_fonts['head'] ) ); ?>">
-					<?php esc_html_e( 'Linen Shirt', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Linen Shirt', 'commerce-colors-for-elementor' ); ?>
 				</span>
 
 				<span class="eccw-mock-stars" data-eccw-paint="stars" style="color:<?php echo esc_attr( $eccw_star_color ); ?>;">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
@@ -217,15 +217,15 @@ $eccw_font_style = static function ( $family ) {
 				</span>
 
 				<span class="eccw-mock-desc" data-eccw-paint="body" style="color:<?php echo esc_attr( $eccw_body_color ); ?>;<?php echo esc_attr( $eccw_font_style( $eccw_fonts['body'] ) ); ?>">
-					<?php esc_html_e( 'Soft, breathable and cut a little loose.', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Soft, breathable and cut a little loose.', 'commerce-colors-for-elementor' ); ?>
 				</span>
 
 				<span class="eccw-mock-button" data-eccw-paint="button" style="background-color:<?php echo esc_attr( $eccw_button_bg ); ?>;color:<?php echo esc_attr( $eccw_button_text ); ?>;<?php echo esc_attr( $eccw_font_style( $eccw_fonts['button'] ) ); ?>">
-					<?php esc_html_e( 'Add to cart', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Add to cart', 'commerce-colors-for-elementor' ); ?>
 				</span>
 
 				<span class="eccw-mock-link" data-eccw-paint="link" style="color:<?php echo esc_attr( $eccw_link_color ); ?>;">
-					<?php esc_html_e( 'More in Shirts', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'More in Shirts', 'commerce-colors-for-elementor' ); ?>
 				</span>
 			</div>
 		</div>

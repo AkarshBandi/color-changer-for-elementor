@@ -1,13 +1,10 @@
-=== Color and Font Sync for Elementor and WooCommerce ===
-Contributors: admin
+=== Commerce Colors for Elementor ===
+Contributors: AkarshBandi
 Tags: elementor, woocommerce, colors, fonts, branding
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Requires Plugins: woocommerce, elementor
-WC requires at least: 7.0
-WC tested up to: 10.9
-Stable tag: 2.1.6
+Stable tag: 1.0.0
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.txt
 
@@ -120,45 +117,16 @@ Open WooCommerce → Store Design, find the element you want to change, pick a c
 
 This plugin collects no personal data. It sends nothing to any external service, and it has no analytics, telemetry or tracking of any kind. Everything it stores — your color mappings, settings and editor drafts — stays in your own site's database.
 
-Versions before 1.3.3 offered an email signup on the last step of the Onboarding Wizard. Any address entered there was stored in your own database (WordPress option `eccw_pro_optin_email`) and never sent anywhere, but the wizard did not say so and the guide it offered was never written. That signup is gone, and updating to 1.3.3 deletes any address it stored.
-
 == Changelog ==
 
-= 2.1.6 =
-* Shop-page guard hardened: also intercepts pre-generated rewrite rules at read time, which is what WordPress 6.4+ actually uses.
-* Styled WooCommerce chrome rendered in Elementor headers and footers (mini-cart, account links) on every page, not just store pages.
-* Login/register submit button and mini-cart buttons now part of the button family.
-* Mini-cart totals, product reviews, review author and short description styled with the body text token.
-* Block product tabs (.wc-tabs) styled alongside the classic tabs.
-* New registry slots apply automatically after an update — no mappings reset required.
-
-= 2.0.0 =
-* Automatic mapping of Elementor Site Settings (Button, Links, Headings, Body) onto all WooCommerce elements.
-* WooCommerce-only scoping: stylesheet loads only on WooCommerce contexts; other pages untouched.
-* Colors and fonts only — never emits layout/structural CSS.
-* Self-healing shop page guard: prevents the WooCommerce archive rewrite rule from hijacking Elementor-built shop pages.
-* Legacy Elementor fallback: reads pre-3.0 scheme options when no Kit exists.
-* WooCommerce Blocks support: block cart/checkout buttons, inputs, cart items, notices, quantity selector.
-* Elementor-built WooCommerce page detection via _elementor_data.
-* Coupon widget fix: correct cart coupon selectors and Apply Coupon button styling.
-* Account dashboard colors restored to text/primary tokens.
-* Free + Pro addon architecture via filter seams (eccw_element_registry, eccw_is_pro, eccw_addon_widget_map, eccw_typography_groups, eccw_generated_css).
-
 = 1.0.0 =
-* Initial release: dynamic CSS mapping Elementor global colors to WooCommerce elements.
-* Added Onboarding Wizard with 4-step setup (scan, A/B test, dequeue, launch)
-* Added Live Visual Editor with click-to-customize on the frontend
-* Added color state controls (Normal, Hover, Focus, Disabled)
-* Added Audit Mode with coverage counter
-* Added WCAG contrast scoring for accessibility
-* Added share preview links for client feedback
-* Added undo support (10-action history stack)
-* Added performance badge showing CSS savings
-* Renamed admin menu to "Elementor Colors"
-* New options: eccw_onboarding_completed, eccw_live_draft, eccw_history_*, eccw_share_*
-* Simplified the setup wizard: the technical "CSS Dequeue" step is now a single, plain-language toggle that hands styling over to your brand colors.
-* Added a friendly notice in the wizard when Elementor global colors aren't set yet, with a link to set them.
-* Rewrote the readme to lead with a plain-language, 3-step setup for non-technical users.
-* Fixed button text contrast so labels stay readable on any background color.
-* Fixed dequeue so WooCommerce block CSS is only removed when replacement styles exist.
-* Live editor: clicking an element opens its color card instead of triggering the element's action, with an instant kit-color palette for non-technical users.
+* First release.
+* Reads the colours and fonts from your Elementor site settings and applies them across WooCommerce.
+* Covers add-to-cart and shop buttons, prices, sale badges, star ratings, product tabs, cart, checkout, notices, quantity boxes, My Account and store links.
+* Styles only colours and fonts, never spacing or layout, so nothing on your pages moves.
+* Loads only on store pages; the rest of your site is left alone.
+* Optional readable-text adjustment picks black or white button labels automatically and lifts text that is too faint to read.
+* Optional hover, focus and unavailable shades worked out from each element's main colour.
+* Works with WooCommerce Blocks cart and checkout.
+* Keeps Elementor-built shop pages from being replaced by the default WooCommerce archive.
+* Falls back to pre-3.0 Elementor colour settings on sites that never moved to a kit.

@@ -22,6 +22,13 @@ class Discovery_Engine {
 	const DEFAULT_LIMIT = 250;
 
 	/**
+	 * Posts read by the last scan.
+	 *
+	 * @var int
+	 */
+	private $scanned = 0;
+
+	/**
 	 * Scan published content for WooCommerce widget types.
 	 *
 	 * @param int|null $limit Maximum posts to read. Null uses the default;
@@ -75,6 +82,8 @@ class Discovery_Engine {
 
 		$widgets = array();
 
+		$this->scanned = count( $posts );
+
 		foreach ( $posts as $post_id ) {
 			$elementor_data = get_post_meta( $post_id, '_elementor_data', true );
 
@@ -96,6 +105,49 @@ class Discovery_Engine {
 		}
 
 		return array_unique( $widgets );
+	}
+
+	/**
+	 * Scan, and report what was found in the shape the callers expect.
+	 *
+	 * This method did not exist. Both rescan paths -- the daily cron job and
+	 * the Rescan button under Advanced -- called it, so both raised a fatal
+	 * the moment they ran: discovery has never actually completed on any
+	 * install. It is the same write-here-read-there split this codebase keeps
+	 * producing, in its bluntest form, and no test caught it because nothing
+	 * exercised either caller.
+	 *
+	 * `cards` are registry group keys, not widget types: the saved mappings
+	 * are keyed by group, and merge_new_widgets() diffs against those keys.
+	 * A widget type that resolves to no group is reported as unmapped instead,
+	 * which is what lets the settings screen say "we found elements we do not
+	 * style" rather than silently ignoring them.
+	 *
+	 * @param int|null $limit Maximum posts to read.
+	 * @return array{cards:string[],unmapped:string[],scanned:int}
+	 */
+	public function scan( $limit = null ) {
+		$widget_types = $this->scan_all_pages( $limit );
+
+		$cards    = array();
+		$unmapped = array();
+
+		foreach ( $widget_types as $widget_type ) {
+			$key = Element_Registry::normalize_key( $widget_type );
+
+			if ( '' !== (string) $key && null !== Element_Registry::lookup( $key ) ) {
+				$cards[] = $key;
+				continue;
+			}
+
+			$unmapped[] = $widget_type;
+		}
+
+		return array(
+			'cards'    => array_values( array_unique( $cards ) ),
+			'unmapped' => array_values( array_unique( $unmapped ) ),
+			'scanned'  => (int) $this->scanned,
+		);
 	}
 
 	/**

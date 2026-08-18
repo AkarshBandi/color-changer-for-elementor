@@ -6,6 +6,48 @@ defined( 'ABSPATH' ) || exit;
 
 class Element_Registry {
 
+	/**
+	 * A fingerprint of everything in the registry that shapes generated CSS.
+	 *
+	 * Exists so a release that adds a slot or widens a selector is noticed
+	 * without anyone having to remember to bump a version constant. Slots
+	 * added in an update used to sit inert until the owner happened to press
+	 * Rescan or re-save: the code shipped, the stylesheet did not change, and
+	 * nothing anywhere said why. Keying off a version number would only move
+	 * that dependency onto a human remembering to increment it; keying off the
+	 * registry's own shape means the trigger is the change itself.
+	 *
+	 * Covers group keys, slot ids, selectors, properties and states, because
+	 * each of those alters the emitted CSS. Deliberately includes anything a
+	 * third party adds through `eccw_element_registry`, so an addon
+	 * registering a slot is picked up on the same path as a core release.
+	 *
+	 * @return string
+	 */
+	public static function signature() {
+		$shape = array();
+
+		foreach ( self::get_registry() as $key => $group ) {
+			$slots = array();
+
+			foreach ( isset( $group['slots'] ) ? (array) $group['slots'] : array() as $slot ) {
+				$slots[] = array(
+					isset( $slot['slot_id'] ) ? $slot['slot_id'] : '',
+					isset( $slot['selectors'] ) ? (array) $slot['selectors'] : array(),
+					isset( $slot['properties'] ) ? (array) $slot['properties'] : array(),
+					isset( $slot['states'] ) ? (array) $slot['states'] : array(),
+					isset( $slot['derives_from'] ) ? $slot['derives_from'] : '',
+				);
+			}
+
+			$shape[ $key ] = $slots;
+		}
+
+		ksort( $shape );
+
+		return md5( (string) wp_json_encode( $shape ) );
+	}
+
 	public static function get_registry() {
 		$registry = apply_filters(
 			'eccw_element_registry',
@@ -192,6 +234,17 @@ class Element_Registry {
 				'woocommerce-product-additional-information' => 'wc-cart-table',
 				'woocommerce-checkout-page'             => 'wc-checkout',
 				'woocommerce-my-account'                => 'wc-account',
+				// Read off the widgets Elementor Pro actually registers on the
+				// reference store rather than assumed. These were absent, so
+				// they were recognised by the prefix heuristic but never
+				// mapped to a styling group.
+				'woocommerce-notices'                   => 'wc-notices',
+				'wc-add-to-cart'                        => 'wc-add-to-cart',
+				'wc-products'                           => 'wc-loop-buttons',
+				'woocommerce-product-title'             => 'wc-general-links',
+				'woocommerce-product-content'           => 'wc-general-links',
+				'woocommerce-product-stock'             => 'wc-general-links',
+				'woocommerce-archive-description'       => 'wc-general-links',
 				'woocommerce-breadcrumb'                => 'wc-general-links',
 				'woocommerce-product-meta'              => 'wc-general-links',
 				'woocommerce-product-short-description' => 'wc-general-links',
@@ -220,14 +273,37 @@ class Element_Registry {
 	}
 
 	/**
-	 * Whether a widget type string belongs to the WooCommerce element family.
+	 * Option caching the widget types Elementor itself files under WooCommerce.
+	 */
+	const WC_WIDGETS_OPTION = 'eccw_wc_widget_types';
+
+	/**
+	 * Whether a widget type belongs to the WooCommerce element family.
 	 *
-	 * Matches native Elementor widget types (woocommerce-*, wc-*) plus
-	 * addon widget types from Essential Addons (eael-woo-*, eicon-woocommerce),
-	 * Premium Addons (premium-woo-*) and Happy Addons (product-grid-new,
-	 * wc-cart, mini-cart, ...). Any widget type in the addon map counts too.
+	 * Deliberately asks no vendor's name. An earlier version matched
+	 * `^eael-woo-`, `^premium-woo-`, `^hm-woo-` and friends, which is a list of
+	 * plugins pretending to be a rule: it dates the moment a pack renames a
+	 * prefix, and it silently excludes every addon nobody thought of. Support
+	 * for a widget should never require a release of this plugin.
 	 *
-	 * @param string $widget_type
+	 * Three source-agnostic layers, cheapest first:
+	 *
+	 * 1. The registry map, which is filterable — an integration or a site can
+	 *    declare any widget type without touching core.
+	 * 2. Elementor's own metadata. A widget registered into one of Elementor's
+	 *    WooCommerce categories is a WooCommerce widget, whoever shipped it;
+	 *    this catches third-party packs for free, and catches the ones that do
+	 *    not exist yet. Read from a cached set, because instantiating every
+	 *    registered widget is far too expensive for a front-end request.
+	 * 3. A domain-token test for when Elementor is not loaded — cron, CLI, a
+	 *    scan of stored data. It names the domain (`woocommerce`, `woo`, `wc`)
+	 *    as a whole token, never a vendor, so `eael-woo-product-price` and
+	 *    `acme-woo-anything` both match on the same rule. Bare `product`,
+	 *    `price` and `cart` are excluded on purpose: Elementor ships a generic
+	 *    `price-table` and `price-list`, and claiming those would put this
+	 *    stylesheet on pages with no store on them.
+	 *
+	 * @param string $widget_type Elementor widget type.
 	 * @return bool
 	 */
 	public static function is_woocommerce_widget_type( $widget_type ) {
@@ -235,17 +311,84 @@ class Element_Registry {
 			return false;
 		}
 
-		if ( preg_match( '/woocommerce|^wc-|^eael-woo-|^premium-woo-|^eicon-woocommerce/', $widget_type ) ) {
+		$addon_map = self::get_addon_map();
+
+		if ( isset( $addon_map[ $widget_type ] ) ) {
 			return true;
 		}
 
-		// Addon widgets are recognised by the addon map. The prefix list above
-		// covers the families that predate the map; keeping the map as the
-		// source of truth means widening coverage in get_addon_map() also
-		// widens recognition here.
-		$addon_map = self::get_addon_map();
+		if ( in_array( $widget_type, self::woocommerce_widget_types(), true ) ) {
+			return true;
+		}
 
-		return isset( $addon_map[ $widget_type ] );
+		return (bool) preg_match( '/(^|[-_])(woocommerce|woo|wc)([-_]|$)/i', $widget_type );
+	}
+
+	/**
+	 * Widget types Elementor files under a WooCommerce category.
+	 *
+	 * Cached in an option and refreshed by discovery, never computed on a
+	 * front-end request: `get_widget_types()` instantiates every registered
+	 * widget, which is exactly the kind of work that must not happen while
+	 * somebody is waiting for a page.
+	 *
+	 * @return string[]
+	 */
+	public static function woocommerce_widget_types() {
+		$cached = get_option( self::WC_WIDGETS_OPTION, null );
+
+		return is_array( $cached ) ? $cached : array();
+	}
+
+	/**
+	 * Ask Elementor which widgets it considers WooCommerce, and cache it.
+	 *
+	 * Called from discovery and rescan, where the cost is acceptable and the
+	 * answer is wanted fresh.
+	 *
+	 * @return string[] The widget types found.
+	 */
+	public static function refresh_woocommerce_widget_types() {
+		$found = array();
+
+		if ( class_exists( '\\Elementor\\Plugin' ) && isset( \Elementor\Plugin::$instance->widgets_manager ) ) {
+			/**
+			 * Filters which Elementor widget categories denote WooCommerce.
+			 *
+			 * Matched as a substring so Elementor's own
+			 * `woocommerce-elements`, `woocommerce-elements-single` and
+			 * `woocommerce-elements-archive` are all covered by one entry, as
+			 * is any category an addon registers alongside them.
+			 *
+			 * @param string[] $categories Category name fragments.
+			 */
+			$categories = (array) apply_filters( 'eccw_woocommerce_widget_categories', array( 'woocommerce' ) );
+
+			$widgets = \Elementor\Plugin::$instance->widgets_manager->get_widget_types();
+
+			if ( is_array( $widgets ) ) {
+				foreach ( $widgets as $name => $widget ) {
+					if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_categories' ) ) {
+						continue;
+					}
+
+					foreach ( (array) $widget->get_categories() as $category ) {
+						foreach ( $categories as $needle ) {
+							if ( '' !== $needle && false !== stripos( (string) $category, $needle ) ) {
+								$found[] = $name;
+								continue 3;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$found = array_values( array_unique( $found ) );
+
+		update_option( self::WC_WIDGETS_OPTION, $found, false );
+
+		return $found;
 	}
 
 	public static function normalize_key( $widget_type ) {
@@ -339,11 +482,11 @@ class Element_Registry {
 	private static function widget_add_to_cart() {
 		$s = array( '.single_add_to_cart_button', '.woocommerce .button.alt', '.woocommerce button.button.alt', '.woocommerce a.button.alt', '#respond input#submit.alt', '.woocommerce .wc-block-components-button:not(.is-link)', '.woocommerce button[name="apply_coupon"]', '.woocommerce-form-login__submit', '.woocommerce-mini-cart__buttons a' );
 		return array(
-			'label' => __( 'Add to Cart Button', 'color-changer-for-elementor' ),
+			'label' => __( 'Add to Cart Button', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'button_normal',
-					'label'      => __( 'Normal', 'color-changer-for-elementor' ),
+					'label'      => __( 'Normal', 'commerce-colors-for-elementor' ),
 					'selectors'  => $s,
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color', 'fill' ),
@@ -351,7 +494,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'button_hover',
 					'derives_from' => 'button_normal',
-					'label'        => __( 'Hover', 'color-changer-for-elementor' ),
+					'label'        => __( 'Hover', 'commerce-colors-for-elementor' ),
 					'selectors'    => $s,
 					'states'       => array( 'hover' ),
 					'properties'   => array( 'background-color', 'color' ),
@@ -359,7 +502,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'button_focus',
 					'derives_from' => 'button_normal',
-					'label'        => __( 'Focus', 'color-changer-for-elementor' ),
+					'label'        => __( 'Focus', 'commerce-colors-for-elementor' ),
 					'selectors'    => $s,
 					'states'       => array( 'focus' ),
 					'properties'   => array( 'background-color', 'color', 'border-color' ),
@@ -367,7 +510,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'button_disabled',
 					'derives_from' => 'button_normal',
-					'label'        => __( 'Disabled', 'color-changer-for-elementor' ),
+					'label'        => __( 'Disabled', 'commerce-colors-for-elementor' ),
 					'selectors'    => $s,
 					'states'       => array( 'disabled' ),
 					'properties'   => array( 'background-color', 'color' ),
@@ -378,18 +521,18 @@ class Element_Registry {
 
 	private static function widget_product_price() {
 		return array(
-			'label' => __( 'Product Price', 'color-changer-for-elementor' ),
+			'label' => __( 'Product Price', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'price_regular',
-					'label'      => __( 'Regular Price', 'color-changer-for-elementor' ),
+					'label'      => __( 'Regular Price', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce div.product p.price', '.woocommerce div.product span.price', '.woocommerce ul.products li.product .price', '.price', '.woocommerce-Price-amount', '.wc-block-components-product-price' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 				),
 				array(
 					'slot_id'    => 'price_sale',
-					'label'      => __( 'Sale Price', 'color-changer-for-elementor' ),
+					'label'      => __( 'Sale Price', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce div.product p.price ins', '.woocommerce ul.products li.product .price ins', '.price ins' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -400,11 +543,11 @@ class Element_Registry {
 
 	private static function widget_sale_badge() {
 		return array(
-			'label' => __( 'Sale Badge', 'color-changer-for-elementor' ),
+			'label' => __( 'Sale Badge', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'badge_normal',
-					'label'      => __( 'Sale Badge', 'color-changer-for-elementor' ),
+					'label'      => __( 'Sale Badge', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce span.onsale', '.wc-block-components-product-sale-badge' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -415,18 +558,18 @@ class Element_Registry {
 
 	private static function widget_star_rating() {
 		return array(
-			'label' => __( 'Star Rating', 'color-changer-for-elementor' ),
+			'label' => __( 'Star Rating', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'stars_filled',
-					'label'      => __( 'Filled Stars', 'color-changer-for-elementor' ),
+					'label'      => __( 'Filled Stars', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.star-rating', '.star-rating span', '.star-rating span::before', '.wc-block-components-product-rating__stars' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 				),
 				array(
 					'slot_id'    => 'stars_empty',
-					'label'      => __( 'Empty Stars', 'color-changer-for-elementor' ),
+					'label'      => __( 'Empty Stars', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.star-rating::before', '.wc-block-components-product-rating__stars::before' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -437,11 +580,11 @@ class Element_Registry {
 
 	private static function widget_product_tabs() {
 		return array(
-			'label' => __( 'Product Tabs', 'color-changer-for-elementor' ),
+			'label' => __( 'Product Tabs', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'tab_normal',
-					'label'      => __( 'Tab', 'color-changer-for-elementor' ),
+					'label'      => __( 'Tab', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce div.product .woocommerce-tabs ul.tabs li a', '.wc-tabs li a' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -449,7 +592,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'tab_active',
 					'derives_from' => 'tab_normal',
-					'label'        => __( 'Active Tab', 'color-changer-for-elementor' ),
+					'label'        => __( 'Active Tab', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '.woocommerce div.product .woocommerce-tabs ul.tabs li.active a', '.wc-tabs li.active a' ),
 					'states'       => array( 'normal' ),
 					'properties'   => array( 'color' ),
@@ -460,12 +603,12 @@ class Element_Registry {
 
 	private static function widget_cart_table() {
 		return array(
-			'label' => __( 'Cart Table', 'color-changer-for-elementor' ),
+			'label' => __( 'Cart Contents', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'table_header',
-					'label'      => __( 'Column Headings', 'color-changer-for-elementor' ),
-					'selectors'  => array( '.woocommerce table.shop_table th', '.woocommerce table.cart th', '.wc-block-cart-items__header' ),
+					'label'      => __( 'Column Headings', 'commerce-colors-for-elementor' ),
+					'selectors'  => array( '.woocommerce table.shop_table th', '.woocommerce table.cart th', '.wc-block-cart-items__header', '.elementor-menu-cart__subtotal' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 				),
@@ -483,36 +626,59 @@ class Element_Registry {
 					// redraw the table's structure, so WooCommerce keeps its
 					// own dividers.
 					'slot_id'    => 'table_cell',
-					'label'      => __( 'Table Rows', 'color-changer-for-elementor' ),
-					'selectors'  => array( '.woocommerce table.shop_table td', '.wc-block-cart-items' ),
+					'label'      => __( 'Rows', 'commerce-colors-for-elementor' ),
+					'selectors'  => array( '.woocommerce table.shop_table td', '.wc-block-cart-items', '.elementor-menu-cart__products', '.elementor-menu-cart__product' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 				),
 				array(
 					'slot_id'    => 'proceed_button',
-					'label'      => __( 'Checkout Button', 'color-changer-for-elementor' ),
-					'selectors'  => array( '.woocommerce .wc-proceed-to-checkout a.checkout-button' ),
+					'label'      => __( 'Checkout Button', 'commerce-colors-for-elementor' ),
+					'selectors'  => array( '.woocommerce .wc-proceed-to-checkout a.checkout-button', '.elementor-menu-cart__footer-buttons a.elementor-button--checkout' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
 				),
 				array(
 					'slot_id'      => 'proceed_hover',
 					'derives_from' => 'proceed_button',
-					'label'        => __( 'Checkout Button (Hover)', 'color-changer-for-elementor' ),
-					'selectors'    => array( '.woocommerce .wc-proceed-to-checkout a.checkout-button' ),
+					'label'        => __( 'Checkout Button (Hover)', 'commerce-colors-for-elementor' ),
+					'selectors'    => array( '.woocommerce .wc-proceed-to-checkout a.checkout-button', '.elementor-menu-cart__footer-buttons a.elementor-button--checkout' ),
 					'states'       => array( 'hover' ),
 					'properties'   => array( 'background-color', 'color' ),
 				),
 				array(
 					'slot_id'    => 'coupon_input',
-					'label'      => __( 'Coupon Field', 'color-changer-for-elementor' ),
+					'label'      => __( 'Coupon Box', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-cart-form .coupon .input-text', '.woocommerce form.checkout_coupon .input-text', '#coupon_code', '.wc-block-cart .wc-block-components-text-input input' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color', 'border-color' ),
 				),
 				array(
+					// The cart button in the header, which on an Elementor Pro
+					// site is the single most-seen store element: it renders on
+					// every page, and it is the widget whose presence puts this
+					// stylesheet on the site in the first place. It was
+					// detected and then left unpainted, sitting at Elementor's
+					// default grey next to a store styled in the owner's
+					// colours. Elementor renders its own markup here rather
+					// than a WooCommerce template, so no WooCommerce selector
+					// could ever have reached it.
+					'slot_id'    => 'menu_cart_toggle',
+					'label'      => __( 'Cart Button in Header', 'commerce-colors-for-elementor' ),
+					'selectors'  => array( '.elementor-menu-cart__toggle .elementor-button', '.elementor-menu-cart__toggle_button' ),
+					'states'     => array( 'normal' ),
+					'properties' => array( 'color' ),
+				),
+				array(
+					'slot_id'    => 'menu_cart_count',
+					'label'      => __( 'Cart Item Count', 'commerce-colors-for-elementor' ),
+					'selectors'  => array( '.elementor-button-icon-qty', '.elementor-menu-cart__toggle .elementor-button-icon-qty' ),
+					'states'     => array( 'normal' ),
+					'properties' => array( 'background-color', 'color' ),
+				),
+				array(
 					'slot_id'    => 'update_cart',
-					'label'      => __( 'Update Cart', 'color-changer-for-elementor' ),
+					'label'      => __( 'Update Cart', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce button[name="update_cart"]' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -520,7 +686,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'update_cart_hover',
 					'derives_from' => 'update_cart',
-					'label'        => __( 'Update Cart (Hover)', 'color-changer-for-elementor' ),
+					'label'        => __( 'Update Cart (Hover)', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '.woocommerce button[name="update_cart"]' ),
 					'states'       => array( 'hover' ),
 					'properties'   => array( 'background-color', 'color' ),
@@ -531,11 +697,11 @@ class Element_Registry {
 
 	private static function widget_checkout() {
 		return array(
-			'label' => __( 'Checkout', 'color-changer-for-elementor' ),
+			'label' => __( 'Checkout', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'place_order',
-					'label'      => __( 'Place Order Button', 'color-changer-for-elementor' ),
+					'label'      => __( 'Place Order Button', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '#place_order', '.woocommerce .checkout .button' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -543,14 +709,14 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'place_order_hover',
 					'derives_from' => 'place_order',
-					'label'        => __( 'Place Order (Hover)', 'color-changer-for-elementor' ),
+					'label'        => __( 'Place Order (Hover)', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '#place_order', '.woocommerce .checkout .button' ),
 					'states'       => array( 'hover' ),
 					'properties'   => array( 'background-color', 'color' ),
 				),
 				array(
 					'slot_id'    => 'input_text',
-					'label'      => __( 'Input Fields', 'color-changer-for-elementor' ),
+					'label'      => __( 'Boxes to Fill In', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce .input-text', '.woocommerce select', '.select2-selection--single', '.woocommerce .select2-container--default .select2-selection--single', '.wc-block-checkout .wc-block-components-text-input input' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color', 'border-color' ),
@@ -558,7 +724,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'input_focus',
 					'derives_from' => 'input_text',
-					'label'        => __( 'Input Fields (Focus)', 'color-changer-for-elementor' ),
+					'label'        => __( 'Boxes to Fill In (Focus)', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '.woocommerce .input-text', '.woocommerce select', '.select2-selection--single', '.woocommerce .select2-container--default .select2-selection--single' ),
 					'states'       => array( 'focus' ),
 					'properties'   => array( 'border-color' ),
@@ -569,46 +735,46 @@ class Element_Registry {
 
 	private static function widget_notices() {
 		return array(
-			'label' => __( 'Notices', 'color-changer-for-elementor' ),
+			'label' => __( 'Messages', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'success_border',
-					'label'      => __( 'Success Border', 'color-changer-for-elementor' ),
+					'label'      => __( 'Success Border', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-message', '.wc-block-components-notice-banner.is-success' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'border-top-color' ),
 				),
 				array(
 					'slot_id'    => 'success_icon',
-					'label'      => __( 'Success Icon', 'color-changer-for-elementor' ),
+					'label'      => __( 'Success Icon', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-message::before' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 				),
 				array(
 					'slot_id'    => 'info_border',
-					'label'      => __( 'Info Border', 'color-changer-for-elementor' ),
+					'label'      => __( 'Info Border', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-info', '.wc-block-components-notice-banner.is-info' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'border-top-color' ),
 				),
 				array(
 					'slot_id'    => 'info_icon',
-					'label'      => __( 'Info Icon', 'color-changer-for-elementor' ),
+					'label'      => __( 'Info Icon', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-info::before' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
 				),
 				array(
 					'slot_id'    => 'error_border',
-					'label'      => __( 'Error Border', 'color-changer-for-elementor' ),
+					'label'      => __( 'Error Border', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-error', '.wc-block-components-notice-banner.is-error' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'border-top-color' ),
 				),
 				array(
 					'slot_id'    => 'error_icon',
-					'label'      => __( 'Error Icon', 'color-changer-for-elementor' ),
+					'label'      => __( 'Error Icon', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-error::before' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -619,11 +785,11 @@ class Element_Registry {
 
 	private static function widget_quantity_input() {
 		return array(
-			'label' => __( 'Quantity Input', 'color-changer-for-elementor' ),
+			'label' => __( 'Quantity Box', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'qty_input',
-					'label'      => __( 'Quantity Box', 'color-changer-for-elementor' ),
+					'label'      => __( 'Quantity Box', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.quantity .qty', 'input.qty', '.wc-block-components-quantity-selector input' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color', 'border-color' ),
@@ -631,7 +797,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'qty_focus',
 					'derives_from' => 'qty_input',
-					'label'        => __( 'Quantity Box (Focus)', 'color-changer-for-elementor' ),
+					'label'        => __( 'Quantity Box (Focus)', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '.quantity .qty', 'input.qty' ),
 					'states'       => array( 'focus' ),
 					'properties'   => array( 'border-color' ),
@@ -642,11 +808,11 @@ class Element_Registry {
 
 	private static function widget_account() {
 		return array(
-			'label' => __( 'My Account', 'color-changer-for-elementor' ),
+			'label' => __( 'My Account', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'nav_link',
-					'label'      => __( 'Menu Link', 'color-changer-for-elementor' ),
+					'label'      => __( 'Menu Link', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-MyAccount-navigation-link a' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -654,7 +820,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'nav_active',
 					'derives_from' => 'nav_link',
-					'label'        => __( 'Active Menu Link', 'color-changer-for-elementor' ),
+					'label'        => __( 'Active Menu Link', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '.woocommerce-MyAccount-navigation-link.is-active a' ),
 					'states'       => array( 'normal' ),
 					'properties'   => array( 'color' ),
@@ -697,7 +863,7 @@ class Element_Registry {
 		);
 
 		return array(
-			'label'  => __( 'General Links', 'color-changer-for-elementor' ),
+			'label'  => __( 'General Links', 'commerce-colors-for-elementor' ),
 			// Emitted before the element-specific cards. Two rules of equal
 			// specificity are decided by source order, and this card is the
 			// broadest one here, so it must lose those ties rather than win
@@ -706,7 +872,7 @@ class Element_Registry {
 			'slots'  => array(
 				array(
 					'slot_id'    => 'link_normal',
-					'label'      => __( 'Link', 'color-changer-for-elementor' ),
+					'label'      => __( 'Link', 'commerce-colors-for-elementor' ),
 					'selectors'  => $link_selectors,
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -714,14 +880,14 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'link_hover',
 					'derives_from' => 'link_normal',
-					'label'        => __( 'Link (Hover)', 'color-changer-for-elementor' ),
+					'label'        => __( 'Link (Hover)', 'commerce-colors-for-elementor' ),
 					'selectors'    => $link_selectors,
 					'states'       => array( 'hover' ),
 					'properties'   => array( 'color' ),
 				),
 				array(
 					'slot_id'    => 'body_text',
-					'label'      => __( 'Body Text', 'color-changer-for-elementor' ),
+					'label'      => __( 'Body Text', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce-mini-cart__total', '.woocommerce-Reviews', '.woocommerce-review__author', '.woocommerce-product-details__short-description' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'color' ),
@@ -732,11 +898,11 @@ class Element_Registry {
 
 	private static function widget_loop_buttons() {
 		return array(
-			'label' => __( 'Shop Page Buttons', 'color-changer-for-elementor' ),
+			'label' => __( 'Shop Page Buttons', 'commerce-colors-for-elementor' ),
 			'slots' => array(
 				array(
 					'slot_id'    => 'loop_button',
-					'label'      => __( 'Add to Cart', 'color-changer-for-elementor' ),
+					'label'      => __( 'Add to Cart', 'commerce-colors-for-elementor' ),
 					'selectors'  => array( '.woocommerce ul.products li.product .button', 'a.add_to_cart_button', '.woocommerce .products .button' ),
 					'states'     => array( 'normal' ),
 					'properties' => array( 'background-color', 'color' ),
@@ -744,7 +910,7 @@ class Element_Registry {
 				array(
 					'slot_id'      => 'loop_hover',
 					'derives_from' => 'loop_button',
-					'label'        => __( 'Add to Cart (Hover)', 'color-changer-for-elementor' ),
+					'label'        => __( 'Add to Cart (Hover)', 'commerce-colors-for-elementor' ),
 					'selectors'    => array( '.woocommerce ul.products li.product .button', 'a.add_to_cart_button', '.woocommerce .products .button' ),
 					'states'       => array( 'hover' ),
 					'properties'   => array( 'background-color', 'color' ),

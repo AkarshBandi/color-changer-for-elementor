@@ -22,7 +22,7 @@ class Plugin {
 	 * 3: onboarding flags removed with the wizard in 2.0.
 	 * 4: page-type CSS variants dropped; one stylesheet for the whole site.
 	 */
-	const DB_VERSION = 4;
+	const DB_VERSION = 5;
 
 	const DB_VERSION_OPTION = 'eccw_db_version';
 
@@ -85,7 +85,7 @@ class Plugin {
 	 * Missing-dependency notice.
 	 */
 	public static function dependencies_notice() {
-		$message = __( 'Color and Font Sync for Elementor and WooCommerce requires both <strong>WooCommerce</strong> and <strong>Elementor</strong> to be installed and active.', 'color-changer-for-elementor' );
+		$message = __( 'Commerce Colors for Elementor requires both <strong>WooCommerce</strong> and <strong>Elementor</strong> to be installed and active.', 'commerce-colors-for-elementor' );
 		echo '<div class="notice notice-error"><p>' . wp_kses_post( $message ) . '</p></div>';
 	}
 
@@ -180,6 +180,7 @@ class Plugin {
 		add_action( 'elementor/kit/after_save', array( __NAMESPACE__ . '\Cache_Manager', 'clear_css' ) );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'on_plugin_update' ), 10, 2 );
 		add_action( 'admin_init', array( __CLASS__, 'maybe_upgrade' ) );
+		add_action( 'admin_init', array( __CLASS__, 'maybe_sync_registry' ) );
 
 		// WooCommerce generates a product-archive rewrite rule for the shop
 		// page's slug (or the hardcoded 'shop' fallback when no shop page is
@@ -289,7 +290,7 @@ class Plugin {
 			return;
 		}
 
-		$plugin_file = ECCW_PATH . 'color-changer-for-elementor.php';
+		$plugin_file = ECCW_PATH . 'commerce-colors-for-elementor.php';
 
 		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
 			'custom_order_tables',
@@ -340,6 +341,48 @@ class Plugin {
 	 * matches — the guard is a single autoloaded integer, so the common case
 	 * costs no query.
 	 */
+	/**
+	 * Option holding the registry fingerprint the saved mappings were built for.
+	 */
+	const REGISTRY_SIGNATURE_OPTION = 'eccw_registry_signature';
+
+	/**
+	 * Run a scan when the registry has changed shape since the last one.
+	 *
+	 * A release that adds a slot, or an addon that registers one through
+	 * `eccw_element_registry`, changes what the stylesheet should contain. The
+	 * saved mappings do not know that: they were built against the old
+	 * registry, and nothing regenerates them until somebody presses Rescan.
+	 * That is how the Menu Cart slots shipped and then sat inert — the code
+	 * was on the server, the stylesheet was unchanged, and no message
+	 * anywhere connected the two.
+	 *
+	 * Comparing a fingerprint rather than a version number means the trigger
+	 * is the change itself, so it cannot be defeated by forgetting to bump a
+	 * constant, and it covers changes this plugin did not ship.
+	 *
+	 * Costs one autoloaded option read and one string comparison per admin
+	 * request; the scan behind it runs only when they differ.
+	 */
+	public static function maybe_sync_registry() {
+		$current = Element_Registry::signature();
+
+		if ( get_option( self::REGISTRY_SIGNATURE_OPTION ) === $current ) {
+			return;
+		}
+
+		// Recorded before the scan, not after. A fatal inside discovery would
+		// otherwise re-enter this on every single admin request.
+		update_option( self::REGISTRY_SIGNATURE_OPTION, $current );
+
+		/**
+		 * Fires when the element registry has changed shape.
+		 *
+		 * @param string $signature The new registry fingerprint.
+		 */
+		do_action( 'eccw_rescan', $current );
+	}
+
 	public static function maybe_upgrade() {
 		$stored = (int) get_option( self::DB_VERSION_OPTION, 0 );
 
@@ -363,7 +406,103 @@ class Plugin {
 			Cache_Manager::clear_css();
 		}
 
+		if ( $stored < 5 ) {
+			self::adopt_semantic_defaults();
+		}
+
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION );
+	}
+
+	/**
+	 * Re-point untouched button, link and text slots at the kit's own Button,
+	 * Link and Body colours.
+	 *
+	 * Until now every slot defaulted to one of the four brand tokens, so a
+	 * store whose Elementor buttons were green got black WooCommerce buttons
+	 * and no indication why. `Heuristic_Engine` now defaults those families to
+	 * the kit's own settings, but a default only ever applies to a slot nobody
+	 * has stored a value for — and on an existing install every slot has one.
+	 *
+	 * A slot is re-pointed only when it still holds exactly the brand token
+	 * that used to be its default, and only when the kit actually defines the
+	 * semantic token replacing it. Anything the owner changed keeps the colour
+	 * they chose; a kit with no Button tab is left entirely alone.
+	 *
+	 * Deliberately conservative in one respect worth naming: an owner who
+	 * chose `primary` for buttons on purpose is indistinguishable from one who
+	 * never touched it, so that choice is migrated too. It remains one
+	 * selection away from being set back, and leaving every store mismatched
+	 * to protect an invisible minority is the worse trade.
+	 */
+	private static function adopt_semantic_defaults() {
+		$saved = get_option( 'eccw_colors_mappings', array() );
+
+		if ( empty( $saved['widgets'] ) || ! is_array( $saved['widgets'] ) ) {
+			return;
+		}
+
+		// slot_id => array( token it must still hold, token to move it to ).
+		$moves = array(
+			'button_normal'     => array( 'primary', 'button_normal' ),
+			'button_focus'      => array( 'primary', 'button_normal' ),
+			'button_hover'      => array( 'secondary', 'button_hover' ),
+			'proceed_button'    => array( 'primary', 'button_normal' ),
+			'proceed_hover'     => array( 'secondary', 'button_hover' ),
+			'update_cart'       => array( 'primary', 'button_normal' ),
+			'update_cart_hover' => array( 'secondary', 'button_hover' ),
+			'place_order'       => array( 'primary', 'button_normal' ),
+			'place_order_hover' => array( 'secondary', 'button_hover' ),
+			'loop_button'       => array( 'primary', 'button_normal' ),
+			'loop_hover'        => array( 'secondary', 'button_hover' ),
+			'link_normal'       => array( 'text', 'link_normal' ),
+			'link_hover'        => array( 'primary', 'link_hover' ),
+			'nav_link'          => array( 'text', 'link_normal' ),
+			'tab_normal'        => array( 'text', 'body' ),
+			// nav_active and tab_active are deliberately absent: "the current
+			// one" must stay distinguishable, and a kit may set its link-hover
+			// colour equal to its body colour.
+			'table_cell'        => array( 'text', 'body' ),
+			'input_text'        => array( 'text', 'body' ),
+			'qty_input'         => array( 'text', 'body' ),
+			'coupon_input'      => array( 'text', 'body' ),
+			'body_text'         => array( 'text', 'body' ),
+		);
+
+		$palette = CSS_Generator::get_kit_colors();
+		$changed = false;
+
+		foreach ( $saved['widgets'] as $widget_key => $widget ) {
+			if ( empty( $widget['slots'] ) || ! is_array( $widget['slots'] ) ) {
+				continue;
+			}
+
+			foreach ( $widget['slots'] as $slot_id => $slot ) {
+				if ( ! isset( $moves[ $slot_id ], $slot['color'] ) ) {
+					continue;
+				}
+
+				list( $was, $now ) = $moves[ $slot_id ];
+
+				if ( $slot['color'] !== $was ) {
+					continue;
+				}
+
+				if ( ! isset( $palette[ $now ] ) || '' === $palette[ $now ] ) {
+					continue;
+				}
+
+				$saved['widgets'][ $widget_key ]['slots'][ $slot_id ]['color'] = $now;
+				$changed = true;
+			}
+		}
+
+		if ( ! $changed ) {
+			return;
+		}
+
+		Mapping_Service::bump_version( $saved );
+		update_option( 'eccw_colors_mappings', $saved );
+		Cache_Manager::clear_css();
 	}
 
 	/**
@@ -416,7 +555,7 @@ class Plugin {
 			return;
 		}
 
-		$basename = plugin_basename( ECCW_PATH . 'color-changer-for-elementor.php' );
+		$basename = plugin_basename( ECCW_PATH . 'commerce-colors-for-elementor.php' );
 
 		if ( ! empty( $options['plugins'] ) && in_array( $basename, (array) $options['plugins'], true ) ) {
 			Cache_Manager::clear_css();
@@ -424,6 +563,12 @@ class Plugin {
 			// An update can widen which widget types count as WooCommerce, so
 			// the cached answer from the previous version cannot be trusted.
 			CSS_Generator::flush_global_chrome();
+
+			// Force the registry watcher to re-answer on the next admin
+			// request. Clearing caches was never enough on its own: new
+			// slots have to be merged into the saved mappings before they
+			// can reach the stylesheet, and only a scan does that.
+			delete_option( self::REGISTRY_SIGNATURE_OPTION );
 		}
 	}
 }

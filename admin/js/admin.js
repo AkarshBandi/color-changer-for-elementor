@@ -290,7 +290,7 @@
 
 		// Always resolves. The version this replaced chained `.always()` onto a
 		// function that returned nothing, so every rescan threw a TypeError and
-		// left the button disabled reading "Scanning..." forever.
+		// left the button disabled reading "Checking\u2026" forever.
 		window.fetch(data.ajaxUrl, {
 			method: 'POST',
 			credentials: 'same-origin',
@@ -303,14 +303,50 @@
 				return;
 			}
 
-			window.alert((json && json.data && json.data.message) || strings.requestFailed);
+			notify((json && json.data && json.data.message) || strings.requestFailed, 'bad');
 		}).catch(function () {
-			window.alert(strings.requestFailed);
+			notify(strings.requestFailed, 'bad');
 		}).then(function () {
 			if (onDone) {
 				onDone();
 			}
 		});
+	}
+
+	/*
+	 * Report a result on the page instead of in a browser dialog.
+	 *
+	 * alert() interrupts: it steals focus, has to be dismissed before the page
+	 * can be touched again, and looks like the browser talking rather than the
+	 * plugin. For a screen whose whole premise is that the owner never has to
+	 * think about internals, one sentence of good news should not require an OK
+	 * click. This writes into a live region that already exists in the markup,
+	 * so the placement is fixed and assistive technology announces it without
+	 * moving focus.
+	 */
+	function notify(message, kind) {
+		var region = document.getElementById('eccw-live');
+
+		if (!region) {
+			window.alert(message);
+			return;
+		}
+
+		region.textContent = '';
+
+		var note = document.createElement('div');
+
+		note.className = 'eccw-note ' + (kind === 'bad' ? 'eccw-note-bad' : 'eccw-note-good');
+		note.textContent = message;
+		region.appendChild(note);
+
+		// Only scrolled to when it is out of sight; scrolling a message that is
+		// already on screen just moves the page under the reader.
+		var box = region.getBoundingClientRect();
+
+		if (box.top < 0 || box.bottom > window.innerHeight) {
+			region.scrollIntoView({ block: 'center', behavior: 'smooth' });
+		}
 	}
 
 	function rescan(button) {
@@ -321,7 +357,7 @@
 
 		post({ action: 'eccw_rescan' }, function (result) {
 			if (result.message) {
-				window.alert(result.message);
+				notify(result.message);
 			}
 
 			if (result.new_count > 0 && window.confirm(strings.reloadPrompt)) {
@@ -345,7 +381,7 @@
 
 		post({ action: 'eccw_reset_defaults' }, function (result) {
 			if (result.message) {
-				window.alert(result.message);
+				notify(result.message);
 			}
 
 			// The server chose the new values, so re-reading the page is the

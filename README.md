@@ -2,10 +2,10 @@
 
 ## Product & UI Direction — Non-Technical User Experience
 
-**Plugin slug:** `color-changer-for-elementor`
+**Plugin slug:** `commerce-colors-for-elementor`
 **Namespace:** `ElementorColorChanger`
-**Text domain:** `color-changer-for-elementor`
-**Current version:** 2.0.0
+**Text domain:** `commerce-colors-for-elementor`
+**Current version:** 1.0.0
 
 ---
 
@@ -124,7 +124,11 @@ A separate Pro addon can extend it through existing filter seams:
 | `eccw_feature_*` | Gate Pro features behind the license |
 | `eccw_typography_groups` / `eccw_kit_typography` | Pro typography tokens and groups |
 | `eccw_kit_colors` / `eccw_generated_css` | Pro color tokens and final CSS |
-| `eccw_is_woocommerce_context` | Extend page detection |
+| `eccw_is_woocommerce_context` | Declare WooCommerce context for an integration the built-in detectors cannot see |
+| `eccw_woocommerce_widget_categories` | Which Elementor widget categories denote WooCommerce (default: any containing `woocommerce`) |
+| `eccw_wc_block_namespaces` | Which block namespaces denote WooCommerce (default: `woocommerce`) |
+| `eccw_wc_shortcodes` | Which shortcodes bring a page into scope |
+| `eccw_chrome_template_types` | Which Elementor template types count as site-wide chrome |
 | `eccw_slot_states` / `eccw_settings` | State and settings extension |
 
 The free plugin covers native WooCommerce elements everywhere (Elementor Free or

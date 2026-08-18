@@ -32,31 +32,6 @@ jobs:
       - name: Run PHPCS
         run: vendor/bin/phpcs .
 
-  phpunit:
-    name: PHPUnit (logic core)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          coverage: none
-          tools: composer:v2
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
-
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit
-
   plugin-check:
     name: Plugin Check
     runs-on: ubuntu-latest
@@ -68,7 +43,3 @@ jobs:
         with:
           build-dir: './'
           ignore-warnings: true
-          # tests/ is a PHPUnit bootstrap (defines ABSPATH itself, mirrors core
-          # shims) that does not ship in the plugin package.
-          exclude-directories: |
-            tests

@@ -102,232 +102,35 @@ class CSS_Generator {
 	/**
 	 * Whether the current request renders WooCommerce elements.
 	 *
-	 * Native WooCommerce routes (shop, product, cart, checkout, account,
-	 * endpoints), pages embedding WooCommerce via shortcode, and Elementor
-	 * pages built with WooCommerce widgets (whose widgets live in
-	 * `_elementor_data`, invisible to `is_shop()` and `has_shortcode()`).
+	 * Delegates to {@see Scope_Detector}. This used to hold the whole answer
+	 * inline, which meant the decision could only be exercised through a real
+	 * request; each source is now a detector that can be tested on its own.
 	 *
 	 * @return bool
 	 */
 	private static function is_woocommerce_context() {
-		if ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) {
-			return true;
-		}
-
-		if ( function_exists( 'is_cart' ) && is_cart() ) {
-			return true;
-		}
-
-		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-			return true;
-		}
-
-		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-			return true;
-		}
-
-		if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url() ) {
-			return true;
-		}
-
-		// Site chrome. A Menu Cart in an Elementor header puts a cart total
-		// and a button on every page of the site, including pages
-		// WooCommerce does not route and whose own content holds no
-		// WooCommerce widget — so no per-post check can ever see it.
-		//
-		// This is the bug 2.0 set out to kill ("mini-carts in headers got no
-		// styling") and did not: the page-type gate was removed from slot
-		// generation, but the surviving gate was here, one layer further out.
-		// Answered for the whole site at once, because that is the shape of
-		// the question.
-		if ( self::has_global_wc_chrome() ) {
-			return true;
-		}
-
-		if ( is_singular() ) {
-			$post = get_post();
-
-			if ( $post ) {
-				foreach ( self::wc_shortcodes() as $shortcode ) {
-					if ( has_shortcode( $post->post_content, $shortcode ) ) {
-						return true;
-					}
-				}
-
-				// Elementor pages: WooCommerce widgets live in _elementor_data,
-				// not post_content, so a plain page built with the Products,
-				// Cart or Checkout widget is invisible to the checks above.
-				if ( self::layout_has_wc_widget( get_post_meta( $post->ID, '_elementor_data', true ) ) ) {
-					return true;
-				}
-			}
-		}
-
-		/**
-		 * Filters whether the current request is a WooCommerce context.
-		 *
-		 * @param bool $is_wc Whether the request renders WooCommerce elements.
-		 */
-		return (bool) apply_filters( 'eccw_is_woocommerce_context', false );
-	}
-
-	/**
-	 * WooCommerce shortcodes that put store elements on an ordinary page.
-	 *
-	 * @return string[]
-	 */
-	private static function wc_shortcodes() {
-		return array(
-			'products',
-			'product_page',
-			'product_category',
-			'product',
-			'add_to_cart',
-			'woocommerce_cart',
-			'woocommerce_checkout',
-			'woocommerce_my_account',
-			'woocommerce_order_tracking',
-		);
-	}
-
-	/**
-	 * Whether an Elementor layout contains a WooCommerce widget.
-	 *
-	 * This used to be a `"widgetType":"woocommerce-*"` regex, which saw only
-	 * Elementor's own WooCommerce widgets. Elementor free ships none of them,
-	 * so on the very common Essential Addons / Premium Addons stack the check
-	 * matched nothing and the page went unstyled. The registry already knows
-	 * which widget types belong to the WooCommerce family, addon map
-	 * included — ask it rather than re-deriving the answer from a prefix.
-	 *
-	 * @param mixed $elementor_data Raw `_elementor_data` meta.
-	 * @return bool
-	 */
-	private static function layout_has_wc_widget( $elementor_data ) {
-		if ( is_array( $elementor_data ) ) {
-			$elementor_data = wp_json_encode( $elementor_data );
-		}
-
-		if ( ! is_string( $elementor_data ) || '' === $elementor_data ) {
-			return false;
-		}
-
-		if ( preg_match_all( '/"widgetType"\s*:\s*"([^"]+)"/', $elementor_data, $matches ) ) {
-			foreach ( array_unique( $matches[1] ) as $widget_type ) {
-				if ( Element_Registry::is_woocommerce_widget_type( $widget_type ) ) {
-					return true;
-				}
-			}
-		}
-
-		// Shortcode widgets may embed WooCommerce shortcodes. The stored value
-		// is JSON-escaped, so unescape before asking has_shortcode(): a
-		// shortcode carrying an attribute (`[products ids="4,5"]`) is cut off
-		// at the first escaped quote otherwise.
-		if ( preg_match_all( '/"shortcode"\s*:\s*"((?:[^"\\\\]|\\\\.)*)"/', $elementor_data, $matches ) ) {
-			foreach ( $matches[1] as $shortcode ) {
-				$shortcode = str_replace( array( '\\"', '\\\\' ), array( '"', '\\' ), $shortcode );
-
-				foreach ( self::wc_shortcodes() as $tag ) {
-					if ( has_shortcode( $shortcode, $tag ) ) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
+		return Scope_Detector::is_in_scope();
 	}
 
 	/**
 	 * Whether the site's Elementor chrome renders WooCommerce elements on
 	 * every page.
 	 *
-	 * Cached in an autoloaded option rather than recomputed: theme-builder
-	 * templates change when somebody edits one, not per request, and this is
-	 * consulted on every front-end page load. `Plugin` flushes it when an
-	 * `elementor_library` post is saved or deleted.
+	 * Retained as the published name for this answer; the detection itself
+	 * lives in {@see Scope_Detector::global_chrome()}.
 	 *
 	 * @return bool
 	 */
 	public static function has_global_wc_chrome() {
-		$cached = get_option( self::CHROME_OPTION, null );
-
-		if ( '1' === $cached || '0' === $cached ) {
-			return '1' === $cached;
-		}
-
-		$answer = self::detect_global_wc_chrome();
-
-		update_option( self::CHROME_OPTION, $answer ? '1' : '0' );
-
-		return $answer;
+		return Scope_Detector::global_chrome();
 	}
 
 	/**
 	 * Forget the cached global-chrome answer.
 	 */
 	public static function flush_global_chrome() {
-		delete_option( self::CHROME_OPTION );
-	}
-
-	/**
-	 * Scan Elementor theme-builder templates for WooCommerce widgets.
-	 *
-	 * Bounded like discovery is: a site with hundreds of saved templates
-	 * should not turn one cache miss into an unbounded meta read.
-	 *
-	 * @return bool
-	 */
-	private static function detect_global_wc_chrome() {
-		$templates = get_posts(
-			array(
-				'post_type'      => 'elementor_library',
-				'post_status'    => 'publish',
-				'posts_per_page' => 100,
-				'fields'         => 'ids',
-				'orderby'        => 'modified',
-				'order'          => 'DESC',
-				'no_found_rows'  => true,
-				'cache_results'  => false,
-			)
-		);
-
-		$chrome_types = self::chrome_template_types();
-
-		foreach ( $templates as $template_id ) {
-			$type = get_post_meta( $template_id, '_elementor_template_type', true );
-
-			if ( ! in_array( $type, $chrome_types, true ) ) {
-				continue;
-			}
-
-			if ( self::layout_has_wc_widget( get_post_meta( $template_id, '_elementor_data', true ) ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Elementor template types that render as part of the site's chrome.
-	 *
-	 * Deliberately excludes `page` and `section` templates: those are inserted
-	 * into one specific layout, which the per-post check already reads.
-	 *
-	 * @return string[]
-	 */
-	private static function chrome_template_types() {
-		/**
-		 * Filters which Elementor template types count as site-wide chrome.
-		 *
-		 * @param array $types Elementor `_elementor_template_type` values.
-		 */
-		return (array) apply_filters(
-			'eccw_chrome_template_types',
-			array( 'header', 'footer', 'popup', 'single', 'single-page', 'single-post', 'archive', 'product', 'product-archive', 'search-results', 'error-404' )
-		);
+		Scope_Detector::flush_global_chrome();
+		Scope_Detector::flush_memo();
 	}
 
 	/**
@@ -443,6 +246,43 @@ class CSS_Generator {
 	 *
 	 * @return array Colour id => hex.
 	 */
+	/**
+	 * Forget the memoised palette.
+	 *
+	 * The palette is resolved once per request and cached in a static, which is
+	 * right for the front end and wrong for anything that changes the kit and
+	 * then reads it back — a migration, or a test setting `eccw_kit_colors`
+	 * after something else has already read it.
+	 */
+	/**
+	 * The resolved colour when a token is one of the kit's own interaction
+	 * states, or '' when it is not.
+	 *
+	 * Only the state colours Elementor actually exposes qualify. A brand token
+	 * such as `accent` says nothing about what hovering looks like, so a slot
+	 * holding one still derives its shade.
+	 *
+	 * @param mixed $token Stored slot colour.
+	 * @return string Resolved hex, or ''.
+	 */
+	public static function kit_state_color( $token ) {
+		if ( ! is_string( $token ) || ! in_array( $token, array( 'button_hover', 'button_hover_text', 'link_hover' ), true ) ) {
+			return '';
+		}
+
+		$kit = self::get_kit_colors();
+
+		if ( ! isset( $kit[ $token ] ) || '' === $kit[ $token ] ) {
+			return '';
+		}
+
+		return self::resolve_color( $token );
+	}
+
+	public static function flush_kit_colors() {
+		self::$kit_colors = null;
+	}
+
 	public static function get_kit_colors() {
 		if ( null !== self::$kit_colors ) {
 			return self::$kit_colors;
@@ -807,7 +647,7 @@ class CSS_Generator {
 	 * @param array $slot_def Slot definition.
 	 * @return string State name, or 'normal'.
 	 */
-	private static function state_of_slot( array $slot_def ) {
+	public static function state_of_slot( array $slot_def ) {
 		$states = isset( $slot_def['states'] ) ? (array) $slot_def['states'] : array();
 
 		foreach ( array( 'hover', 'active', 'disabled', 'focus' ) as $state ) {
@@ -834,7 +674,11 @@ class CSS_Generator {
 			array_filter(
 				$slots,
 				function ( $slot ) {
-					return empty( $slot['derives_from'] );
+					// Anything the generator does not derive has to stay
+					// editable, or the owner is left with a control-less slot
+					// nobody sets — which is how the active tab ended up
+					// permanently identical to an inactive one.
+					return empty( $slot['derives_from'] ) || 'normal' === self::state_of_slot( $slot );
 				}
 			)
 		);
@@ -995,23 +839,8 @@ class CSS_Generator {
 	 * @param string $hex        The mapped color hex.
 	 * @return array CSS declarations (e.g. array( 'color: #fff !important' )).
 	 */
-	private function build_rules( array $properties, $hex ) {
-		$rules  = array();
-		$has_bg = in_array( 'background-color', $properties, true );
-
-		/**
-		 * Filters whether label colour is auto-derived from the background.
-		 *
-		 * @param bool   $auto       Whether to derive the label colour.
-		 * @param string $hex        Background colour being applied.
-		 * @param array  $properties Properties the slot paints.
-		 */
-		$auto_contrast = (bool) apply_filters(
-			'eccw_auto_contrast_text',
-			Settings::get( 'auto_contrast' ),
-			$hex,
-			$properties
-		);
+	private function build_rules( array $properties, array $resolved ) {
+		$rules = array();
 
 		/**
 		 * Filters whether declarations are emitted with !important.
@@ -1026,23 +855,17 @@ class CSS_Generator {
 		);
 
 		$suffix = $force ? ' !important' : '';
-		$derive = $has_bg && $auto_contrast;
 
-		if ( $derive ) {
-			$text_hex = self::contrast_text( $hex );
-		} elseif ( $auto_contrast ) {
-			$text_hex = self::ensure_readable( $hex, self::page_background() );
-		} else {
-			$text_hex = $hex;
-		}
-
+		// Deliberately no colour logic here. Which colour a property gets was
+		// decided once, in Colour_Resolver; this method's only job is to write
+		// it down. Contrast used to be chosen at this point, which meant the
+		// text half of a slot was decided two layers away from the background
+		// half — the same write-here-read-there split that has produced five
+		// shipped defects.
 		foreach ( $properties as $prop ) {
-			if ( 'color' === $prop || 'fill' === $prop ) {
-				$rules[] = $prop . ': ' . $text_hex . $suffix;
-				continue;
-			}
+			$value = ( 'color' === $prop || 'fill' === $prop ) ? $resolved['text'] : $resolved['base'];
 
-			$rules[] = $prop . ': ' . $hex . $suffix;
+			$rules[] = $prop . ': ' . $value . $suffix;
 		}
 
 		return $rules;
@@ -1209,34 +1032,14 @@ class CSS_Generator {
 
 			foreach ( $widget['slots'] as $slot_id => $slot_data ) {
 				$slot_def = $slot_data['definition'];
-				$hex      = self::resolve_color( $slot_data['color'] );
 
-				$derives_from = isset( $slot_def['derives_from'] ) ? $slot_def['derives_from'] : '';
+				// One call, one answer. Everything that shapes this colour —
+				// the token, the kit's own state colours, derivation, the focus
+				// ring, the readability guard — lives in Colour_Resolver, so
+				// there is exactly one place to read when a colour is wrong.
+				$resolved = Colour_Resolver::resolve( $slot_def, $slot_data, $base_colors, $derive );
 
-				if ( $derive && '' !== $derives_from && isset( $base_colors[ $derives_from ] ) ) {
-					// The slot's own stored colour is ignored while deriving is
-					// on, not discarded — switching the setting off brings back
-					// whatever was chosen before.
-					$state = self::state_of_slot( $slot_def );
-
-					if ( 'focus' === $state && ! in_array( 'background-color', $slot_def['properties'], true ) ) {
-						// A focused control must be visibly distinct from its idle
-						// state (WCAG 2.4.7). Border-only slots (inputs, quantity
-						// boxes) cannot show a shade change, so focus is signalled
-						// with the brand primary rather than the base colour —
-						// which made the focus border identical to the normal
-						// border. Falls back to the derived shade when the kit
-						// defines no primary.
-						$kit = self::get_kit_colors();
-						$hex = isset( $kit['primary'] ) && '' !== $kit['primary']
-							? self::resolve_color( 'primary' )
-							: self::derive_state_color( $base_colors[ $derives_from ], $state );
-					} else {
-						$hex = self::derive_state_color( $base_colors[ $derives_from ], $state );
-					}
-				}
-
-				$css .= $this->build_slot_css( $slot_def, $hex );
+				$css .= $this->build_slot_css( $slot_def, $resolved );
 			}
 		}
 
@@ -1263,7 +1066,7 @@ class CSS_Generator {
 	 * @param string $hex      Resolved colour.
 	 * @return string CSS.
 	 */
-	private function build_slot_css( array $slot_def, $hex ) {
+	private function build_slot_css( array $slot_def, array $resolved ) {
 		$css = '';
 
 		foreach ( $slot_def['selectors'] as $selector ) {
@@ -1271,7 +1074,7 @@ class CSS_Generator {
 				$state_selectors = $this->get_state_selectors( $selector, $state );
 
 				foreach ( $state_selectors as $state_selector ) {
-					$rules = $this->build_rules( $slot_def['properties'], $hex );
+					$rules = $this->build_rules( $slot_def['properties'], $resolved );
 
 					if ( 'disabled' === $state ) {
 						$rules[] = 'opacity: 0.5 !important';
@@ -1367,7 +1170,13 @@ class CSS_Generator {
 
 		$instance = new self();
 
-		return $instance->minify( $instance->build_slot_css( $slot_def, $hex ) );
+		// Through the same resolver the stylesheet uses, with deriving off and
+		// no sibling slots, so a preview cannot disagree with what the store
+		// will render. A preview drawn by a second code path is how the 1.3.2
+		// before/after panel came to show two identical panels.
+		$resolved = Colour_Resolver::resolve( $slot_def, array( 'color' => $hex ), array(), false );
+
+		return $instance->minify( $instance->build_slot_css( $slot_def, $resolved ) );
 	}
 
 	/**

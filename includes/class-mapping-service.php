@@ -24,6 +24,50 @@ class Mapping_Service {
 	 * @param array $saved Mappings option, by reference.
 	 * @return int The new version.
 	 */
+	/**
+	 * Option holding what the last scan found.
+	 */
+	const COVERAGE_OPTION = 'eccw_coverage';
+
+	/**
+	 * Record what a scan found, whether or not it changed any mapping.
+	 *
+	 * This method did not exist either, and both rescan paths called it one
+	 * line after the missing scan(). Recorded separately from the mappings so
+	 * that "we found elements we do not style" survives a scan that alters
+	 * nothing -- the count is a fact about the site, not about the saved
+	 * colours, and tying it to a mapping change is how it would go stale.
+	 *
+	 * @param array $report Report from Discovery_Engine::scan().
+	 */
+	public static function record_coverage( $report ) {
+		if ( ! is_array( $report ) ) {
+			return;
+		}
+
+		update_option(
+			self::COVERAGE_OPTION,
+			array(
+				'styled'   => isset( $report['cards'] ) ? count( (array) $report['cards'] ) : 0,
+				'unmapped' => isset( $report['unmapped'] ) ? array_values( (array) $report['unmapped'] ) : array(),
+				'scanned'  => isset( $report['scanned'] ) ? (int) $report['scanned'] : 0,
+				'at'       => current_time( 'mysql' ),
+			),
+			false
+		);
+	}
+
+	/**
+	 * What the last scan found.
+	 *
+	 * @return array
+	 */
+	public static function coverage() {
+		$saved = get_option( self::COVERAGE_OPTION, array() );
+
+		return is_array( $saved ) ? $saved : array();
+	}
+
 	public static function bump_version( &$saved ) {
 		if ( ! is_array( $saved ) ) {
 			$saved = array();

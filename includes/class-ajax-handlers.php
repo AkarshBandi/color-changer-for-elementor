@@ -22,11 +22,11 @@ class AJAX_Handlers {
 
 	private function verify_request() {
 		if ( ! check_ajax_referer( 'eccw_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'color-changer-for-elementor' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'commerce-colors-for-elementor' ) ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You do not have sufficient permissions.', 'commerce-colors-for-elementor' ) ) );
 		}
 	}
 
@@ -36,7 +36,7 @@ class AJAX_Handlers {
 		// Nonce and capability are verified in verify_request() above.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! isset( $_POST['widgets'] ) || ! is_array( $_POST['widgets'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No widgets specified.', 'color-changer-for-elementor' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No widgets specified.', 'commerce-colors-for-elementor' ) ) );
 		}
 
 		$saved = get_option( 'eccw_colors_mappings', array() );
@@ -65,40 +65,21 @@ class AJAX_Handlers {
 
 		update_option( 'eccw_colors_mappings', $saved );
 
-		wp_send_json_success( array( 'message' => __( 'Dismissed.', 'color-changer-for-elementor' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Dismissed.', 'commerce-colors-for-elementor' ) ) );
 	}
 
 	public function rescan() {
 		$this->verify_request();
 
-		// "Check for new elements" should also re-answer whether the site's
-		// header or footer carries WooCommerce, or the button would look like
-		// it did nothing on the one case people click it for.
-		CSS_Generator::flush_global_chrome();
+		// Straight through the shared implementation, so the button and the
+		// nightly job cannot drift apart. Bumping the version is part of that
+		// sequence now, which is what makes a newly merged slot actually reach
+		// the stylesheet rather than sitting in the mappings unused.
+		$cron   = new Cron_Handler();
+		$result = $cron->rescan();
 
-		$discovery = new Discovery_Engine();
-		$report    = $discovery->scan();
-
-		Mapping_Service::record_coverage( $report );
-
-		$saved = get_option( 'eccw_colors_mappings', array() );
-
-		$needs_update = Mapping_Service::normalize_all( $saved );
-
-		$new_widgets = Mapping_Service::merge_new_widgets( $saved, $report['cards'] );
-
-		if ( ! empty( $new_widgets ) ) {
-			$needs_update = true;
-		}
-
-		if ( Mapping_Service::ensure_defaults( $saved ) ) {
-			$needs_update = true;
-		}
-
-		if ( $needs_update ) {
-			Mapping_Service::bump_version( $saved );
-			update_option( 'eccw_colors_mappings', $saved );
-		}
+		$report      = $result['report'];
+		$new_widgets = $result['new'];
 
 		Cache_Manager::clear_css();
 
@@ -118,7 +99,7 @@ class AJAX_Handlers {
 				'Found %1$d kind of store element across %2$d pages and templates.',
 				'Found %1$d kinds of store element across %2$d pages and templates.',
 				$styled,
-				'color-changer-for-elementor'
+				'commerce-colors-for-elementor'
 			),
 			$styled,
 			(int) $report['scanned']
@@ -131,7 +112,7 @@ class AJAX_Handlers {
 					'%d is not styled yet — see "Not styled yet" below.',
 					'%d are not styled yet — see "Not styled yet" below.',
 					$unmapped,
-					'color-changer-for-elementor'
+					'commerce-colors-for-elementor'
 				),
 				$unmapped
 			);
@@ -164,7 +145,7 @@ class AJAX_Handlers {
 
 		Cache_Manager::clear_css();
 
-		wp_send_json_success( array( 'message' => __( 'All elements reset to defaults.', 'color-changer-for-elementor' ) ) );
+		wp_send_json_success( array( 'message' => __( 'All elements reset to defaults.', 'commerce-colors-for-elementor' ) ) );
 	}
 
 	private function migrate_widget_keys( &$saved ) {

@@ -11,7 +11,7 @@ class Admin_Interface {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_post_eccw_save_settings', array( $this, 'handle_form_save' ) );
 
-		$plugin_file = plugin_basename( ECCW_PATH . 'color-changer-for-elementor.php' );
+		$plugin_file = plugin_basename( ECCW_PATH . 'commerce-colors-for-elementor.php' );
 		add_filter( 'plugin_action_links_' . $plugin_file, array( $this, 'add_settings_link' ) );
 	}
 
@@ -30,8 +30,8 @@ class Admin_Interface {
 	public function add_submenu() {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Store Design', 'color-changer-for-elementor' ),
-			__( 'Store Design', 'color-changer-for-elementor' ),
+			__( 'Store Design', 'commerce-colors-for-elementor' ),
+			__( 'Store Design', 'commerce-colors-for-elementor' ),
 			'manage_options',
 			'eccw-settings',
 			array( $this, 'render_settings_page' )
@@ -39,8 +39,8 @@ class Admin_Interface {
 
 		add_submenu_page(
 			'themes.php',
-			__( 'Store Design', 'color-changer-for-elementor' ),
-			__( 'Store Design', 'color-changer-for-elementor' ),
+			__( 'Store Design', 'commerce-colors-for-elementor' ),
+			__( 'Store Design', 'commerce-colors-for-elementor' ),
 			'manage_options',
 			'eccw-settings',
 			array( $this, 'render_settings_page' )
@@ -66,7 +66,7 @@ class Admin_Interface {
 
 	public function add_settings_link( $links ) {
 		$settings_link = '<a href="' . admin_url( 'admin.php?page=eccw-settings' ) . '">' .
-			esc_html__( 'Settings', 'color-changer-for-elementor' ) . '</a>';
+			esc_html__( 'Settings', 'commerce-colors-for-elementor' ) . '</a>';
 
 		array_unshift( $links, $settings_link );
 
@@ -122,14 +122,14 @@ class Admin_Interface {
 			'siteUrl'   => home_url(),
 			'features'  => Features::all(),
 			'i18n'      => array(
-				'scanning'      => __( 'Checking…', 'color-changer-for-elementor' ),
-				'checkAgain'    => __( 'Check for new elements', 'color-changer-for-elementor' ),
-				'resetting'     => __( 'Resetting…', 'color-changer-for-elementor' ),
-				'requestFailed' => __( 'That did not work. Please try again.', 'color-changer-for-elementor' ),
-				'unsaved'       => __( 'You have unsaved changes.', 'color-changer-for-elementor' ),
-				'nothingNew'    => __( 'Nothing new to review.', 'color-changer-for-elementor' ),
-				'reloadPrompt'  => __( 'New parts of your store were found. Reload to see them?', 'color-changer-for-elementor' ),
-				'customColour'  => __( 'Custom colour', 'color-changer-for-elementor' ),
+				'scanning'      => __( 'Checking…', 'commerce-colors-for-elementor' ),
+				'checkAgain'    => __( 'Check for new parts of my store', 'commerce-colors-for-elementor' ),
+				'resetting'     => __( 'Resetting…', 'commerce-colors-for-elementor' ),
+				'requestFailed' => __( 'That did not work. Please try again.', 'commerce-colors-for-elementor' ),
+				'unsaved'       => __( 'You have unsaved changes.', 'commerce-colors-for-elementor' ),
+				'nothingNew'    => __( 'Nothing new to review.', 'commerce-colors-for-elementor' ),
+				'reloadPrompt'  => __( 'New parts of your store were found. Reload to see them?', 'commerce-colors-for-elementor' ),
+				'customColour'  => __( 'Custom colour', 'commerce-colors-for-elementor' ),
 			),
 		);
 
@@ -180,18 +180,18 @@ class Admin_Interface {
 	 */
 	public static function kit_color_labels() {
 		$labels = array(
-			'button_normal'     => __( 'Button colour', 'color-changer-for-elementor' ),
-			'button_hover'      => __( 'Button colour (mouse over)', 'color-changer-for-elementor' ),
-			'button_text'       => __( 'Button text', 'color-changer-for-elementor' ),
-			'button_hover_text' => __( 'Button text (mouse over)', 'color-changer-for-elementor' ),
-			'link_normal'       => __( 'Link colour', 'color-changer-for-elementor' ),
-			'link_hover'        => __( 'Link colour (mouse over)', 'color-changer-for-elementor' ),
-			'body'              => __( 'Body text', 'color-changer-for-elementor' ),
+			'button_normal'     => __( 'Button colour', 'commerce-colors-for-elementor' ),
+			'button_hover'      => __( 'Button colour (mouse over)', 'commerce-colors-for-elementor' ),
+			'button_text'       => __( 'Button text', 'commerce-colors-for-elementor' ),
+			'button_hover_text' => __( 'Button text (mouse over)', 'commerce-colors-for-elementor' ),
+			'link_normal'       => __( 'Link colour', 'commerce-colors-for-elementor' ),
+			'link_hover'        => __( 'Link colour (mouse over)', 'commerce-colors-for-elementor' ),
+			'body'              => __( 'Body text', 'commerce-colors-for-elementor' ),
 		);
 
 		for ( $level = 1; $level <= 6; $level++ ) {
 			/* translators: %d: heading level, 1 to 6. */
-			$labels[ 'h' . $level ] = sprintf( __( 'Heading %d', 'color-changer-for-elementor' ), $level );
+			$labels[ 'h' . $level ] = sprintf( __( 'Heading %d', 'commerce-colors-for-elementor' ), $level );
 		}
 
 		$kit_id = get_option( 'elementor_active_kit' );
@@ -274,18 +274,18 @@ class Admin_Interface {
 	 */
 	public static function element_descriptions() {
 		return array(
-			'wc-add-to-cart'    => __( 'The main button on a product page.', 'color-changer-for-elementor' ),
-			'wc-product-price'  => __( 'Prices, wherever they appear.', 'color-changer-for-elementor' ),
-			'wc-sale-badge'     => __( 'The “Sale!” flash on a discounted product.', 'color-changer-for-elementor' ),
-			'wc-star-rating'    => __( 'Review stars on products.', 'color-changer-for-elementor' ),
-			'wc-product-tabs'   => __( 'The Description and Reviews tabs on a product.', 'color-changer-for-elementor' ),
-			'wc-cart-table'     => __( 'The cart contents, and the mini cart in your header.', 'color-changer-for-elementor' ),
-			'wc-checkout'       => __( 'Checkout fields, totals and the place-order button.', 'color-changer-for-elementor' ),
-			'wc-notices'        => __( '“Added to cart” confirmations, warnings and errors.', 'color-changer-for-elementor' ),
-			'wc-quantity-input' => __( 'The quantity box beside Add to cart.', 'color-changer-for-elementor' ),
-			'wc-account'        => __( 'The My Account pages and their menu.', 'color-changer-for-elementor' ),
-			'wc-general-links'  => __( 'Store links, such as category and product names.', 'color-changer-for-elementor' ),
-			'wc-loop-buttons'   => __( 'Add-to-cart buttons in product listings.', 'color-changer-for-elementor' ),
+			'wc-add-to-cart'    => __( 'The main button on a product page.', 'commerce-colors-for-elementor' ),
+			'wc-product-price'  => __( 'Prices, wherever they appear.', 'commerce-colors-for-elementor' ),
+			'wc-sale-badge'     => __( 'The “Sale!” flash on a discounted product.', 'commerce-colors-for-elementor' ),
+			'wc-star-rating'    => __( 'Review stars on products.', 'commerce-colors-for-elementor' ),
+			'wc-product-tabs'   => __( 'The Description and Reviews tabs on a product.', 'commerce-colors-for-elementor' ),
+			'wc-cart-table'     => __( 'The cart contents, and the mini cart in your header.', 'commerce-colors-for-elementor' ),
+			'wc-checkout'       => __( 'Checkout fields, totals and the place-order button.', 'commerce-colors-for-elementor' ),
+			'wc-notices'        => __( '“Added to cart” confirmations, warnings and errors.', 'commerce-colors-for-elementor' ),
+			'wc-quantity-input' => __( 'The quantity box beside Add to cart.', 'commerce-colors-for-elementor' ),
+			'wc-account'        => __( 'The My Account pages and their menu.', 'commerce-colors-for-elementor' ),
+			'wc-general-links'  => __( 'Store links, such as category and product names.', 'commerce-colors-for-elementor' ),
+			'wc-loop-buttons'   => __( 'Add-to-cart buttons in product listings.', 'commerce-colors-for-elementor' ),
 		);
 	}
 
@@ -303,19 +303,19 @@ class Admin_Interface {
 	 */
 	public static function state_label( $slot_id, $registry_label = '', $base_label = '' ) {
 		$states = array(
-			'_hover'    => __( 'when the mouse is over it', 'color-changer-for-elementor' ),
-			'_focus'    => __( 'when reached by keyboard', 'color-changer-for-elementor' ),
-			'_disabled' => __( 'when it is unavailable', 'color-changer-for-elementor' ),
-			'_active'   => __( 'when it is the current one', 'color-changer-for-elementor' ),
-			'_normal'   => __( 'normally', 'color-changer-for-elementor' ),
+			'_hover'    => __( 'when the mouse is over it', 'commerce-colors-for-elementor' ),
+			'_focus'    => __( 'when reached by keyboard', 'commerce-colors-for-elementor' ),
+			'_disabled' => __( 'when it is unavailable', 'commerce-colors-for-elementor' ),
+			'_active'   => __( 'when it is the current one', 'commerce-colors-for-elementor' ),
+			'_normal'   => __( 'normally', 'commerce-colors-for-elementor' ),
 		);
 
 		$standalone = array(
-			'_hover'    => __( 'When the mouse is over it', 'color-changer-for-elementor' ),
-			'_focus'    => __( 'When reached by keyboard', 'color-changer-for-elementor' ),
-			'_disabled' => __( 'When it is unavailable', 'color-changer-for-elementor' ),
-			'_active'   => __( 'When it is the current one', 'color-changer-for-elementor' ),
-			'_normal'   => __( 'Normally', 'color-changer-for-elementor' ),
+			'_hover'    => __( 'When the mouse is over it', 'commerce-colors-for-elementor' ),
+			'_focus'    => __( 'When reached by keyboard', 'commerce-colors-for-elementor' ),
+			'_disabled' => __( 'When it is unavailable', 'commerce-colors-for-elementor' ),
+			'_active'   => __( 'When it is the current one', 'commerce-colors-for-elementor' ),
+			'_normal'   => __( 'Normally', 'commerce-colors-for-elementor' ),
 		);
 
 		foreach ( $states as $suffix => $phrase ) {
@@ -332,7 +332,7 @@ class Admin_Interface {
 			if ( '' !== $base_label ) {
 				return sprintf(
 					/* translators: 1: element name, e.g. "Input Fields". 2: state, e.g. "when reached by keyboard". */
-					_x( '%1$s — %2$s', 'colour slot label', 'color-changer-for-elementor' ),
+					_x( '%1$s — %2$s', 'colour slot label', 'commerce-colors-for-elementor' ),
 					$base_label,
 					$phrase
 				);
@@ -360,6 +360,29 @@ class Admin_Interface {
 		}
 
 		return $defaults;
+	}
+
+	/**
+	 * Build a map of slot_id => the colour tokens its chooser offers.
+	 *
+	 * The specification asks for a short list — the four brand tokens plus
+	 * Custom — rather than every token the kit resolves. `Heuristic_Engine`
+	 * decides which non-brand token a slot may additionally offer, so a button
+	 * lists the kit's button colour and nothing lists all six heading colours.
+	 *
+	 * @return array Slot id => ordered token ids.
+	 */
+	private function get_slot_choices() {
+		$heuristic = new Heuristic_Engine();
+		$choices   = array();
+
+		foreach ( Element_Registry::get_registry() as $definition ) {
+			foreach ( $definition['slots'] as $slot ) {
+				$choices[ $slot['slot_id'] ] = $heuristic->choices_for( $slot['slot_id'] );
+			}
+		}
+
+		return $choices;
 	}
 
 	/**
@@ -391,6 +414,7 @@ class Admin_Interface {
 		$dequeue_settings = $settings; // Backwards compatibility for templates.
 		$kit_colors       = CSS_Generator::get_kit_colors();
 		$defaults         = $this->get_slot_defaults();
+		$slot_choices     = $this->get_slot_choices();
 		$new_count        = $this->count_new_widgets( $mappings );
 		$dequeue_disabled = empty( $mappings );
 
@@ -427,11 +451,11 @@ class Admin_Interface {
 
 	public function handle_form_save() {
 		if ( ! isset( $_POST['eccw_save_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['eccw_save_nonce'] ) ), 'eccw_save_settings' ) ) {
-			wp_die( esc_html__( 'Security check failed.', 'color-changer-for-elementor' ) );
+			wp_die( esc_html__( 'Security check failed.', 'commerce-colors-for-elementor' ) );
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have sufficient permissions.', 'color-changer-for-elementor' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions.', 'commerce-colors-for-elementor' ) );
 		}
 
 		// Checkboxes are absent from the POST body when unticked, so every one

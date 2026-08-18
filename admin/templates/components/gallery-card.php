@@ -60,17 +60,17 @@ $eccw_swatch = static function ( $id, $hex, $labels ) {
 };
 ?>
 <section class="eccw-section">
-	<h2 class="eccw-section-title"><?php esc_html_e( 'Your colours', 'color-changer-for-elementor' ); ?></h2>
+	<h2 class="eccw-section-title"><?php esc_html_e( 'Your colours', 'commerce-colors-for-elementor' ); ?></h2>
 	<p class="eccw-section-intro">
-		<?php esc_html_e( 'These come from Elementor. Change them there and your store follows — you do not need to come back here.', 'color-changer-for-elementor' ); ?>
+		<?php esc_html_e( 'These come from Elementor. Change them there and your store follows — you do not need to come back here.', 'commerce-colors-for-elementor' ); ?>
 	</p>
 
 	<div class="eccw-card">
 		<?php if ( empty( $kit_colors ) ) : ?>
 			<div class="eccw-note">
-				<?php esc_html_e( 'No colours found yet.', 'color-changer-for-elementor' ); ?>
+				<?php esc_html_e( 'No colours found yet.', 'commerce-colors-for-elementor' ); ?>
 				<a href="<?php echo esc_url( $kit_edit_url ); ?>" target="_blank" rel="noopener noreferrer">
-					<?php esc_html_e( 'Set your brand colours in Elementor', 'color-changer-for-elementor' ); ?>
+					<?php esc_html_e( 'Set your brand colours in Elementor', 'commerce-colors-for-elementor' ); ?>
 				</a>
 			</div>
 		<?php else : ?>
@@ -84,7 +84,7 @@ $eccw_swatch = static function ( $id, $hex, $labels ) {
 
 			<?php if ( ! empty( $eccw_derived ) ) : ?>
 				<details class="eccw-details">
-					<summary><?php esc_html_e( 'Colours taken from your Elementor buttons, links and text', 'color-changer-for-elementor' ); ?></summary>
+					<summary><?php esc_html_e( 'Colours taken from your Elementor buttons, links and text', 'commerce-colors-for-elementor' ); ?></summary>
 					<ul class="eccw-swatches eccw-swatches-compact">
 						<?php
 						foreach ( $eccw_derived as $eccw_id => $eccw_hex ) {

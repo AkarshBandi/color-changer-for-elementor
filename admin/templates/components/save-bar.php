@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 <div class="eccw-savebar">
 	<span class="eccw-savebar-hint" data-eccw-dirty-hint hidden>
-		<?php esc_html_e( 'You have unsaved changes.', 'color-changer-for-elementor' ); ?>
+		<?php esc_html_e( 'You have unsaved changes.', 'commerce-colors-for-elementor' ); ?>
 	</span>
 	<?php
 	// Not name="submit": a control named `submit` shadows the form's own
@@ -23,6 +23,6 @@ defined( 'ABSPATH' ) || exit;
 	// on the nonce and never reads this name.
 	?>
 	<button type="submit" name="eccw_submit" class="eccw-btn eccw-btn-primary">
-		<?php esc_html_e( 'Save changes', 'color-changer-for-elementor' ); ?>
+		<?php esc_html_e( 'Save changes', 'commerce-colors-for-elementor' ); ?>
 	</button>
 </div>

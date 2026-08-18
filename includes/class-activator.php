@@ -15,9 +15,9 @@ class Activator {
 	 */
 	public static function activate() {
 		if ( ! class_exists( 'WooCommerce' ) || ! defined( 'ELEMENTOR_VERSION' ) ) {
-			deactivate_plugins( plugin_basename( ECCW_PATH . 'color-changer-for-elementor.php' ) );
+			deactivate_plugins( plugin_basename( ECCW_PATH . 'commerce-colors-for-elementor.php' ) );
 			wp_die(
-				esc_html__( 'Color and Font Sync for Elementor and WooCommerce requires both WooCommerce and Elementor to be installed and active.', 'color-changer-for-elementor' )
+				esc_html__( 'Commerce Colors for Elementor requires both WooCommerce and Elementor to be installed and active.', 'commerce-colors-for-elementor' )
 			);
 		}
 
@@ -63,7 +63,7 @@ class Activator {
 		}
 
 		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-			$plugin_file = ECCW_PATH . 'color-changer-for-elementor.php';
+			$plugin_file = ECCW_PATH . 'commerce-colors-for-elementor.php';
 
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
 				'custom_order_tables',
@@ -95,7 +95,7 @@ class Activator {
 		$settings_url = admin_url( 'admin.php?page=eccw-settings' );
 		$message      = sprintf(
 			/* translators: %s: settings page URL */
-			__( 'Color and Font Sync for Elementor and WooCommerce is active. Your store elements are now styled with your Elementor brand colors. <a href="%s">Go to settings</a>.', 'color-changer-for-elementor' ),
+			__( 'Commerce Colors for Elementor is active. Your store elements are now styled with your Elementor brand colors. <a href="%s">Go to settings</a>.', 'commerce-colors-for-elementor' ),
 			esc_url( $settings_url )
 		);
 
