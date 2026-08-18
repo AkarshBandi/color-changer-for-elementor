@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commerce Colors for Elementor — Brand colors &amp; fonts for WooCommerce</title>
+<meta name="description" content="Your Elementor colors and fonts, applied automatically to every WooCommerce button, price, badge and form. No page-by-page setup.">
+<style>
+  :root {
+    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8;
+    --accent: #6366f1; --accent-2: #22d3ee; --border: #334155;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  header { text-align: center; padding: 72px 0 40px; }
+  .badge { display: inline-block; background: rgba(99,102,241,.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,.4); border-radius: 999px; padding: 4px 14px; font-size: 13px; margin-bottom: 20px; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; }
+  h1 span { background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tagline { font-size: 1.15rem; color: var(--muted); max-width: 620px; margin: 0 auto 32px; }
+  .cta { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; padding: 14px 28px; border-radius: 10px; transition: transform .15s, background .15s; }
+  .cta:hover { background: #4f46e5; transform: translateY(-2px); }
+  .cta small { font-weight: 400; opacity: .85; }
+  .demo { margin: 56px auto; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--card); }
+  .demo img, .demo video { display: block; width: 100%; }
+  .demo .ph { display: flex; align-items: center; justify-content: center; min-height: 320px; color: var(--muted); font-size: 14px; text-align: center; padding: 24px; }
+  section { padding: 32px 0; }
+  h2 { font-size: 1.5rem; margin-bottom: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card h3 { font-size: 1rem; margin-bottom: 8px; color: #a5b4fc; }
+  .card p { font-size: .92rem; color: var(--muted); }
+  .optin { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 40px 24px; text-align: center; margin: 40px 0; }
+  .optin h2 { margin-bottom: 8px; }
+  .optin p { color: var(--muted); margin-bottom: 20px; }
+  .optin form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .optin input[type=email] { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); min-width: 260px; }
+  .optin button { padding: 12px 22px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  .optin .ph { color: var(--muted); font-size: 14px; }
+  footer { text-align: center; padding: 48px 0 64px; color: var(--muted); font-size: .9rem; }
+  footer a { color: #a5b4fc; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="badge">Free · GPL-2.0 · WordPress plugin</div>
+    <h1>Commerce Colors <span>for Elementor</span></h1>
+    <p class="tagline">Your Elementor colors and fonts, applied automatically to every WooCommerce button, price, badge and form. No page-by-page setup.</p>
+    <a class="cta" href="https://github.com/AkarshBandi/color-changer-for-elementor/releases/latest">Download the plugin <small>· v1.0.0</small></a>
+  </header>
+
+  <div class="demo">
+    <!-- Replace with your demo GIF or screen recording:
+         <img src="demo.gif" alt="Demo: changing Elementor kit colors updates the WooCommerce store instantly"> -->
+    <div class="ph">Demo coming soon — watch your brand colors flow from Elementor into WooCommerce</div>
+  </div>
+
+  <section>
+    <h2>What it does</h2>
+    <p style="color:var(--muted); margin-bottom:24px;">You already chose your brand colors and fonts in Elementor. WooCommerce ignores them — its buttons, prices, badges and checkout ship their own grey-and-purple palette. This plugin reads your Elementor kit and keeps WooCommerce in step with it, updating whenever you change the kit.</p>
+    <div class="grid">
+      <div class="card"><h3>Connected to your kit</h3><p>Brand colors and fonts follow your Elementor Site Settings automatically.</p></div>
+      <div class="card"><h3>Zero configuration</h3><p>Sensible defaults on activation — every element gets a color from your palette.</p></div>
+      <div class="card"><h3>Per-element control</h3><p>Change any element's color from WooCommerce → Store Design, or enter a custom hex.</p></div>
+      <div class="card"><h3>States included</h3><p>Hover, focus and disabled states derived automatically, with accessible focus outlines.</p></div>
+      <div class="card"><h3>Blocks &amp; add-ons</h3><p>WooCommerce Blocks, Essential Addons and Premium Addons widgets supported.</p></div>
+      <div class="card"><h3>One-click off switch</h3><p>Untick "Apply my brand colours" and your store returns to normal instantly.</p></div>
+    </div>
+  </section>
+
+  <div class="optin">
+    <h2>Get the launch update</h2>
+    <p>Be first to know when the plugin lands on WordPress.org, plus setup tips.</p>
+    <!-- Replace with your MailerLite / ConvertKit embed code -->
+    <div class="ph">Email signup form coming soon</div>
+  </div>
+
+  <footer>
+    <p><a href="https://github.com/AkarshBandi/color-changer-for-elementor">GitHub</a> · <a href="https://github.com/AkarshBandi/color-changer-for-elementor/releases/latest">Releases</a> · <a href="https://buymeacoffee.com/yourname">Buy me a coffee</a></p>
+    <p style="margin-top:8px;">GPL-2.0-or-later · Built with WordPress, Elementor &amp; WooCommerce</p>
+  </footer>
+
+</div>
+</body>
+</html>
