@@ -4,7 +4,6 @@
 
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
 
-> ☕ If this plugin saves you time, [buy me a coffee](https://buymeacoffee.com/yourname) — it keeps the updates coming.
 
 ---
 
